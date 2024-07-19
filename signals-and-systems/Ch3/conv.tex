@@ -1,0 +1,591 @@
+\documentclass{report}
+\input{../../preamble.tex}
+
+\begin{document}
+\setcounter{chapter}{2}
+\chapter{Convolution}
+In the previous chapter, we were introduced to the concept of \emph{convolution}, an operation ($*$) defined by the \emph{convolution integral}
+\begin{align*}
+    x(t) * h(t) &= \int_{-\infty}^{+\infty} x(\tau)h(t-\tau) \,d\tau,
+\end{align*}
+We have seen that the operation is commutative since by change of variables, 
+\begin{align*}
+    x(t) * h(t) &= \int_{-\infty}^{+\infty} x(\tau)h(t-\tau) \,d\tau \\
+    &= \int_{-\infty}^{+\infty} x(t-\tau)h(\tau) \,d\tau = h(t) * x(t).
+\end{align*}
+We have also already seen another convolution property in effect with the sampling property of the impulse function. 
+\begin{align*}
+    \int_{-\infty}^{+\infty} x(t)\delta(t-T) \,dt &= x(T) \\
+    \Longrightarrow \int_{-\infty}^{+\infty} x(\tau)\delta(\tau-t) \,d\tau &= \int_{-\infty}^{+\infty} x(\tau)\delta(t-\tau) \,d\tau = x(t) \\
+    x(t) * \delta(t) &= x(t).
+\end{align*}
+We also introduced the concept that any LTI system characterized by impulse response $h(t)$ will always have predictable outputs since the output is simply the 
+convolution of the input signal and the impulse response, provided that all initial conditions of the system are zero. That is, 
+\begin{align}
+    y(t) = x(t) * h(t) = \int_{-\infty}^{+\infty} x(\tau)h(t-\tau) \,d\tau.
+\end{align}
+We can even take this one step further. Since the physical world can only have causal signals and causal systems (with $x(t)$ and $h(t)$ both being causal) the output $y(t)$ must be causal as well. 
+This is reflected in a modified version of the convolution integral, 
+\begin{align}
+    y(t) = u(t) \int_{0}^{t} x(\tau)h(t-\tau) \,d\tau = u(t) \int_{0}^{t} h(\tau)x(t-\tau) \,d\tau.
+\end{align}
+In this chapter, different techniques to computing the convolution of two functions are explored. 
+
+\section{Analytical Convolution}
+One way to compute the convolution is to directly solve the convolution integral itself. Refer to Table \ref{conv_prop} for some 
+convolution properties.
+\begin{table}[hbt!]
+    \centering
+    \caption{Convolution properties}
+    \label{conv_prop}
+    \begin{tabular}{|c|c|}
+        \hline
+        Property & Description \\[0.15cm]
+        \hline
+        Commutativity & $x(t)*h(t)=h(t)*x(t)$ \\[0.5cm]
+        Associativity & $x(t)*[h(t)*g(t)]=[x(t)*h(t)]*g(t)$ \\[0.5cm]
+        Distributivity & $x(t)*[h_1(t)+\cdots+h_N(t)]=[x(t)*h_1(t)]+\cdots+[x(t)*h_N(t)]$  \\[0.5cm]
+        Time-shift & $x(t-T_1)*h(t-T_2)=y(t-T_1-T_2)$ \\[0.5cm]
+        Convolution with impulse & $x(t)*\delta(t)=x(t)$ \\[0.5cm]
+        Convolution with step & $x(t)*u(t)=\displaystyle\int_{-\infty}^{t} x(\tau) \,d\tau$ (ideal integrator) \\[0.5cm]
+        Causal signals and systems & $y(t)=u(t)\displaystyle\int_{0}^{t} h(\tau)x(t-\tau) \,d\tau$ \\[0.5cm]
+        Width & $\text{Width}[y(t)]=\text{Width}[x(t)]+\text{Width}[h(t)]$ \\[0.5cm]
+        Area & $\text{Area}[y(t)]=\text{Area}[x(t)]+\text{Area}[h(t)]$ \\[0.5cm]
+        Differentation & $\left(\dfrac{d^mx(t)}{dt^m}\right) * \left(\dfrac{d^nh(t)}{dt^n}\right) = \dfrac{d^{m+n}y(t)}{dt^{m+n}}$ \\[0.5cm]
+        Integration & $\displaystyle\int_{-\infty}^{t} y(\tau) \,d\tau = x(t) * \left[\displaystyle\int_{-\infty}^{t} h(\tau) \,d\tau\right] = \left[\displaystyle\int_{-\infty}^{t} x(\tau) \,d\tau\right] * h(t)$ \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table} 
+\\
+When integrating two causal functions, one of the functions will become time-reversed in the convolution integral. We can use this to our advantage in redefining the limits of integration. That is, for 
+$f(\tau)$ representing the non-step factors, 
+\begin{align}
+    \int_{-\infty}^{+\infty} f(\tau) \cdot \underbrace{u(\tau-a)}_\textrm{$\tau-a>0$} \cdot \underbrace{u(b-\tau)}_\textrm{$b-\tau>0$} \,d\tau = u(b-a)\int_{a}^{b} f(\tau) \,d\tau.
+\end{align}
+The inequalities above are defined for when the step functions are ``switched on'', and combining the two inequalities gives us an interval of validity $a<\tau<b$, which is what is used to update the convolution integral.
+
+\begin{example}
+    Find $y(t)=x(t)*h(t)$ for 
+    \begin{align*}
+        x(t) &= t e^{-2t}u(t), \\
+        h(t) &= e^{-3t}u(t).
+    \end{align*}
+\end{example}
+\begin{solution}
+    Using the convolution integral, it follows that 
+    \begin{align*}
+        y(t) = [t e^{-2t}u(t)] * [e^{-3t}u(t)] &= \int_{-\infty}^{+\infty} \tau e^{-2\tau} \underbrace{u(\tau)}_\textrm{$\tau>0$} e^{-3(t-\tau)}\underbrace{u(t-\tau)}_\textrm{$\tau<t$} \,d\tau \\
+        &= u(t-0) \int_{0}^{t} \tau e^{-2\tau} e^{-3(t-\tau)} \,d\tau \\
+        &= e^{-3t}u(t) \int_{0}^{t} \tau e^{\tau} \,d\tau = e^{-3t}[te^t-e^t+1]u(t).
+    \end{align*}
+\end{solution}
+
+\begin{example}
+    Find $y(t)=x(t)*h(t)$ for 
+    \begin{align*}
+        x(t) &= u(t-2)-u(t-4), \\
+        h(t) &= u(t-3)-u(t-5).
+    \end{align*}
+\end{example}
+\begin{solution}
+    Using the convolution integral and the distributive property, it follows that 
+    \begin{align*}
+        y(t) &= [u(t-2)-u(t-4)] * [u(t-3)-u(t-5)] \\
+        &= u(t-2) * u(t-3) - u(t-2) * u(t-5) - u(t-4) * u(t-3) + u(t-4) * u(t-5) \\
+        &= \int_{-\infty}^{+\infty} \underbrace{u(\tau-2)}_\textrm{$\tau>2$} \underbrace{u((t-3)-\tau)}_\textrm{$\tau<t-3$} \,d\tau 
+        -\int_{-\infty}^{+\infty} \underbrace{u(\tau-2)}_\textrm{$\tau>2$} \underbrace{u((t-5)-\tau)}_\textrm{$\tau<t-5$} \,d\tau \\
+        & \indent -\int_{-\infty}^{+\infty} \underbrace{u(\tau-4)}_\textrm{$\tau>4$} \underbrace{u((t-3)-\tau)}_\textrm{$\tau<t-3$} \,d\tau 
+        +\int_{-\infty}^{+\infty} \underbrace{u(\tau-4)}_\textrm{$\tau>4$} \underbrace{u((t-5)-\tau)}_\textrm{$\tau<t-5$} \,d\tau.
+    \end{align*}
+    Simplifying the integrals, we get
+    \begin{align*}
+        y(t) &= u((t-3)-2)\int_{2}^{t-3} \,d\tau -u((t-5)-2)\int_{2}^{t-5} \,d\tau \\
+        & \indent -u((t-3)-4)\int_{4}^{t-3} \,d\tau +u((t-5)-4)\int_{4}^{t-5} \,d\tau \\
+        &= (t-5)u(t-5) -2(t-7)u(t-7) +(t-9)u(t-9) \\
+        &= r(t-5) - 2r(t-7) + r(t-9).
+    \end{align*}
+\end{solution}
+
+While we are mostly interested in intervals of validity that follow causal signals and systems, there are other possible intervals of validity for different 
+types of systems that may or may not be causal. Refer to Table \ref{int_redef} for these integral redefinitions. 
+\begin{table}[hbt!]
+    \centering
+    \caption{Integral redefinitions based on unit step functions}
+    \label{int_redef}
+    \begin{mdframed}
+    \begin{align}
+        \int_{-\infty}^{+\infty} f(\tau) u(\tau-a) \,d\tau &= \int_{a}^{+\infty} f(\tau) \,d\tau \\[0.25cm]
+        \int_{-\infty}^{+\infty} f(\tau) u(b-\tau) \,d\tau &= \int_{-\infty}^{b} f(\tau) \,d\tau \\[0.25cm]
+        \int_{-\infty}^{+\infty} f(\tau) u(\tau-a) u(b-\tau) \,d\tau &= u(b-a)\int_{a}^{b} f(\tau) \,d\tau \\[0.25cm]
+        \int_{-\infty}^{+\infty} f(\tau) u(\tau-a) u(\tau-b) \,d\tau &= \int_{\max(a,b)}^{+\infty} f(\tau) \,d\tau \nonumber \\ 
+        &= u(a-b) \int_{a}^{+\infty} f(\tau) \,d\tau + u(b-a) \int_{b}^{+\infty} f(\tau) \,d\tau \\[0.25cm] 
+        \int_{-\infty}^{+\infty} f(\tau) u(a-\tau) u(b-\tau) \,d\tau &= \int_{-\infty}^{\min(a,b)} f(\tau) \,d\tau \nonumber \\ 
+        &= u(b-a) \int_{-\infty}^{a} f(\tau) \,d\tau + u(a-b) \int_{-\infty}^{b} f(\tau) \,d\tau \\[0.15cm] \nonumber
+    \end{align}
+    \end{mdframed}
+\end{table} 
+
+\begin{example}
+    Find $y(t)=x(t)*h(t)$ for 
+    \begin{align*}
+        x(t) &= e^{-t}u(t-3), \\
+        h(t) &= u(-t).
+    \end{align*} 
+\end{example}
+\begin{solution}
+    Using the convolution integral, it follows that 
+    \begin{align*}
+        y(t) = [e^{-t}u(t-3)] * [u(-t)] &= \int_{-\infty}^{+\infty} e^{-\tau} \underbrace{u(\tau-3)}_\textrm{$\tau>3$} \underbrace{u(\tau-t)}_\textrm{$\tau>t$} \,d\tau \\
+        &= \int_{\max(3,t)}^{+\infty} e^{-\tau} u(\tau-3)u(\tau-t) \,d\tau \\
+        &= u(3-t)\int_{3}^{+\infty} e^{-\tau} \,d\tau + u(t-3)\int_{t}^{+\infty} e^{-\tau} \,d\tau \\
+        &= e^{-3}u(3-t)+e^{-t}u(t-3).
+    \end{align*}
+\end{solution}
+
+\begin{table}[hbt!]
+    \centering
+    \caption{Commonly encountered convolutions}
+    \label{common_conv}
+    \begin{mdframed}
+    \begin{align}
+        u(t)*u(t) &= t\cdot u(t) \\[0.25cm]
+        e^{at}u(t)*u(t) &= \left(\frac{e^{at}-1}{a}\right) u(t) \\[0.25cm]
+        e^{at}u(t)*e^{bt}u(t) &= \left(\frac{e^{at}-e^{bt}}{a-b}\right) u(t) \\[0.25cm]
+        e^{at}u(t)*e^{at}u(t) &= te^{at} u(t) \\[0.25cm]
+        te^{at}u(t)*e^{bt}u(t) &= \left(\frac{e^{bt}-e^{at}+(a-b)te^{at}}{(a-b)^2}\right) u(t) \\[0.25cm]
+        te^{at}u(t)*e^{at}u(t) &= \frac{1}{2} \cdot t^2 e^{at} u(t) \\[0.25cm]
+        \delta(t-T_1)*\delta(t-T_2) &= \delta(t-T_1-T_2) \\[0.15cm] \nonumber
+    \end{align}
+    \end{mdframed}
+\end{table} 
+
+\section{Pointwise Graphical Convolution}
+Another way to compute the convolution is to interpret the convolution graphically. Here, we will first introduce the pointwise method, 
+best used when only a few samples of the output are of interest. Since 
+\begin{align*}
+    y(t) = x(t) * h(t) = \int_{-\infty}^{+\infty} x(\tau)h(t-\tau) \,d\tau,
+\end{align*}
+the output at a certain single time $t$ is given by the area under the resultant curve formed by multiplying $x(\tau)$ and $h(t-\tau)$, which is a time-reversed and translated 
+version of $h(\tau)$. 
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \noindent\emph{POINTWISE GRAPHICAL CONVOLUTION.}
+    \begin{enumerate}[Step 1:]
+        \item Determine the set of time values of interest $t_0, ..., t_N$.
+        \item Plot $x(\tau)$ and $h(-\tau)$ along the $\tau$-axis.
+        \item Let $t=t_0$ and shift $h(-\tau)$ to the right by $t$ units to represent $h(t-\tau)$.
+        \item Using the region of overlap between $x(\tau)$ and $h(t-\tau)$, there are many options to solve:
+        \begin{enumerate}
+            \item if one curve is constant during the overlap and the other curve has a simple area under the curve, then $y(t)$ is the area under the curve but scaled by the constant.
+            \item if both curves are linear during the overlap, then point-by-point multiplication can be performed, and the area under the new curve is taken to be $y(t)$.
+            \item in general, integration during the overlap will always work.
+        \end{enumerate}
+        \item Repeat Steps 2--4 for the remaining time values of interest.
+    \end{enumerate}
+\end{tcolorbox}
+
+\begin{example}
+    Find $y(t)=x(t)*h(t)$, given the following plots. \\ \\
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (\x < 1) * (0) + and(\x >= 1, \x < 2) * (4) + (\x > 2) * (0); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=4.5, ytick={0,2,4}, ylabel={$x(t)$},
+            xmin=0, xmax=4, xtick={0,...,2}, xlabel={$t$ [s]},
+            domain=0:3,samples=200,
+            width=5cm, height=4cm]
+        \addplot [blue,thick]{func(x)};
+        \end{axis}
+    \end{tikzpicture}
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (\x < 0) * (0) + and(\x >= 0, \x < 3) * (\x) + (\x > 3) * (0); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=4.5, ytick={0,3}, ylabel={$h(t)$},
+            xmin=0, xmax=4, xtick={0,...,3}, xlabel={$t$ [s]},
+            domain=0:3.5,samples=200,
+            width=5cm, height=4cm]
+        \addplot [red,thick]{func(x)};
+        \end{axis}
+    \end{tikzpicture}
+\end{example}
+\begin{solution}
+    From the width property of convolution, we know that the width of the output is the sum of the two widths, 
+    which is 5 seconds. \\ \\ 
+    We also know that from the time-shift property of the convolution, since $x(t)$ is excited at $t=0$ and 
+    $h(t)$ is excited at $t=1$, the output $y(t)$ must be excited at $t=1$. \\ \\ 
+    From this information alone, we can already deduce that 
+    the output is only nonzero when $1<t<6$. Therefore, it is wise to choose values during that interval. 
+    \\ \\
+    Suppose we are interested in only finding $y(2)$. First, we plot $x(\tau)$ and $h(-\tau)$ on the $\tau$-axis.
+    \begin{tikzpicture}
+        [declare function={
+            func1(\x) = (\x < 1) * (0) + and(\x >= 1, \x < 2) * (4) + (\x > 2) * (0); 
+            func2(\x)= (\x < 0) * (0) + and(\x >= 0, \x < 3) * (\x) + (\x > 3) * (0); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=4.5, ytick={0,...,4}, ylabel={ },
+            xmin=-4, xmax=4, xtick={-3,...,3}, xlabel={$\tau$ [s]},
+            domain=-3.5:3.5,samples=200,
+            width=8cm, height=4cm]
+        \addplot [blue,thick]{func1(x)};
+        \addplot [red,thick]{func2(-x)};
+        \end{axis}
+    \end{tikzpicture}
+    \\ \\
+    Since we want to observe at time $t=2$, we shift the red plot to the right by 2 units: \\ \\
+    \begin{tikzpicture}
+        [declare function={
+            func1(\x) = (\x < 1) * (0) + and(\x >= 1, \x < 2) * (4) + (\x > 2) * (0); 
+            func2(\x)= (\x < 0) * (0) + and(\x >= 0, \x < 3) * (\x) + (\x > 3) * (0); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=4.5, ytick={0,...,4}, ylabel={ },
+            xmin=-4, xmax=4, xtick={-3,...,3}, xlabel={$\tau$ [s]},
+            domain=-3.5:3.5,samples=200,
+            width=8cm, height=4cm]
+        \addplot [blue,thick]{func1(x)};
+        \addplot [red,thick]{func2(-x+2)};
+        \end{axis}
+    \end{tikzpicture}
+    \\ \\
+    Here, we notice that the region of overlap occurs during $1<\tau<2$. Note that the area under the red curve during that time is $\frac{1}{2}\times 1 \times 1 = \frac{1}{2}$, and the constant value 
+    of the blue plot during that time is 4. Therefore, $y(2)$ is the scaled area under the curve during the region of overlap. That is, $y(2)=\frac{1}{2}\times 4=2$. 
+    \\ \\ 
+    Alternatively, we could have performed point-by-point multiplication and find that the area under the green curve in the following plot is still 2. \\ \\
+    \begin{tikzpicture}
+        [declare function={
+            func1(\x) = (\x < 1) * (0) + and(\x >= 1, \x < 2) * (4) + (\x > 2) * (0); 
+            func2(\x)= (\x < 0) * (0) + and(\x >= 0, \x < 3) * (\x) + (\x > 3) * (0); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=4.5, ytick={0,...,4}, ylabel={ },
+            xmin=-4, xmax=4, xtick={-3,...,3}, xlabel={$\tau$ [s]},
+            domain=-3.5:3.5,samples=200,
+            width=8cm, height=4cm]
+        \addplot [blue,thick]{func1(x)};
+        \addplot [red,thick]{func2(-x+2)};
+        \addplot [darkgreen,thick]{func2(-x+2)*func1(x)};
+        \end{axis}
+    \end{tikzpicture}
+    \\ \\ 
+    Of course, integration generally always works as well. During the region of overlap, we can let $x(\tau)=4$ and $h(2-\tau)=2-\tau$ such that 
+    \begin{align*}
+        y(2) = \int_{1}^{2} x(\tau)h(2-\tau) \,d\tau = \int_{1}^{2} 4(2-\tau) \,d\tau = 2.
+    \end{align*}
+    We can repeat the process as many times as needed for other values of $t\in(1,6)$ until we get enough samples to sketch $y(t)$.
+    \\ \\
+\end{solution}
+
+\section{Region-Based Graphical Convolution}
+The pointwise method is impractical if we are interested in the output response over a larger, if not entire, time domain. Here, we introduce the region-based 
+graphical convolution, which utilizes a signal's \emph{leading and trailing edges}, if any. 
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \noindent\emph{REGION-BASED GRAPHICAL CONVOLUTION.}
+    \begin{enumerate}[Step 1:]
+        \item Plot $x(\tau)$ and $h(-\tau)$ along the $\tau$-axis, with $h(-\tau)$ being the simpler function to flip.
+        \item Label the leading and trailing edges of $h(-\tau)$.
+        \item Identify a region of overlap and use the edges to determine the interval of $t$-values. Then evaluate the convolution integral during that region of overlap. 
+        \item Repeat Steps 2--3 for any other regions of overlap when shifting $h(-\tau)$ from left-to-right along the $\tau$-axis. Keep track of the width of $h(t-\tau)$. 
+    \end{enumerate}
+\end{tcolorbox}
+
+\begin{example}
+    Find $y(t)=x(t)*h(t)$, given the following plots. \\ \\
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (\x < 0) * (0) + and(\x >= 0, \x < 2) * (0.5 * \x) + (\x > 2) * (0); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=2.5, ytick={0,1,2}, ylabel={$x(t)$},
+            xmin=0, xmax=3, xtick={0,...,2}, xlabel={$t$ [s]},
+            domain=0:3,samples=200,
+            width=5cm, height=3cm]
+        \addplot [blue,thick]{func(x)};
+        \end{axis}
+    \end{tikzpicture}
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (\x < -2) * (0) + and(\x >= -2, \x < 2) * (2) + (\x > 2) * (0); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=2.5, ytick={0,1,2}, ylabel={$h(t)$},
+            xmin=-2.5, xmax=2.5, xtick={-2,...,2}, xlabel={$t$ [s]},
+            domain=-3:3,samples=200,
+            width=6cm, height=3cm]
+        \addplot [red,thick]{func(x)};
+        \end{axis}
+    \end{tikzpicture}
+\end{example}
+\begin{solution}
+    First, plot $x(\tau)$ and $h(-\tau)$. Then identify the leading and trailing edges of $h(-\tau)$. \\ \\
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (\x < 0) * (0) + and(\x >= 0, \x < 2) * (0.5 * \x) + (\x > 2) * (0); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=3, ytick={0,1,2}, ylabel={$x(\tau)$},
+            xmin=0, xmax=3, xtick={0,...,2}, xlabel={$\tau$ [s]},
+            domain=0:3,samples=200,
+            width=7cm, height=4cm]
+        \addplot [blue,thick]{func(x)};
+        \end{axis}
+    \end{tikzpicture}
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (\x < -2) * (0) + and(\x >= -2, \x < 2) * (2) + (\x > 2) * (0); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=3, ytick={0,1,2}, ylabel={$\big[h(t-\tau)\big|_{t=0} = h(-\tau)$},
+            xmin=-3, xmax=3, xtick={-2,...,2}, xlabel={ },
+            domain=-3:3,samples=200,
+            width=8cm, height=4cm]
+        \addplot [red,thick]{func(-x)} node[above,pos=0.05] {\scriptsize \shortstack{Trailing \\ edge, \\ $t-2$}};
+        \addplot [red,thick]{func(-x)} node[above,pos=0.95] {\scriptsize \shortstack{Leading \\ edge, \\ $t+2$}};
+        \end{axis}
+    \end{tikzpicture}
+    \\
+    From $h(-\tau)$ above, we see that the leading edge is $\tau=t+2$ and the trailing edge is $\tau=t-2$. Now we place $h(t-\tau)$ to the furthest left and gradually shift to the right. 
+    \\ \\ \\
+    \underline{Region 1: No overlap} \\ \\
+    \begin{tabular}{ cc }
+        \begin{tabular}{ c }
+            \begin{tikzpicture}
+                [declare function={
+                    func1(\x)= (\x < 0) * (0) + and(\x >= 0, \x < 2) * (0.5 * \x) + (\x > 2) * (0);  }]
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=2.5, ytick={0,1,2}, ylabel={$x(\tau)$},
+                    xmin=-2.5, xmax=2.5, xtick={-2,...,2}, xlabel={$\tau$},
+                    domain=-3:3,samples=200,
+                    width=6cm, height=3cm]
+                \addplot [blue,thick]{func1(x)};
+                \end{axis}
+            \end{tikzpicture} \\
+            \begin{tikzpicture}
+                [declare function={
+                    func2(\x)= (\x < -2) * (0) + and(\x >= -2, \x < 2) * (2) + (\x > 2) * (0); }]
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=3, ytick={0,2}, ylabel={$h(t-\tau)$},
+                    xmin=-2.5, xmax=2.5, xtick={0}, xlabel={$\tau$},
+                    extra x ticks={-5,-1}, extra x tick labels={$t-2$,$t+2$}, 
+                    domain=-3:3,samples=200,
+                    width=6cm, height=3cm]
+                \addplot [red,thick]{func2(-x-3)};
+                \end{axis}
+            \end{tikzpicture}
+        \end{tabular} & 
+        \begin{tabular}{ c }
+            Leading edge: $t+2 < 0 \Rightarrow t < -2$ \\ 
+            \\
+            No overlap, so $y(t)=0$ for $t<-2.$
+        \end{tabular}
+    \end{tabular} 
+    \\ \\ 
+    \noindent \underline{Region 2: Partial overlap} \\ \\
+    \begin{tabular}{ cc }
+        \begin{tabular}{ c }
+            \begin{tikzpicture}
+                [declare function={
+                    func1(\x)= (\x < 0) * (0) + and(\x >= 0, \x < 2) * (0.5 * \x) + (\x > 2) * (0);  }]
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=2.5, ytick={0,1,2}, ylabel={$x(\tau)$},
+                    xmin=-2.5, xmax=2.5, xtick={-2,...,2}, xlabel={$\tau$},
+                    domain=-3:3,samples=200,
+                    width=6cm, height=3cm]
+                \addplot [blue,thick]{func1(x)};
+                \end{axis}
+            \end{tikzpicture} \\
+            \begin{tikzpicture}
+                [declare function={
+                    func2(\x)= (\x < -2) * (0) + and(\x >= -2, \x < 2) * (2) + (\x > 2) * (0); }]
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=3, ytick={0,2}, ylabel={$h(t-\tau)$},
+                    xmin=-2.5, xmax=2.5, xtick={0}, xlabel={$\tau$},
+                    extra x ticks={-3,1}, extra x tick labels={$t-2$,$t+2$}, 
+                    domain=-3:3,samples=200,
+                    width=6cm, height=3cm]
+                \addplot [red,thick]{func2(-x-1)};
+                \end{axis}
+            \end{tikzpicture} \\
+            \begin{tikzpicture}
+                [declare function={
+                    func1(\x)= (\x < 0) * (0) + and(\x >= 0, \x < 2) * (0.5 * \x) + (\x > 2) * (0);
+                    func2(\x)= (\x < -2) * (0) + and(\x >= -2, \x < 2) * (2) + (\x > 2) * (0); }]
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=3, ytick={0,1,2}, ylabel={$x(\tau)h(t-\tau)$},
+                    xmin=-2.5, xmax=2.5, xtick={0,2}, xlabel={$\tau$},
+                    extra x ticks={1}, extra x tick labels={$t+2$}, 
+                    domain=-3:3,samples=200,
+                    width=6cm, height=3cm]
+                \addplot [darkgreen,thick]{func1(x) * func2(-x-1)};
+                \end{axis}
+            \end{tikzpicture}
+        \end{tabular} & 
+        \begin{tabular}{ c }
+            Leading edge: $0 < t+2 < 2 \Rightarrow -2 < t < 0$ \\ 
+            \\
+            $y(t) = \displaystyle\int_{-\infty}^{+\infty} x(\tau)h(t-\tau) \,d\tau$ \\ \\
+            $\Longrightarrow y(t) = \displaystyle\int_{0}^{t+2} \left[\frac{1}{2}\tau\right][2] \,d\tau=\frac{1}{2}(t+2)^2$
+        \end{tabular}
+    \end{tabular} 
+    \\[2.5cm]
+    \underline{Region 3: Complete overlap} \\ \\
+    \begin{tabular}{ cc }
+        \begin{tabular}{ c }
+            \begin{tikzpicture}
+                [declare function={
+                    func1(\x)= (\x < 0) * (0) + and(\x >= 0, \x < 2) * (0.5 * \x) + (\x > 2) * (0);  }]
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=2.5, ytick={0,1,2}, ylabel={$x(\tau)$},
+                    xmin=-1.5, xmax=3.5, xtick={-1,...,3}, xlabel={$\tau$},
+                    domain=-3:3,samples=200,
+                    width=6cm, height=3cm]
+                \addplot [blue,thick]{func1(x)};
+                \end{axis}
+            \end{tikzpicture} \\
+            \begin{tikzpicture}
+                [declare function={
+                    func2(\x)= (\x < -2) * (0) + and(\x >= -2, \x < 2) * (2) + (\x > 2) * (0); }]
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=3, ytick={0,2}, ylabel={$h(t-\tau)$},
+                    xmin=-1.5, xmax=3.5, xtick={0}, xlabel={$\tau$},
+                    extra x ticks={-1,3}, extra x tick labels={$t-2$,$t+2$}, 
+                    domain=-3:3,samples=200,
+                    width=6cm, height=3cm]
+                \addplot [red,thick]{func2(-x+1)};
+                \end{axis}
+            \end{tikzpicture} \\
+            \begin{tikzpicture}
+                [declare function={
+                    func1(\x)= (\x < 0) * (0) + and(\x >= 0, \x < 2) * (0.5 * \x) + (\x > 2) * (0);
+                    func2(\x)= (\x < -2) * (0) + and(\x >= -2, \x < 2) * (2) + (\x > 2) * (0); }]
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=3, ytick={0,1,2}, ylabel={$x(\tau)h(t-\tau)$},
+                    xmin=-1.5, xmax=3.5, xtick={0,2}, xlabel={$\tau$},
+                    domain=-3:3,samples=200,
+                    width=6cm, height=3cm]
+                \addplot [darkgreen,thick]{func1(x) * func2(-x+1)};
+                \end{axis}
+            \end{tikzpicture}
+        \end{tabular} & 
+        \begin{tabular}{ c }
+            Leading edge: $t+2 > 2 \Rightarrow t > 0$ \\
+            Trailing edge: $t-2 < 0 \Rightarrow t < 2$ \\ \\
+            $\Longrightarrow 0 < t < 2$  \\ \\
+            $\Longrightarrow y(t) = \displaystyle\int_{0}^{2} \left[\frac{1}{2}\tau\right][2] \,d\tau=2$
+        \end{tabular}
+    \end{tabular} 
+    \\ \newpage
+    \noindent\underline{Region 4: Partial overlap} \\ \\
+    \begin{tabular}{ cc }
+        \begin{tabular}{ c }
+            \begin{tikzpicture}
+                [declare function={
+                    func1(\x)= (\x < 0) * (0) + and(\x >= 0, \x < 2) * (0.5 * \x) + (\x > 2) * (0);  }]
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=2.5, ytick={0,1,2}, ylabel={$x(\tau)$},
+                    xmin=-1, xmax=4, xtick={0,...,2}, xlabel={$\tau$},
+                    domain=-3:3,samples=200,
+                    width=6cm, height=3cm]
+                \addplot [blue,thick]{func1(x)};
+                \end{axis}
+            \end{tikzpicture} \\
+            \begin{tikzpicture}
+                [declare function={
+                    func2(\x)= (\x < -2) * (0) + and(\x >= -2, \x < 2) * (2) + (\x > 2) * (0); }]
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=3, ytick={0,2}, ylabel={$h(t-\tau)$},
+                    xmin=-1, xmax=4, xtick={0}, xlabel={$\tau$},
+                    extra x ticks={1}, extra x tick labels={$t-2$}, 
+                    domain=-3:3,samples=200,
+                    width=6cm, height=3cm]
+                \addplot [red,thick]{func2(-x+3)};
+                \end{axis}
+            \end{tikzpicture} \\
+            \begin{tikzpicture}
+                [declare function={
+                    func1(\x)= (\x < 0) * (0) + and(\x >= 0, \x < 2) * (0.5 * \x) + (\x > 2) * (0);
+                    func2(\x)= (\x < -2) * (0) + and(\x >= -2, \x < 2) * (2) + (\x > 2) * (0); }]
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=3, ytick={0,1,2}, ylabel={$x(\tau)h(t-\tau)$},
+                    xmin=-1, xmax=4, xtick={0,2}, xlabel={$\tau$},
+                    extra x ticks={1}, extra x tick labels={$t-2$}, 
+                    domain=-3:3,samples=200,
+                    width=6cm, height=3cm]
+                \addplot [darkgreen,thick]{func1(x) * func2(-x+3)};
+                \end{axis}
+            \end{tikzpicture}
+        \end{tabular} & 
+        \begin{tabular}{ c }
+            Trailing edge: $0 < t-2 < 2 \Rightarrow 2 < t < 4$ \\ \\
+            $\Longrightarrow y(t) = \displaystyle\int_{t-2}^{2} \left[\frac{1}{2}\tau\right][2] \,d\tau=2-\frac{1}{2}(t-2)^2$
+        \end{tabular}
+    \end{tabular}
+    \\[2.5cm]
+    \underline{Region 5: No overlap} \\ \\
+    \begin{tabular}{ cc }
+        \begin{tabular}{ c }
+            \begin{tikzpicture}
+                [declare function={
+                    func1(\x)= (\x < 0) * (0) + and(\x >= 0, \x < 2) * (0.5 * \x) + (\x > 2) * (0);  }]
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=2.5, ytick={0,1,2}, ylabel={$x(\tau)$},
+                    xmin=0, xmax=5, xtick={0,...,2}, xlabel={$\tau$},
+                    domain=0:4,samples=200,
+                    width=6cm, height=3cm]
+                \addplot [blue,thick]{func1(x)};
+                \end{axis}
+            \end{tikzpicture} \\
+            \begin{tikzpicture}
+                [declare function={
+                    func2(\x)= (\x < -2) * (0) + and(\x >= -2, \x < 2) * (2) + (\x > 2) * (0); }]
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=3, ytick={0,2}, ylabel={$h(t-\tau)$},
+                    xmin=0, xmax=5, xtick={0}, xlabel={$\tau$},
+                    extra x ticks={3}, extra x tick labels={$t-2$}, 
+                    domain=0:4,samples=200,
+                    width=6cm, height=3cm]
+                \addplot [red,thick]{func2(-x+5)};
+                \end{axis}
+            \end{tikzpicture}
+        \end{tabular} & 
+        \begin{tabular}{ c }
+            Trailing edge: $t-2 > 2 \Rightarrow t > 4$ \\ \\
+            No overlap, so $y(t)=0$ for $t>4$.
+        \end{tabular}
+    \end{tabular}
+    \\ \\ \\
+    Aggregating the outputs from the five regions, we can write a piecewise function for the overall output:
+    \begin{align*}
+        y(t) = 
+        \begin{cases} 
+            0, & t<-2 \\
+            \frac{1}{2}(t+2)^2, & -2<t<0 \\
+            2, & 0<t<2 \\
+            2-\frac{1}{2}(t-2)^2, & 2<t<4 \\
+            0, & t>4
+        \end{cases}.
+    \end{align*}
+    This can also be written with unit step functions:
+    \begin{align*}
+        y(t) = \frac{1}{2}(t+2)^2[u(t+2)-u(t)]+2[u(t)-u(t-2)]+\left[2-\frac{1}{2}(t-2)^2\right][u(t-2)-u(t-4)].
+    \end{align*}
+\end{solution}
+
+\end{document}

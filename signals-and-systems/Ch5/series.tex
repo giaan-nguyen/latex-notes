@@ -1,0 +1,1173 @@
+\documentclass{report}
+\input{../../preamble.tex}
+
+\begin{document}
+\setcounter{chapter}{4}
+\chapter{Fourier Series}
+Previously, we have seen that causal signals and systems can be analyzed using the unilateral Laplace transform. Once transformed to the $s$-domain, 
+equations can be solved algebraically before transforming back to the time domain.
+\\ \\
+For LTI systems with everlasting signals, the unilateral Laplace transform is not suitable. While the bilateral Laplace transform could be used, \emph{Fourier analysis} is far more 
+suitable as Fourier analysis techniques transform data to the \emph{frequency domain}, where frequency content can be analyzed. 
+\\ \\
+There are two types of Fourier analysis techniques for continuous-time signals and systems: the Fourier series and the Fourier transform. The Fourier series is used for periodic signals, 
+whereas the Fourier transform can be generalized for any signal regardless of periodicity and causality.
+\\ \\
+This chapter will first explore the analysis of periodic signals with Fourier series. 
+
+\section{Phasor Domain}
+Before delving into Fourier series, first we consider periodic signals with only one frequency -- that is, sinusoidal signals. It follows that an input sinusoidal signal into an LTI system will generate 
+an output sinusoidal signal with the same frequency.
+\\ \\
+The relationship between a sinusoid $x(t)$ and a phasor $\underline{X}=|\underline{X}|e^{j\phi}$ with $\phi=\arg(\underline{X})$ can be exploited such that 
+\begin{align}
+    x(t) &= \Re[\,\underline{X}e^{j\omega t}] \\ 
+    &= \Re[|\underline{X}|e^{j\phi}e^{j\omega t}] \nonumber \\
+    &= \Re[|\underline{X}|e^{j(\omega t+\phi)}] \nonumber \\
+    &= |\underline{X}|\cos(\omega t+\phi).
+\end{align}
+The \emph{phasor transform} offers a way to solve signals and systems with only one frequency involved. Because a sinusoid contain only a single frequency, the magnitude and phase of sinusoidal signals can be isolated and analyzed. 
+The phasor transform can be defined as 
+\begin{align}
+    \underline{X} = \mathcal{P}[x(t)],
+\end{align}
+where the inverse phasor transform is defined as 
+\begin{align}
+    x(t) = \mathcal{P}^{-1}[\,\underline{X}\,] = \Re[\,\underline{X}e^{j\omega t}].
+\end{align}
+The table of phasor transform pairs is given in Table \ref{phasor_pairs}.
+
+\begin{table}[hbt!]
+    \centering
+    \caption{Phasor Transform Pairs}
+    \label{phasor_pairs}
+    \begin{tabular}{|c|c|}
+        \hline
+        $x(t)=\Re[\,\underline{X}e^{j\omega t}]$ & $\underline{X} = \mathcal{P}[x(t)]$ \\[0.15cm]
+        \hline
+        & \\[0.1cm]
+        $A\cos(\omega t)$ & $A$ \\[0.5cm]
+        $A\cos(\omega t+\phi)$ & $Ae^{j\phi}$ \\[0.5cm]
+        $-A\cos(\omega t+\phi)$ & $Ae^{j(\phi\pm\pi)}$ \\[0.5cm]
+        $A\sin(\omega t)$ & $Ae^{-j\pi/2}=-jA$ \\[0.5cm]
+        $A\sin(\omega t+\phi)$ & $Ae^{j(\phi-\pi/2)}$ \\[0.5cm]
+        $-A\sin(\omega t+\phi)$ & $Ae^{j(\phi+\pi/2)}$ \\[0.5cm]
+        $\dfrac{d}{dt}\left[A\cos(\omega t+\phi)\right]$ & $j\omega Ae^{j\phi}$ \\[0.5cm]
+        $\dfrac{d^n}{dt^n}\left[A\cos(\omega t+\phi)\right]$ & $(j\omega)^n Ae^{j\phi}$ \\[0.5cm]
+        $\displaystyle\int A\cos(\omega \tau+\phi)\,d\tau$ & $\dfrac{1}{j\omega} Ae^{j\phi}$ \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{example}
+    Find the output $y(t)$ of a system characterized by the differential equation 
+    \begin{align*}
+        \frac{d^2y(t)}{dt^2} + 300\frac{dy(t)}{dt} + (5\times 10^4)y(t) = x(t),
+    \end{align*}
+    given input signal $x(t) = 10\sin(100t+60^{\circ})$.
+\end{example}
+\begin{solution}
+    First, we transform the LCCDE to the phasor domain.
+    \begin{align*}
+        (j\omega)^2\underline{Y} + 300(j\omega)\underline{Y} + (5\times 10^4)\underline{Y} &= 10e^{j(60^{\circ}-90^{\circ})} \\ 
+        \underline{Y} [(j\omega)^2 + 300(j\omega) + (5\times 10^4)] &= 10e^{-j30^{\circ}}
+    \end{align*}
+    We can now rearrange to solve for $\underline{Y}$ and substitute $\omega = 100$.
+    \begin{align*}
+        \underline{Y} &= \frac{10e^{-j30^{\circ}}}{(j\omega)^2 + 300(j\omega) + (5\times 10^4)} \\ 
+        &= \frac{10e^{-j30^{\circ}}}{(j100)^2 + 300(j100) + (5\times 10^4)} \\
+        &= (0.2\times 10^{-3})e^{-j66.87^{\circ}}
+    \end{align*}
+    Transforming back to the time domain, the output is 
+    \begin{align*}
+        y(t) = \Re[\,\underline{Y}e^{j\omega t}] = (0.2\times 10^{-3})\cos(100t - 66.87^{\circ}).
+    \end{align*}
+\end{solution}
+
+\begin{example}
+    Find the output $y(t)$ of a system characterized by the differential equation 
+    \begin{align*}
+        (4\times 10^{-3})\frac{dy(t)}{dt} + 3y(t) = x(t),
+    \end{align*}
+    given input signal $x(t) = 5\cos(\omega_0 t) - 10\cos(2\omega_0 t)$ with $\omega_0 = 10^3\text{ [rad/s]}$.
+\end{example}
+\begin{solution}
+    Let $x_1(t) = 5\cos(\omega_0 t)$ and $x_2(t) = -10\cos(2\omega_0 t)$.
+    \\ \\
+    First, solving for $\underline{Y_1}$ with $\omega_1 = \omega_0$, we get 
+    \begin{align*}
+        (4\times 10^{-3})\frac{dy_1(t)}{dt} + 3y_1(t) &= 5\cos(\omega_1 t) \\
+        \Longrightarrow (4\times 10^{-3})(j\omega_1)\underline{Y_1} + 3\underline{Y_1} &= 5 \\
+        \Longrightarrow \underline{Y_1} = \frac{5}{(4\times 10^{-3})j\omega_1 + 3} &= \frac{5}{3+j4} = e^{-j53.13^{\circ}}.
+    \end{align*}
+    Then, solving for $\underline{Y_2}$ with $\omega_2 = 2\omega_0$, we get 
+    \begin{align*}
+        (4\times 10^{-3})\frac{dy_2(t)}{dt} + 3y_2(t) &= -10\cos(\omega_2 t) \\
+        \Longrightarrow (4\times 10^{-3})(j\omega_2)\underline{Y_2} + 3\underline{Y_2} &= 10e^{j\pi} \\
+        \Longrightarrow \underline{Y_2} = \frac{10e^{j\pi}}{(4\times 10^{-3})j\omega_2 + 3} &= \frac{10e^{j\pi}}{3+j8} = 1.17e^{j20.56^{\circ}}.
+    \end{align*}
+    Since $\underline{Y} = \underline{Y_1} + \underline{Y_2}$ by the superposition principle, it follows that 
+    \begin{align*}
+        y(t) &= \Re[\,\underline{Y_1}e^{j\omega_1 t}] + \Re[\,\underline{Y_2}e^{j\omega_2 t}] \\
+        &= \Re[e^{-j53.13^{\circ}}e^{j\omega_0 t}] + \Re[1.17e^{j20.56^{\circ}}e^{j2\omega_0 t}] \\
+        &= \cos(\omega_0 t - 53.13^{\circ}) + 1.17\cos(2\omega_0 t + 20.56^{\circ}).
+    \end{align*}
+\end{solution}
+
+\section{Fourier Series}
+While the superposition principle can be applied for an input signal comprised of a few sinusoidal addends, using the phasor transform becomes more tedious when more and more sinusoids with different frequencies are introduced. 
+In fact, the procedure becomes impossible when an infinite number of sinusoids are added. Why is this relevant?
+\\ \\
+According to \emph{Fourier's theorem}, any physically realizable periodic signal can be represented as a sum of sinusoids, whether or not it is a finite sum or an infinite series. While finite sums can be handled using the phasor transform, periodic signals represented by 
+infinite series must be analyzed using a different tool. 
+\\ \\ 
+Here, the \emph{Fourier series} is introduced, where any physically realizable periodic signal with period $T_0$ can be broken down into fundamentals (which are terms with fundamental angular frequency $\omega_0=2\pi/T_0$) and its $n^{th}$ harmonics 
+(which are terms with frequency $n\omega_0$ for each $n$).
+\\ \\
+There are three different representations of the Fourier series: the sine/cosine representation, the amplitude/phase representation, and the exponential representation.
+
+\subsection{Sine / Cosine Representation}
+The sine/cosine representation of a physically realizable periodic signal $x(t)$ is given by 
+\begin{align}
+    x(t) = a_0 + \sum_{n=1}^{\infty}[a_n\cos(n\omega_0 t)+b_n\sin(n\omega_0 t)],
+\end{align}
+where the \emph{Fourier coefficients} are calculated from the following integrals:
+\begin{align}
+    a_0 &= \frac{1}{T_0} \int_{t_0}^{t_0+T_0} x(t) \,dt \\
+    a_n &= \frac{2}{T_0} \int_{t_0}^{t_0+T_0} x(t)\cos(n\omega_0 t) \,dt \\
+    b_n &= \frac{2}{T_0} \int_{t_0}^{t_0+T_0} x(t)\sin(n\omega_0 t) \,dt
+\end{align} 
+Here, the limits of integration $[t_0, t_0+T_0]$ can be set to $[0,T_0]$, $[-T_0/2,+T_0/2]$, or a reasonable interval $[t_1,t_2]$ such that $t_2-t_1=T_0$. 
+Sometimes, to indicate that the integral is over a period $T_0$, the integral (not including the integrand) may be written as $\int_{T_0} \,dt$.
+\\ \\
+The coefficient $a_0$ is also referred to as the \emph{DC (Fourier) component} and can be restated as
+\begin{align}
+    a_0 = \frac{\text{Area of } x(t) \text{ during } T_0}{\text{Period } T_0 \text{ of } x(t)}.
+\end{align}
+The Fourier series of a select set of waveforms are listed in Table \ref{periodic_waveforms}. 
+
+\begin{center}
+    \begin{table}
+    \small
+    \centering
+    \caption{Select Set of Periodic Waveforms}
+    \label{periodic_waveforms}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{ c|c|c }
+     & Waveform & Fourier Series \\[0.1cm]
+    \hline 
+    Square wave & 
+    \adjustbox{valign=m}{\resizebox{0.45\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > -0.5, \x < 0.5) * (1) + and(\x > 0.5, \x < 1.5) * (-1); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-1.5, ymax=1.75, ytick={0}, ylabel={$x(t)$},
+                xmin=-3, xmax=3, xtick={0}, xlabel={$t$ [s]},
+                extra x ticks={-2,-1,1,2}, extra x tick labels={$-T_0$,$-T_0/2$,$T_0/2$,$T_0$}, 
+                extra y ticks={1}, extra y tick labels={$A$}, y tick label style={yshift={(\tick==1)*0.75em}},
+                domain=-2.5:2.5,samples=200,
+                width=9cm, height=4cm]
+            \addplot [blue,thick]{func(x) + func(x-2) + func(x+2)};
+            \end{axis}
+        \end{tikzpicture}}} & $x(t) = \displaystyle\sum_{n=1}^{\infty}\dfrac{4A}{n\pi}\sin\left(\dfrac{n\pi}{2}\right)\cos\left(\dfrac{2n\pi t}{T_0}\right)$ \\[1cm]
+    \shortstack{Time-shifted \\ square wave} &  
+    \adjustbox{valign=m}{\resizebox{0.45\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > 0, \x < 1) * (1) + and(\x > 1, \x < 2) * (-1); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-1.5, ymax=1.75, ytick={0}, ylabel={$x(t)$},
+                xmin=-3, xmax=3, xtick={0}, xlabel={$t$ [s]},
+                extra x ticks={-2,-1,1,2}, extra x tick labels={$-T_0$,$-T_0/2$,$T_0/2$,$T_0$}, 
+                extra y ticks={1}, extra y tick labels={$A$}, 
+                domain=-2.5:2.5,samples=200,
+                width=9cm, height=4cm]
+            \addplot [blue,thick]{func(x) + func(x-2) + func(x+2)};
+            \end{axis}
+        \end{tikzpicture}}} & $x(t) = \displaystyle\sum_{\shortstack{\scriptsize $n=1$ \\ \scriptsize $n=$ \text{odd}}}^{\infty}\dfrac{4A}{n\pi}\sin\left(\dfrac{2n\pi t}{T_0}\right)$ \\[1cm]
+    Pulse train & 
+    \adjustbox{valign=m}{\resizebox{0.45\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > -0.3, \x < 0.3) * (1); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-0.5, ymax=2, ytick={0}, ylabel={$x(t)$},
+                xmin=-3, xmax=3, xtick={0}, xlabel={$t$ [s]},
+                extra x ticks={-2,2}, extra x tick labels={$-T_0$,$T_0$}, 
+                extra y ticks={1}, extra y tick labels={$A$}, y tick label style={yshift={(\tick==1)*0.75em}},
+                domain=-2.5:2.5,samples=200,
+                width=9cm, height=4cm]
+            \addplot [blue,thick]{func(x) + func(x-2) + func(x+2)};
+            \draw [-latex] (1.3,0.7) -- (1.7,0.7);
+            \draw [-latex] (2.7,0.7) -- (2.3,0.7);
+            \node at (1.2,0.7) {$\tau$};
+            \end{axis}
+        \end{tikzpicture}}} & $x(t) = \dfrac{A\tau}{T_0} + \displaystyle\sum_{n=1}^{\infty}\dfrac{2A}{n\pi}\sin\left(\dfrac{n\pi\tau}{T_0}\right)\cos\left(\dfrac{2n\pi t}{T_0}\right)$ \\[1cm]
+    Triangular wave & 
+    \adjustbox{valign=m}{\resizebox{0.45\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > -1, \x < 1) * (1-2*abs(\x)); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-1.5, ymax=1.75, ytick={0}, ylabel={$x(t)$},
+                xmin=-2.5, xmax=2.5, xtick={0}, xlabel={$t$ [s]},
+                extra x ticks={-2,-1,1,2}, extra x tick labels={$-T_0$,$-T_0/2$,$T_0/2$,$T_0$}, 
+                extra y ticks={-1,1}, extra y tick labels={$-A$,$A$}, 
+                domain=-2.1:2.1,samples=200,
+                width=9cm, height=4cm]
+            \addplot [blue,thick]{func(x) + func(x-2) + func(x+2)};
+            \end{axis}
+        \end{tikzpicture}}} & $x(t) = \displaystyle\sum_{\shortstack{\scriptsize $n=1$ \\ \scriptsize $n=$odd}}^{\infty}\dfrac{8A}{n^2\pi^2}\cos\left(\dfrac{2n\pi t}{T_0}\right)$ \\[1cm]
+    \shortstack{Time-shifted \\ triangular wave} & 
+    \adjustbox{valign=m}{\resizebox{0.45\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > -0.5, \x < 1.5) * (1-2*abs(\x-0.5)); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-1.5, ymax=1.75, ytick={0}, ylabel={$x(t)$},
+                xmin=-2.5, xmax=2.5, xtick={0}, xlabel={$t$ [s]},
+                extra x ticks={-2,-1,1,2}, extra x tick labels={$-T_0$,$-T_0/2$,$T_0/2$,$T_0$}, 
+                extra y ticks={-1,1}, extra y tick labels={$-A$,$A$}, 
+                domain=-2.1:2.1,samples=200,
+                width=9cm, height=4cm]
+            \addplot [blue,thick]{func(x) + func(x-2) + func(x+2)};
+            \end{axis}
+        \end{tikzpicture}}} & $x(t) = \displaystyle\sum_{\shortstack{\scriptsize $n=1$ \\ \scriptsize $n=$ \text{odd}}}^{\infty}\dfrac{8A}{n^2\pi^2}\sin\left(\dfrac{n\pi}{2}\right)\sin\left(\dfrac{2n\pi t}{T_0}\right)$ \\[1cm]
+    Sawtooth & 
+    \adjustbox{valign=m}{\resizebox{0.45\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > -0.5, \x < 0.5) * (2 * \x); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-1.5, ymax=1.75, ytick={0}, ylabel={$x(t)$},
+                xmin=-2.5, xmax=2.5, xtick={0}, xlabel={$t$ [s]},
+                extra x ticks={-2,-1,1,2}, extra x tick labels={$-2T_0$,$-T_0$,$T_0$,$2T_0$}, 
+                extra y ticks={-1,1}, extra y tick labels={$-A$,$A$}, 
+                domain=-2.1:2.1,samples=200,
+                width=9cm, height=4cm]
+            \addplot [blue,thick]{func(x) + func(x-1) + func(x+1) + func(x-2) + func(x+2)};
+            \end{axis}
+        \end{tikzpicture}}} & $x(t) = \displaystyle\sum_{n=1}^{\infty}(-1)^{n+1}\dfrac{2A}{n\pi}\sin\left(\dfrac{2n\pi t}{T_0}\right)$ \\[1cm]
+    Backward sawtooth & 
+    \adjustbox{valign=m}{\resizebox{0.45\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > 0, \x < 1) * (1-\x); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-0.5, ymax=1.75, ytick={0}, ylabel={$x(t)$},
+                xmin=-2.5, xmax=2.5, xtick={0}, xlabel={$t$ [s]},
+                extra x ticks={-2,-1,1,2}, extra x tick labels={$-2T_0$,$-T_0$,$T_0$,$2T_0$}, 
+                extra y ticks={1}, extra y tick labels={$A$}, 
+                domain=-2.25:2.25,samples=200,
+                width=9cm, height=4cm]
+            \addplot [blue,thick]{func(x) + func(x-1) + func(x+1) + func(x-2) + func(x+2)};
+            \end{axis}
+        \end{tikzpicture}}} & $x(t) = \dfrac{A}{2} + \displaystyle\sum_{n=1}^{\infty}\dfrac{A}{n\pi}\sin\left(\dfrac{2n\pi t}{T_0}\right)$ \\[1cm]
+    \shortstack{Full-wave \\ rectified sinusoid} & 
+    \adjustbox{valign=m}{\resizebox{0.45\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= abs(sin(deg(pi*\x))); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-0.5, ymax=1.75, ytick={0}, ylabel={$x(t)$},
+                xmin=-2.5, xmax=2.5, xtick={0}, xlabel={$t$ [s]},
+                extra x ticks={-2,-1,1,2}, extra x tick labels={$-2T_0$,$-T_0$,$T_0$,$2T_0$}, 
+                extra y ticks={1}, extra y tick labels={$A$}, 
+                domain=-2.25:2.25,samples=200,
+                width=9cm, height=4cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}}} & $x(t) = \dfrac{2A}{\pi} + \displaystyle\sum_{n=1}^{\infty}(-1)^{n+1}\dfrac{4A}{\pi(1-4n^2)}\cos\left(\dfrac{2n\pi t}{T_0}\right)$ \\[1cm]
+    \shortstack{Half-wave \\ rectified sinusoid} & 
+    \adjustbox{valign=m}{\resizebox{0.45\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= max(sin(deg(pi*\x)), 0); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-0.5, ymax=1.75, ytick={0}, ylabel={$x(t)$},
+                xmin=-2.5, xmax=2.5, xtick={0}, xlabel={$t$ [s]},
+                extra x ticks={-2,-1,1,2}, extra x tick labels={$-T_0$,$-T_0/2$,$T_0/2$,$T_0$}, 
+                extra y ticks={1}, extra y tick labels={$A$}, 
+                domain=-2.25:2.25,samples=200,
+                width=9cm, height=4cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}}} & $x(t) = \dfrac{A}{\pi} + \dfrac{A}{2}\sin\left(\dfrac{2\pi t}{T_0}\right) + \displaystyle\sum_{\shortstack{\scriptsize $n=2$ \\ \scriptsize $n=$even}}^{\infty}\dfrac{2A}{\pi(1-n^2)}\cos\left(\dfrac{2n\pi t}{T_0}\right)$ \\[1cm]
+    \hline
+    \end{tabular}
+    }
+    \end{table}
+\end{center}
+
+\subsection{Amplitude / Phase Representation}
+The amplitude/phase representation of a physically realizable periodic signal $x(t)$ is most closely related to the phasor transform technique and is given by 
+\begin{align}
+    x(t) = c_0 + \sum_{n=1}^{\infty} c_n\cos(n\omega_0 t + \phi_n),
+\end{align}
+where the Fourier coefficients are derived from the relationship $c_n e^{j\phi_n} = a_n - jb_n$ from the sine/cosine representation such that 
+\begin{align}
+    c_0 &= a_0 \\ 
+    c_n &= \sqrt{a_n+b_n} \\ 
+    \phi_n &= -\operatorname{atan2}({b_n,a_n}) =
+    \begin{cases} 
+        -\arctan(b_n/a_n), & a_n>0 \\
+        \pi-\arctan(b_n/a_n), & a_n<0
+    \end{cases}
+\end{align}
+While the phasor transform isolates an amplitude and phase of a signal for a single frequency, the amplitude/phase representation of the Fourier series isolates 
+the amplitudes $c_n$ and phases $\phi_n$ of a physically realizable periodic signal across an infinite number of harmonic frequencies. 
+\\ \\
+These amplitudes and phases can be visually depicted on a set of line spectra called the \emph{amplitude spectrum} and the \emph{one-sided phase spectrum}, respectively. The amplitude spectrum 
+plots the amplitudes against the corresponding harmonic frequencies, and the one-sided phase spectrum plots the phases against the corresponding harmonic frequencies. Often the two spectra together 
+are collectively referred to as the \emph{one-sided Fourier spectrum}.
+
+\begin{example}
+    Plot the one-sided Fourier spectrum of the periodic signal $x(t)$ depicted below. \\ \\
+    \resizebox{0.6\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > 0, \x < 1) * (1-\x); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-0.5, ymax=1.75, ytick={0,1}, ylabel={$x(t)$},
+                xmin=-2.1, xmax=4.1, xtick={-2,...,4}, xlabel={$t$ [s]},
+                domain=-2:4,samples=200,
+                width=9cm, height=4cm]
+            \addplot [blue,thick]{func(x) + func(x-2) + func(x+2)};
+            \end{axis}
+        \end{tikzpicture}}
+\end{example}
+\begin{solution}
+    Visually, we see that the period is $T_0=2$. Therefore $\omega_0=2\pi/T_0 = \pi$. 
+    We can define $x(t)$ during a single period as 
+    \begin{align*}
+        x(t)\bigg|_{t\in(0,T_0)} = 
+        \begin{cases}
+            1-t, & 0<t<1 \\
+            0, & 1<t<2
+        \end{cases}
+    \end{align*}
+    Then the sine/cosine Fourier coefficients are given by 
+    \begin{align*}
+        a_0 &= \frac{\text{Area of } x(t) \text{ during } T_0}{\text{Period } T_0 \text{ of } x(t)} = \frac{0.5}{2} = 0.25 \\
+        a_n &= \frac{2}{T_0} \int_{0}^{T_0} x(t)\cos(n\omega_0 t) \,dt = \frac{2}{2} \int_{0}^{1} (1-t)\cos(n\omega_0 t) \,dt = \frac{1-\cos(n\pi)}{(n\pi)^2} \\
+        b_n &= \frac{2}{T_0} \int_{0}^{T_0} x(t)\sin(n\omega_0 t) \,dt = \frac{2}{2} \int_{0}^{1} (1-t)\sin(n\omega_0 t) \,dt = \frac{1}{n\pi}
+    \end{align*}
+    Note that $a_n \geq 0$. Converting the Fourier coefficients to amplitude/phase representation, 
+    \begin{align*}
+        c_0 &= a_0 = 0.25 \\
+        c_n &= \sqrt{a_n^2 + b_n^2} = \sqrt{\left(\frac{1-\cos(n\pi)}{(n\pi)^2}\right)^2 + \left(\frac{1}{n\pi}\right)^2} \\
+        \phi_n &= -\arctan(b_n/a_n) = -\arctan\left(\frac{n\pi}{1-\cos(n\pi)}\right)
+    \end{align*}
+    Plotting the first few values of $c_n$ and $\phi_n$ against $\omega$, we get \\
+    \begin{center}
+    \begin{tikzpicture}
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=0.75, ytick={0,0.5}, ylabel={$c_n$},
+            xmin=0, xmax=6.75, xtick={0}, xlabel={$\omega$ [rad/s]},
+            extra x ticks={1,...,5}, extra x tick labels={$\omega_0$,$2\omega_0$,$3\omega_0$,$4\omega_0$,$5\omega_0$}, 
+            domain=-1:5.5,samples=200,
+            width=9cm, height=4cm]
+            \addplot+ [
+                ycomb,
+            ] coordinates {
+                (0,0.25) (1,0.38) (2,0.16) (3,0.11) (4,0.08) (5,0.06)
+            };
+            \addplot+ [blue!50, 
+                only marks, mark=none, 
+                nodes near coords, nodes near coords align=above,
+                nodes near coords style={/pgf/number format/fixed, /pgf/number format/precision=2},
+            ] coordinates {
+                (0,0.25) (1,0.38) (2,0.16) (3,0.11) (4,0.08) (5,0.06)
+            };
+        \end{axis}
+    \end{tikzpicture}
+    \end{center}
+    \begin{center}
+    \begin{tikzpicture}
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-3*pi/4, ymax=pi/4, ytick={0}, ylabel={$\phi_n$ [deg]},
+            xmin=0, xmax=6.75, xtick={0}, xlabel={$\omega$ [rad/s]},
+            extra x ticks={1,...,5}, extra x tick labels={$\omega_0$,$2\omega_0$,$3\omega_0$,$4\omega_0$,$5\omega_0$}, 
+            extra y ticks={-pi/2,pi/2}, extra y tick labels={$-90^{\circ}$,$90^{\circ}$}, 
+            domain=-1:5.5,samples=200,
+            width=9cm, height=4cm]
+            \addplot+ [
+                ycomb,
+            ] coordinates {
+                (0,0) (1,-58 * pi/180) (2,-90  * pi/180) (3,-78  * pi/180) (4,-90  * pi/180) (5,-83  * pi/180)
+            };
+            \addplot+ [blue!50, 
+                only marks, mark=none, 
+                nodes near coords=\pgfmathprintnumber{\pgfplotspointmeta}$^{\circ}$, 
+                nodes near coords align=below,
+                nodes near coords style={/pgf/number format/fixed, /pgf/number format/precision=2},
+                point meta=y * 180/pi
+            ] coordinates {
+                (1,-58 * pi/180) (2,-90  * pi/180) (3,-78  * pi/180) (4,-90  * pi/180) (5,-83  * pi/180)
+            };
+        \end{axis}
+    \end{tikzpicture}
+    \end{center}
+\end{solution}
+
+\subsection{Exponential Representation}
+Since sinusoids are closely related to complex exponentials with $\cos(\theta)=\frac{1}{2}(e^{+j\theta}+e^{-j\theta})$, it follows that the exponential representation of a physically realizable periodic signal $x(t)$ is given by 
+\begin{align}
+    x(t) = \sum_{n=-\infty}^{+\infty} x_n e^{jn\omega_0 t},
+\end{align}
+where the Fourier coefficients are calculated from the integral: 
+\begin{align}
+    x_n = \frac{1}{T_0} \int_{t_0}^{t_0+T_0} x(t) e^{-jn\omega_0 t} \,dt,
+\end{align}
+with conjugate symmetry properties such that for $x_n = |x_n|e^{j\phi_n}$:
+\begin{align}
+    x_{-n} &= x_n^* \\
+    \phi_{-n} &= -\phi_n
+\end{align}
+In fact, $\phi_n$ here is the same value as $\phi_n$ in the amplitude/phase representation. Between the two representations, it also follows that 
+\begin{align}
+    x_0 &= c_0 \\
+    |x_n| &= \frac{c_n}{2} 
+\end{align} 
+Similar to the amplitude/phase representation, the magnitudes $|x_n|$ and phases $\phi_n$ can be collected and plotted against their corresponding harmonic frequencies 
+on a \emph{magnitude spectrum} and a \emph{two-sided phase spectrum}, respectively. Often the two spectra together are collectively referred to as the 
+\emph{two-sided Fourier spectrum}. 
+\\ \\
+Additionally, the relationship between the exponential and sine/cosine representations is given by 
+\begin{align}
+    x_0 &= a_0 \\
+    x_n &= \frac{1}{2}(a_n - jb_n)
+\end{align}
+
+\begin{example}
+    Plot the two-sided Fourier spectrum of the periodic signal $x(t)$ depicted below. \\ \\
+    \resizebox{0.6\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > -2, \x < -1) * (10 * (\x + 2)) + and(\x > -1, \x < 1) * (10) + and(\x > 1, \x < 2) * (-10 * (\x - 2)); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-0.5, ymax=15, ytick={0,10}, ylabel={$x(t)$},
+                xmin=-2.1, xmax=6.1, xtick={-2,...,6}, xlabel={$t$ [s]},
+                domain=-2:6,samples=200,
+                width=9cm, height=3cm]
+            \addplot [blue,thick]{func(x) + func(x-4)};
+            \end{axis}
+        \end{tikzpicture}}
+\end{example}
+\begin{solution}
+    Visually, we see that the period is $T_0=4$. Therefore $\omega_0=2\pi/T_0 = \pi/2$. 
+    We can define $x(t)$ during a single period from starting point $t_0=-2$ as 
+    \begin{align*}
+        x(t)\bigg|_{t\in(t_0,t_0+T_0)} = 
+        \begin{cases}
+            10(t+2), & -2<t<-1 \\
+            10, & -1<t<1 \\
+            -10(t-2), & 1<t<2
+        \end{cases}
+    \end{align*}
+    The DC component is given by  
+    \begin{align*}
+        x_0 &= \frac{\text{Area of } x(t) \text{ during } T_0}{\text{Period } T_0 \text{ of } x(t)} = \frac{30}{4} = 7.5,
+    \end{align*}
+    and the remaining exponential Fourier coefficients are given by
+    \begin{align*}
+        x_n &= \frac{1}{T_0} \int_{t_0}^{t_0+T_0} x(t)e^{-jn\omega_0 t} \,dt \\
+        &= \frac{1}{4} \left[\int_{-2}^{-1} 10(t+2)e^{-jn\omega_0 t} \,dt + \int_{-1}^{1} 10e^{-jn\omega_0 t} \,dt + \int_{1}^{2} -10(t-2)e^{-jn\omega_0 t} \,dt \right] \\
+        &= \left[\frac{5e^{jn\omega_0}-5e^{j2n\omega_0}+j5n\omega_0e^{jn\omega_0}}{2n^2\omega_0^2}\right] + \frac{5\sin(n\omega_0)}{n\omega_0} + \left[\frac{5e^{-jn\omega_0}-5e^{-j2n\omega_0}-j5n\omega_0e^{-jn\omega_0}}{2n^2\omega_0^2}\right] \\
+        &= \left[\frac{5\cos(n\omega_0)}{n^2\omega_0^2} - \frac{5\cos(2n\omega_0)}{n^2\omega_0^2} - \frac{5\sin(n\omega_0)}{n\omega_0}\right] + \frac{5\sin(n\omega_0)}{n\omega_0} \\
+        &= \frac{5[\cos(n\omega_0)-\cos(2n\omega_0)]}{n^2\omega_0^2}
+    \end{align*}
+    Note that $x_n$ is purely real. Depending on the sign of $x_n$, the phase $\phi_n$ takes on values of either $0^{\circ}$ or $\pm 180^{\circ}$. Plotting the first few values of $|x_n|$ and $\phi_n$ against $\omega$ and using conjugate symmetry properies, we get
+    \begin{center}
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=12, ytick={0,5}, ylabel={$|x_n|$},
+                xmin=-5.2, xmax=7, xtick={0}, xlabel={$\omega$ [rad/s]},
+                extra x ticks={-5,-4,-3,-2,-1,1,2,3,4,5}, extra x tick labels={$-5\omega_0$,$-4\omega_0$,$-3\omega_0$,$-2\omega_0$,$-\omega_0$,$\omega_0$,$2\omega_0$,$3\omega_0$,$4\omega_0$,$5\omega_0$}, 
+                domain=-1:5.5,samples=200,
+                width=13cm, height=4cm]
+                \addplot+ [
+                    ycomb,
+                ] coordinates {
+                    (0,7.5) (1,2.03) (2,1.01) (3,0.23) (4,0) (5,0.08) (-1,2.03) (-2,1.01) (-3,0.23) (-4,0) (-5,0.08)
+                };
+                \addplot+ [blue!50, 
+                    only marks, mark=none, 
+                    nodes near coords, nodes near coords align=above,
+                    nodes near coords style={/pgf/number format/fixed, /pgf/number format/precision=2},
+                ] coordinates {
+                    (0,7.5) (1,2.03) (2,1.01) (3,0.23) (4,0) (5,0.08) (-1,2.03) (-2,1.01) (-3,0.23) (-4,0) (-5,0.08)
+                };
+            \end{axis}
+        \end{tikzpicture}
+        \end{center}
+        \begin{center}
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-1.3*pi, ymax=1.3*pi, ytick={0}, ylabel={$\phi_n$ [deg]},
+                xmin=-5.2, xmax=6.75, xtick={0}, xlabel={$\omega$ [rad/s]},
+                extra x ticks={-5,-4,-3,-2,-1,1,2,3,4,5}, extra x tick labels={$-5\omega_0$,$-4\omega_0$,$-3\omega_0$,$-2\omega_0$,$-\omega_0$,$\omega_0$,$2\omega_0$,$3\omega_0$,$4\omega_0$,$5\omega_0$}, 
+                extra y ticks={-pi,pi}, extra y tick labels={$-180^{\circ}$,$180^{\circ}$}, 
+                domain=-1:5.5,samples=200,
+                width=13cm, height=4cm]
+                \addplot+ [
+                    ycomb,
+                ] coordinates {
+                    (0,0) (1,0 * pi/180) (2,-180  * pi/180) (3,0  * pi/180) (4,0  * pi/180) (5,0  * pi/180) (-1,0 * pi/180) (-2,180  * pi/180) (-3,0  * pi/180) (-4,0  * pi/180) (-5,0  * pi/180)
+                };
+            \end{axis}
+        \end{tikzpicture}
+        \end{center}    
+\end{solution}
+Most of the time, it is easier to find the sine/cosine representation of the Fourier series of a periodic signal first, then convert accordingly to whatever 
+representation is necessary. 
+\\ \\
+However, with the exponential representation of the Fourier series, we observe certain properties (listed in Table \ref{series_prop}) 
+that will become familiar when comparing to the table of Fourier transform properties in a later chapter.
+
+\begin{table}[hbt!]
+    \centering
+    \caption{Properties of the Exponential Representation of the Fourier Series}
+    \label{series_prop}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Property & Periodic signal, $x(t)$ & Exponential Fourier coefficients, $x_n$ \\[0.15cm]
+        \hline
+        & & \\
+        Superposition & $K_1x_1(t)+K_2x_2(t)$ & $K_1(x_1)_n+K_2(x_2)_n$ \\[0.5cm]
+        Time scaling & $x(at),\text{ } a>0$ & $x_n$ \\[0.5cm]
+        Time shift & $x(t-t_0),\text{ } t_0>0$ & $e^{-jn\omega_0 t_0}x_n$ \\[0.5cm]
+        Frequency shift & $e^{-jN\omega_0 t}x(t)$ & $x_{n+N}$ \\[0.5cm]
+        Time reversal & $x(-t)$ & $x_{-n}$ \\[0.5cm]
+        Time derivative & $x'(t)=\dfrac{dx(t)}{dt}$ & $jn\omega_0 x_n$ \\[0.5cm]
+        Time integral & $\displaystyle\int_{-\infty}^{t} x(\tau) \,d\tau$ & $\dfrac{1}{jn\omega_0} x_n$ \\[0.5cm]
+        Conjugate symmetry & $x(t)$ real & 
+        $\begin{cases}
+            x_{-n} = x_n^* \\
+            \Re(x_n) = \Re(x_{-n}) \\
+            \Im(x_n) = -\Im(x_{-n}) \\
+            |x_n| = |x_{-n}| \\
+            \phi_n = -\phi_{-n}
+        \end{cases}$ \\[0.5cm]
+         & & \\[0.25cm]
+        Real and even signals & $x(t)$ real and even & $x_n$ purely real and even \\[0.5cm]
+        Real and odd signals & $x(t)$ real and odd & $x_n$ purely imaginary and odd \\[0.5cm]
+        \shortstack{Even-odd decomposition \\ of real signals} & 
+        $\begin{cases}
+            x_e(t)=\frac{1}{2}[x(t)+x(-t)] \\
+            x_o(t)=\frac{1}{2}[x(t)-x(-t)]
+        \end{cases}$ & 
+        $\begin{cases}
+            \Re(x_n) \\
+            j\Im(x_n)
+        \end{cases}$ \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+
+\newpage
+\section{Symmetry Properties of Fourier Series}
+From the sine/cosine representation, when computing Fourier coefficients, note that $\cos(n\omega_0 t)$ is an odd function and $\sin(n\omega_0 t)$ is an even function. 
+Recall the following symmetry properties for multiplying symmetric functions:
+\begin{itemize}
+    \item $(\text{even}) \times (\text{even}) = \text{even}$
+    \item $(\text{even}) \times (\text{odd}) = \text{odd}$
+    \item $(\text{odd}) \times (\text{odd}) = \text{even}$
+\end{itemize}
+Using $[-t_0, +t_0]$ as the limits of integration, it is easier to see that for some odd function $F_{odd}(t)$ and even function $F_{even}(t)$,
+\begin{align}
+    \int_{-t_0}^{+t_0} F_{odd}(t) \,dt &= 2\int_{0}^{t_0} F_{odd}(t) \,dt \\
+    \int_{-t_0}^{+t_0} F_{even}(t) \,dt &= 0.
+\end{align}
+These integral properties can be applied to the Fourier coefficients from the sine/cosine representation of the Fourier series.
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \emph{EVEN SYMMETRY.}
+    If $x(t)$ is a physically realizable periodic signal with even symmetry $x(t) = x(-t)$, then the sine/cosine Fourier coefficients are 
+    \begin{align}
+        a_0 &= \frac{2}{T_0}\int_{0}^{T_0/2} x(t) \,dt \\
+        a_n &= \frac{4}{T_0}\int_{0}^{T_0/2} x(t)\cos(n\omega_0 t) \,dt \\
+        b_n &= 0
+    \end{align}
+    with the amplitude/phase Fourier coefficients given by    
+    \begin{align}
+        c_n &= |a_n| \\
+        \phi_n &= 
+        \begin{cases}
+            0, & a_n > 0 \\
+            \pi, & a_n < 0
+        \end{cases}
+    \end{align}
+\end{tcolorbox}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \emph{ODD SYMMETRY.}
+    If $x(t)$ is a physically realizable periodic signal with odd symmetry $x(t) = -x(-t)$, then the sine/cosine Fourier coefficients are 
+    \begin{align}
+        a_0 &= 0 \\
+        a_n &= 0 \\
+        a_n &= \frac{4}{T_0}\int_{0}^{T_0/2} x(t)\sin(n\omega_0 t) \,dt 
+    \end{align}
+    with the amplitude/phase Fourier coefficients given by    
+    \begin{align}
+        c_n &= |b_n| \\
+        \phi_n &= 
+        \begin{cases}
+            -\pi/2, & b_n > 0 \\
+            \pi/2, & b_n < 0
+        \end{cases}
+    \end{align}
+\end{tcolorbox}
+As $a_0$ is the DC component, it can be thought of as a DC offset which vertically shifts the plot of some signal. Because of this, it is possible that 
+the signal $f(t) = x(t) - a_0$ (i.e., without the DC offset) has even or odd symmetry, for which we can utilize to our advantage when solving Fourier coefficients. 
+(If so, $x(t)$ is said to have \emph{hidden symmetry}, obscured by DC offset $a_0$.) For reference, see the flowchart in Figure \ref{flowchart}.
+
+\begin{sidewaysfigure}
+    \caption{Flowchart for the Sine/Cosine Representation of the Fourier Series.}
+    \label{flowchart}
+    \centering
+    \resizebox{0.85\textwidth}{!}{%
+        \includestandalone[mode=buildnew, width=\textwidth]{flowchart}
+    }
+\end{sidewaysfigure}
+
+\begin{example}
+    Find the Fourier series for the following periodic signal $x(t)$. \\ \\
+    \resizebox{0.6\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > 0, \x < 4) * (5 * \x); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=30, ytick={20}, ylabel={$x(t)$},
+                xmin=-10, xmax=10, xtick={-8,-4,0,4,8}, xlabel={$t$ [s]},
+                domain=-8.1:8.1,samples=200,
+                width=9cm, height=4cm]
+            \addplot [blue,thick]{func(x) + func(x-4) + func(x+4) + func(x+8)};
+            \end{axis}
+        \end{tikzpicture}}
+\end{example}
+\begin{solution}
+    Visually, we see that the period is $T_0=4$. Therefore, $\omega_0=2\pi/T_0=\pi/2$. First, we calculate the DC offset 
+    \begin{align*}
+        a_0 &= \frac{\text{Area of } x(t) \text{ during } T_0}{\text{Period } T_0 \text{ of } x(t)} = \frac{40}{4} = 10.
+    \end{align*}
+    Removing the DC offset, we get the new signal $f(t)=x(t)-a_0$: \\
+    \begin{center}
+    \resizebox{0.5\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > 0, \x < 4) * (5 * \x - 10); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-15, ymax=15, ytick={-10,10}, ylabel={$f(t)$},
+                xmin=-10, xmax=10, xtick={-8,-4,0,4,8}, xlabel={$t$ [s]},
+                domain=-8.1:8.1,samples=200,
+                width=9cm, height=4cm]
+            \addplot [blue,thick]{func(x) + func(x-4) + func(x+4) + func(x+8)};
+            \end{axis}
+        \end{tikzpicture}}
+    \end{center}
+    From here, we can see that $f(t)$ has odd symmetry. We can use odd-symmetry form of the sine/cosine representation of the 
+    Fourier series to calculate the Fourier coefficients:
+    \begin{align*}
+        a_n &= 0 \\
+        b_n &= \frac{4}{T_0}\int_{0}^{T_0/2}f(t)\sin(n\omega_0 t) \,dt = \frac{4}{4}\int_{0}^{2}(5t-10)\sin\left(\frac{n\pi t}{2}\right) \,dt \\
+        &= \frac{20[\sin(n\pi)-n\pi]}{n^2\pi^2} = \frac{20[(-1)^n-n\pi]}{n^2\pi^2}
+    \end{align*}
+    The sine/cosine representation of the Fourier series of $x(t)$ is then
+    \begin{align*}
+        x(t) = 10 + \sum_{n=1}^{\infty} \frac{20[(-1)^n-n\pi]}{n^2\pi^2} \sin\left(\frac{n\pi t}{2}\right)
+    \end{align*}
+\end{solution}
+
+\section{Fourier Series of Periodic Extensions}
+Suppose a function $x(t)$ is defined strictly over interval $t\in(0,T_0)$. Then its \emph{periodic extension} $\tilde{x}(t)$ is defined as
+\begin{align}
+    \tilde{x}(t + nT_0) = x(t), \text{ for all } t\in(0,T_0) \text{ and } n\in\mathbb{Z},  
+\end{align}
+with $\tilde{x}(t)$ having a period of $T_0$. Essentially, a periodic extension is the result of summing shifted copies of $x(t)$, with the shifts determined 
+by integer amounts of the period, which is defined from the duration of $x(t)$. If the values at the endpoints of $x(t)$ are not equal, then $\tilde{x}(t)$ has jump discontinuities at $t=nT_0$. 
+\\ \\
+While a simple periodic extension can be implemented, one can also apply symmetry in order to generate symmetric signals. While there are multiple types of symmetry, we will briefly cover only five of them:
+\begin{itemize}
+    \item even symmetry: $\tilde{x}(t)=\tilde{x}(-t)$
+    \item odd symmetry: $\tilde{x}(t)=-\tilde{x}(-t)$
+    \item half-wave symmetry: $\tilde{x}(t)=-\tilde{x}(t-T_0/2)$
+    \item quarter-wave even symmetry: $\tilde{x}(t)$ has even and half-wave symmetry
+    \item quarter-wave odd symmetry: $\tilde{x}(t)$ has odd and half-wave symmetry
+\end{itemize}
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \emph{EVEN PERIODIC EXTENSIONS.}
+    If $x(t)$ is function defined on interval $t\in(0,L)$, then an even periodic extension $\tilde{x}(t)$ has period $T_0=2L$ with 
+    Fourier coefficients 
+    \begin{align}
+        a_0 &= \frac{2}{T_0}\int_{0}^{T_0/2} x(t) \,dt \\
+        a_n &= \frac{4}{T_0}\int_{0}^{T_0/2} x(t)\cos(n\omega_0 t) \,dt \\
+        b_n &= 0
+    \end{align}
+    and can be plotted using the following steps:
+    \begin{enumerate}
+        \item Flip $x(t)$ over the vertical axis.
+        \item Horizontally shift the overall new plot by $nT_0$ units for all integers $n$.
+    \end{enumerate}
+\end{tcolorbox}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \emph{ODD PERIODIC EXTENSIONS.}
+    If $x(t)$ is function defined on interval $t\in(0,L)$, then an odd periodic extension $\tilde{x}(t)$ has period $T_0=2L$ with 
+    Fourier coefficients 
+    \begin{align}
+        a_0 &= 0 \\
+        a_n &= 0 \\
+        b_n &= \frac{4}{T_0}\int_{0}^{T_0/2} x(t)\sin(n\omega_0 t) \,dt
+    \end{align}
+    and can be plotted using the following steps:
+    \begin{enumerate}
+        \item Flip $x(t)$ over the vertical axis, then flip the mirrored segment over the time axis.
+        \item Horizontally shift the overall new plot by $nT_0$ units for all integers $n$.
+    \end{enumerate}
+\end{tcolorbox}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \emph{HALF-WAVE SYMMETRY.}
+    If $x(t)$ is function defined on interval $t\in(0,L)$, then periodic extension $\tilde{x}(t)$ can have half-wave symmetry for period $T_0=2L$ with 
+    Fourier coefficients 
+    \begin{align}
+        a_0 &= 0 \\
+        a_n &= 
+        \begin{cases}
+            0, & n \text{ even} \\
+            \frac{4}{T_0}\int_{0}^{T_0/2} x(t)\cos(n\omega_0 t) \,dt, & n \text{ odd}
+        \end{cases} \\
+        b_n &= 
+        \begin{cases}
+            0, & n \text{ even} \\
+            \frac{4}{T_0}\int_{0}^{T_0/2} x(t)\sin(n\omega_0 t) \,dt, & n \text{ odd}
+        \end{cases}
+    \end{align}
+    and can be plotted using the following steps:
+    \begin{enumerate}
+        \item Flip $x(t)$ over the time axis, then shift the flipped segment to the right by $T_0/2 = L$ units.
+        \item Horizontally shift the overall new plot by $nT_0$ units for all integers $n$.
+    \end{enumerate}
+\end{tcolorbox}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \emph{QUARTER-WAVE EVEN SYMMETRY.}
+    If $x(t)$ is function defined on interval $t\in(0,L)$, then periodic extension $\tilde{x}(t)$ can have even and half-wave symmetry for period $T_0=4L$ with 
+    Fourier coefficients 
+    \begin{align}
+        a_0 &= 0 \\
+        a_n &= 
+        \begin{cases}
+            0, & n \text{ even} \\
+            \frac{8}{T_0}\int_{0}^{T_0/4} x(t)\cos(n\omega_0 t) \,dt, & n \text{ odd}
+        \end{cases} \\
+        b_n &= 0
+    \end{align}
+    and can be plotted using the following steps:
+    \begin{enumerate}
+        \item Flip $x(t)$ over the vertical axis. The overall new plot is a half-wave.
+        \item Flip the half-wave over the time axis and shift it to the right by $T_0/2 = 2L$ units.
+        \item Horizontally shift the overall new plot by $nT_0$ units for all integers $n$.
+    \end{enumerate}
+\end{tcolorbox}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \emph{QUARTER-WAVE ODD SYMMETRY.}
+    If $x(t)$ is function defined on interval $t\in(0,L)$, then periodic extension $\tilde{x}(t)$ can have odd and half-wave symmetry for period $T_0=4L$ with 
+    Fourier coefficients 
+    \begin{align}
+        a_0 &= 0 \\
+        a_n &= 0 \\
+        b_n &= 
+        \begin{cases}
+            0, & n \text{ even} \\
+            \frac{8}{T_0}\int_{0}^{T_0/4} x(t)\sin(n\omega_0 t) \,dt, & n \text{ odd}
+        \end{cases}
+    \end{align}
+    and can be plotted using the following steps:
+    \begin{enumerate}
+        \item Flip $x(t)$ over the vertical axis, then flip the mirrored segment over the time axis. The overall new plot is a half-wave.
+        \item Flip the half-wave over the time axis and shift it to the right by $T_0/2 = 2L$ units.
+        \item Horizontally shift the overall new plot by $nT_0$ units for all integers $n$.
+    \end{enumerate}
+\end{tcolorbox}
+
+\begin{example}
+    Plot the following types of periodic extensions of $x(t)$, given that 
+    \begin{align*}
+        x(t)=(1-t)[u(t)-u(t-1)].
+    \end{align*}
+    \begin{enumerate}[(a)]
+        \item general periodic extension
+        \item even periodic extension
+        \item odd periodic extension
+        \item half-wave symmetry
+        \item quarter-wave even symmetry
+        \item quarter-wave odd symmetry
+    \end{enumerate}
+    Then find the Fourier series of the quarter-wave odd symmetric periodic extension.
+\end{example}
+\begin{solution}
+    Applying a general periodic extension, we get $\tilde{x}(t)$ with period $T_0=1$: \\ 
+    \begin{center}\resizebox{0.5\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > 0, \x < 1) * (1 - \x); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-1.25, ymax=1.5, ytick={-1,0,1}, ylabel={$\tilde{x}(t)$},
+                xmin=-3.5, xmax=4, xtick={-3,...,3}, xlabel={$t$ [s]},
+                domain=-3.1:3.9,samples=200,
+                width=9cm, height=4cm]
+            \addplot [blue,thick]{func(x) + func(x-1) + func(x+1) + func(x-2) + func(x+2) + func(x-3) + func(x+3)};
+            \end{axis}
+        \end{tikzpicture}}
+    \end{center}
+    Applying an even periodic extension, we get $\tilde{x}_e(t)$ with period $T_0=2$:
+    \begin{center}\resizebox{0.5\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > -1, \x < 1) * (1 - abs(\x)); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-1.25, ymax=1.5, ytick={-1,0,1}, ylabel={$\tilde{x}_e(t)$},
+                xmin=-3.5, xmax=4, xtick={-3,...,3}, xlabel={$t$ [s]},
+                domain=-3.1:3.1,samples=200,
+                width=9cm, height=4cm]
+            \addplot [blue,thick]{func(x) + func(x-2) + func(x+2) + func(x-4)};
+            \end{axis}
+        \end{tikzpicture}}
+    \end{center}
+    Applying an odd periodic extension, we get $\tilde{x}_o(t)$ with period $T_0=2$:
+    \begin{center}\resizebox{0.5\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > 0, \x < 2) * (1 - \x); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-1.25, ymax=1.5, ytick={-1,0,1}, ylabel={$\tilde{x}_o(t)$},
+                xmin=-3.5, xmax=4, xtick={-3,...,3}, xlabel={$t$ [s]},
+                domain=-3.1:3.9,samples=200,
+                width=9cm, height=4cm]
+            \addplot [blue,thick]{func(x) + func(x-2) + func(x+2) + func(x+4)};
+            \end{axis}
+        \end{tikzpicture}}
+    \end{center}
+    Applying half-wave symmetry, we get $\tilde{x}_{hw}(t)$ with period $T_0=2$:
+    \begin{center}\resizebox{0.5\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > 0, \x < 1) * (1 - \x) + and(\x > 1, \x < 2) * (\x - 2); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-1.25, ymax=1.5, ytick={-1,0,1}, ylabel={$\tilde{x}_{hw}(t)$},
+                xmin=-3.5, xmax=4, xtick={-3,...,3}, xlabel={$t$ [s]},
+                domain=-3.1:3.9,samples=200,
+                width=9cm, height=4cm]
+            \addplot [blue,thick]{func(x) + func(x-2) + func(x+2) + func(x+4)};
+            \end{axis}
+        \end{tikzpicture}}
+    \end{center}
+    Applying quarter-wave even symmetry, we get $\tilde{x}_{qwe}(t)$ with period $T_0=4$:
+    \begin{center}\resizebox{0.5\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > -2, \x < 2) * (1 - abs(\x)); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-1.25, ymax=1.5, ytick={-1,0,1}, ylabel={$\tilde{x}_{qwe}(t)$},
+                xmin=-3.5, xmax=4, xtick={-3,...,3}, xlabel={$t$ [s]},
+                domain=-3.1:3.1,samples=200,
+                width=9cm, height=4cm]
+            \addplot [blue,thick]{func(x) + func(x-4) + func(x+4)};
+            \end{axis}
+        \end{tikzpicture}}
+    \end{center}
+    Applying quarter-wave odd symmetry, we get $\tilde{x}_{qwo}(t)$ with period $T_0=4$:
+    \begin{center}\resizebox{0.5\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > -2, \x < 0) * (- abs(\x + 1)) + and(\x > 0, \x < 2) * (abs(\x - 1)); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-1.25, ymax=1.5, ytick={-1,0,1}, ylabel={$\tilde{x}_{qwo}(t)$},
+                xmin=-3.5, xmax=4, xtick={-3,...,3}, xlabel={$t$ [s]},
+                domain=-3.1:3.9,samples=200,
+                width=9cm, height=4cm]
+            \addplot [blue,thick]{func(x) + func(x-4) + func(x+4)};
+            \end{axis}
+        \end{tikzpicture}}
+    \end{center}
+    The Fourier coefficients for $\tilde{x}_{qwo}(t)$ is given by
+    \begin{align*}
+        a_0 &= 0 \\
+        a_n &= 0 \\
+        b_n\big|_{n \text{ even}} &= 0 \\
+        b_n\big|_{n \text{ odd}} &= \frac{8}{T_0}\int_{0}^{T_0/4} x(t)\sin(n\omega_0 t) \,dt = \frac{8}{4}\int_{0}^{1} (1-t)\sin\left(\frac{n\pi t}{2}\right) \,dt = \frac{4n\pi - 8\sin\left(\frac{n\pi}{2}\right)}{n^2 \pi^2}
+    \end{align*}
+    The Fourier series of $\tilde{x}_{qwo}(t)$ is then 
+    \begin{align*}
+        \tilde{x}_{qwo}(t) = \sum_{\shortstack{\scriptsize $n=1$ \\ \scriptsize $n=$ \text{odd}}}^{\infty}\left[\frac{4n\pi - 8\sin\left(\frac{n\pi}{2}\right)}{n^2 \pi^2}\right]\sin\left(\frac{n\pi t}{2}\right)
+    \end{align*}
+\end{solution}
+
+\section{Convergence of the Fourier Series}
+Earlier, it was prefaced that any physically realizable periodic signal follows Fourier's theorem; we assume that there are no periodic infinite discontinuities 
+as those cannot be physically realized. In fact, in order for a periodic signal $x(t)$ with period $T_0$ to follow Fourier's theorem (i.e., be physically realizable), 
+it must satisfy the \emph{Dirichlet conditions}:
+\begin{enumerate}
+    \item $x(t)$ has a finite number of finite discontinuities in each period.
+    \item $x(t)$ has a finite number of maxima and minima in each period.
+    \item $x(t)$ is absolutely integrable over a period such that $\displaystyle\int_{0}^{T_0}|x(t)| \,dt < \infty$.
+\end{enumerate}
+If the Dirichlet conditions are met, then there are two possible functions the Fourier series converges to, depending on the number of jump discontinuities within a period:
+\begin{itemize}
+    \item If the periodic signal $x(t)$ is continuous with no jump discontinuities, then the Fourier series converges to $x(t)$.
+    \item If the periodic signal $x(t)$ has nonzero number of jumps within a period, then the Fourier series converges to $x(t)$ everywhere except at the jumps, where 
+    the points converge to $\dfrac{1}{2}[x(t_i^-)+x(t_i^+)]$ for each jump discontinuity at $t=t_i$.
+\end{itemize}
+In general, for $S_N(t)$ is the $N^{th}$ partial sum of the Fourier series, 
+\begin{align}
+    \lim_{N\rightarrow\infty} S_N(t) = 
+    \begin{cases}
+        x(t), & \text{if $x$ is continuous at $t$} \\
+        \frac{1}{2}[x(t^-)+x(t^+)], & \text{if $x$ has a jump at $t$}
+    \end{cases}
+\end{align}
+In fact, while periodic signals with jump discontinuities such as the square wave can be represented as a Fourier series, they cannot be reproduced practically in the real world by generating and summing 
+an infinite number of sine waves. 
+\\ \\
+One could get close with a large $N^{th}$ partial sum of the Fourier series. However, regardless of the value of $N$, the \emph{Gibbs phenomenon} will be observed, in which 
+oscillatory overshoots occur about the points of discontinuity, as seen in Figure \ref{gibbs}.
+\begin{figure}[!hbt]
+\caption{Gibbs Phenomenon Observed in the Partial Sum $S_N(t)$ of a Square Wave }
+\label{gibbs}
+\resizebox{0.33\textwidth}{!}{
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (4 / pi) * sin(deg(2 * pi * \x)); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-1.25, ymax=1.85, ytick={0}, ylabel={$S_5(t)$},
+            xmin=-1.5, xmax=1.5, xtick={0}, xlabel={$t$ [s]},
+            domain=-1.1:1.1,samples=100,
+            width=7cm, height=4cm]
+        \addplot [blue,thick]{ func(x) + func(3*x)/3 + func(5*x)/5 };
+        \end{axis}
+    \end{tikzpicture}}
+\resizebox{0.33\textwidth}{!}{
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (4 / pi) * sin(deg(2 * pi * \x)); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-1.25, ymax=1.85, ytick={0}, ylabel={$S_{15}(t)$},
+            xmin=-1.5, xmax=1.5, xtick={0}, xlabel={$t$ [s]},
+            domain=-1.1:1.1,samples=100,
+            width=7cm, height=4cm]
+        \addplot [blue,thick]{ func(x) + func(3*x)/3 + func(5*x)/5 + func(7*x)/7 + func(9*x)/9 + func(11*x)/11 + func(13*x)/13 + func(15*x)/15 };
+        \end{axis}
+    \end{tikzpicture}}
+\resizebox{0.33\textwidth}{!}{
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (4 / pi) * sin(deg(2 * pi * \x)); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-1.25, ymax=1.85, ytick={0}, ylabel={$S_{25}(t)$},
+            xmin=-1.5, xmax=1.5, xtick={0}, xlabel={$t$ [s]},
+            domain=-1.1:1.1,samples=100,
+            width=7cm, height=4cm]
+        \addplot [blue,thick]{ func(x) + func(3*x)/3 + func(5*x)/5 + func(7*x)/7 + func(9*x)/9 + func(11*x)/11 + func(13*x)/13 + func(15*x)/15 + func(17*x)/17 + func(19*x)/19 + func(21*x)/21 + func(23*x)/23 + func(25*x)/25 };
+        \end{axis}
+    \end{tikzpicture}}
+\end{figure}
+
+\section{Parseval's Theorem for Fourier Series}
+\emph{Parseval's theorem} for Fourier series is essentially a ``conservation of (average) power'' theorem. When physically realizable periodic signals are mapped from the continuous-time Fourier series to the discrete-frequency Fourier spectrum, the total 
+signal average power is conserved. Depending on the Fourier series representation used, it follows that the total average power of a physically realizable periodic signal $x(t)$ can be evaluated as:
+\begin{align}
+    P_x &= \frac{1}{T_0}\int_{0}^{T_0} |x(t)|^2 \,dt = a_0^2 +\sum_{n=1}^{\infty}(a_n^2 + b_n^2)/2 \\
+    P_x &= \frac{1}{T_0}\int_{0}^{T_0} |x(t)|^2 \,dt = c_0^2 +\sum_{n=1}^{\infty}c_n^2/2 \\
+    P_x &= \frac{1}{T_0}\int_{0}^{T_0} |x(t)|^2 \,dt = \sum_{n=-\infty}^{+\infty}|x_n|^2
+\end{align}
+Here, the \emph{DC power} is given by $a_0^2 = c_0^2 = |x_0|^2$ whereas the rest of the respective summation is the \emph{average AC power}. 
+\\ \\
+The \emph{AC power fraction} is then given by 
+\begin{align}
+    pf=\frac{P_{AC}}{P_{DC} + P_{AC}}
+\end{align}
+Additionally, we can define the \emph{one-sided power spectral density} (1-sided PSD) to be 
+\begin{align}
+    PSD_1 = 
+    \begin{cases}
+        c_0^2 = |x_0|^2, & n=0 \\
+        \frac{c_n^2}{2} = 2|x_n|^2, & n\geq 0
+    \end{cases}
+\end{align}
+and the \emph{two-sided power spectral density} (2-sided PSD) to be 
+\begin{align}
+    PSD_2 = |x_n|^2.
+\end{align}
+Note that the 2-sided PSD is defined for all frequencies, whereas the 1-sided PSD is defined for only nonnegative frequencies. 
+Because of this, the AC component of the 2-sided PSD are half the values of the 1-sided PSD. In signal processing, we tend to be more interested in the 1-sided PSD.
+
+\begin{example}
+    The current flowing through a 12 $[\Omega]$ resistor is 
+    \begin{align*}
+        i(t)=2+4\cos(377t-30^{\circ}) \text{ [A]}.
+    \end{align*} Find the average power consumed by the resistor. Then find the AC power fraction.
+\end{example}
+\begin{solution}
+    The equation for current closely resembles the amplitude/phase representation of the Fourier series, with $c_0=2$ and $c_1=4$. By Parseval's theorem, the normalized average power is given by 
+    \begin{align*}
+        P_{av,norm} = c_0^2 + \frac{c_1^2}{2} = 2^2 + \frac{4^2}{2} = 12. 
+    \end{align*} 
+    Again, note that this is the normalized average power. Since the $P_{av,norm}$ above has units of [$\text{A}^2$], the actual average power is given by 
+    \begin{align*}
+        P = P_{av,norm}R,
+    \end{align*}
+    for $R=12$ [$\Omega$]. Therefore, the actual average power absorbed by the resistor is 
+    \begin{align*}
+        P_{av} = P_{av,norm}R = 12\cdot 12 = 144 \text{ [W]}.
+    \end{align*}
+    We can isolate the DC power from the average AC power to get 
+    \begin{align*}
+        P_{DC,norm} &= c_0^2 = 2^2 = 4 \\
+        P_{AC,norm} &= \frac{c_1^2}{2} = 8
+    \end{align*}
+    The AC power fraction is then
+    \begin{align*}
+        pf = \frac{P_{AC,norm}}{P_{DC,norm} + P_{AC,norm}} = \frac{8}{4+8} = \frac{2}{3} \Longrightarrow 66.7\%
+    \end{align*}
+    Note that for AC power fraction calculations, using normalized power values should yield the same answer as using actual power values.
+\end{solution}
+
+\section{LTI Systems with Fourier Series}
+As we saw with one of the phasor transform examples, the superposition principle can be applied to find the output of an LTI system, given that the input signal is a finite sum of sinusoids. Extending the notion to Fourier series, we can represent a physically realizable 
+periodic signal $x(t)$ as a Fourier series using the closely related amplitude/phase representation and use the superposition principle to find the output of an LTI system.
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+\emph{FOURIER SERIES ANALYSIS.}
+    \begin{enumerate}
+        \item Express the input signal $x(t)$ as a Fourier series using the amplitude/phase representation such that $x(t) = c_0 + \displaystyle\sum_{n=1}^{\infty} c_n\cos(n\omega_0 t + \phi_n)$, with phasor $c_n e^{j\phi_n} = a_n - jb_n$.
+        \item Use the phasor transform to find the generic frequency response function $H(\omega)$ by letting $x(t) = 1\cdot\cos(\omega t)$ such that $\underline{X}=1$ and $\underline{Y}=H(\omega)$.
+        \item Determine the output signal for 
+        \begin{align*}
+            y(t) &= c_0H(\omega=0) + \displaystyle\sum_{n=1}^{\infty}c_n\Re[H(\omega=n\omega_0)e^{jn\omega_0 t+\phi_n}] \\
+            &= c_0H(\omega=0) + \displaystyle\sum_{n=1}^{\infty}c_n|H(\omega=n\omega_0)|\cos(n\omega_0 t + \phase{H(\omega=n\omega_0)} +\phi_n).
+        \end{align*}
+    \end{enumerate}
+\end{tcolorbox}
+
+\begin{example}
+    Given the plot of periodic input excitation $v_s(t)$, find the output $v_{out}(t)$ of the following RC circuit. \\ \\
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (\x < 0) * (0) + and(\x >= 0, \x < 1) * (10)+ (\x > 1) * (0); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=15, ytick={0,10}, ylabel={$v_s(t)$},
+            xmin=-6, xmax=7, xtick={-4,...,5}, xlabel={$t$ [s]},
+            domain=-5:6,samples=300,
+            width=8cm, height=4cm]
+        \addplot [blue,thick]{func(x) + func(x-4) + func(x+4)};
+        \end{axis}
+    \end{tikzpicture} \\ \\
+    \resizebox{0.65\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+        \draw (0,0) to [V, l_={\large $v_s(t)$}] (0,-2); 
+        \draw (0,0) to [R={$20\,[k\Omega]$}] (3,0);
+        \draw (3,0) to [C={$0.1\,[mF]$}] (3,-2);
+        \draw (3,0) to [short, -*] (6,0);
+        \draw (0,-2) to [short, -*] (6,-2);
+        \draw (6,0) to [open, v^>={\large $v_{out}(t)$}] (6,-2);
+    \end{circuitikz}}
+\end{example}
+\begin{solution}
+    First, we find a Fourier series expression for $v_s(t)$. From the plot, we can visually see that $T_0=4$. Therefore $\omega_0 = 2\pi/T_0 = \pi/2$. During 
+    a single period, we can define $v_s(t)$ as
+    \begin{align*}
+        v_s(t) = 
+        \begin{cases}
+            10, & 0<t<1 \\
+            0, & 1<t<4
+        \end{cases}
+    \end{align*} 
+    Using the sine/cosine representation, the Fourier coefficients are 
+    \begin{align*}
+        a_0 &= \frac{\text{Area of } x(t) \text{ during } T_0}{\text{Period } T_0 \text{ of } x(t)} = \frac{10}{4} = 2.5 \\
+        a_n &= \frac{2}{T_0} \int_{0}^{T_0} v_s(t)\cos(n\omega_0 t) \,dt = \frac{2}{4} \int_{0}^{1} 10\cos(n\omega_0 t) \,dt = \frac{10}{n\pi}\sin\left(\frac{n\pi}{2}\right) \\
+        b_n &= \frac{2}{T_0} \int_{0}^{T_0} v_s(t)\sin(n\omega_0 t) \,dt = \frac{2}{4} \int_{0}^{1} 10\sin(n\omega_0 t) \,dt = \frac{10}{n\pi}\left[1-\cos\left(\frac{n\pi}{2}\right)\right]
+    \end{align*}
+    We can then transform the Fourier coefficients to the amplitude/phase representation such that the DC component is given by 
+    \begin{align*}
+        c_0 &= a_0 = 2.5,
+    \end{align*}
+    the amplitudes are given by 
+    \begin{align*}
+        c_n &= \sqrt{a_n + b_n} = \frac{10}{n\pi}\sqrt{\sin^2\left(\frac{n\pi}{2}\right) + \left[1-\cos\left(\frac{n\pi}{2}\right)\right]^2} = \frac{10}{n\pi}\sqrt{2-2\cos\left(\frac{n\pi}{2}\right)} \\
+        &= \frac{20}{n\pi}\sqrt{\frac{1}{2}\left[1-\cos\left(\frac{n\pi}{2}\right)\right]} = \frac{20}{n\pi}\sin\left(\frac{n\pi}{4}\right)
+    \end{align*}
+    and the phases are given by
+    \begin{align*}
+        \phi_n &= 
+        \begin{cases} 
+            -\arctan(b_n/a_n), & a_n>0 \\
+            \pi-\arctan(b_n/a_n), & a_n<0
+        \end{cases} \\
+        &= -\operatorname{atan2}(b_n, a_n) \\
+        &= -\operatorname{atan2}\left[1-\cos\left(\frac{n\pi}{2}\right), \sin\left(\frac{n\pi}{2}\right)\right] \\
+        &= -\frac{(n \text{ mod } 4)\pi}{4}
+    \end{align*}
+    It just so happens that when plotting the $atan2$ function above, the plot has a period of 4. We can utilize this to apply modulo 4 to the values of $n$ 
+    when writing a final expression for $\phi_n$.
+    \\ \\ 
+    The input voltage can then be written as  
+    \begin{align*}
+        v_s(t) = 2.5 + \sum_{n=1}^{\infty} \frac{20}{n\pi}\sin\left(\frac{n\pi}{4}\right) \cos\left( n\omega_0 t -\frac{(n \text{ mod } 4)\pi}{4} \right).
+    \end{align*}
+    Now we convert the circuit to phasor domain with $\underline{V_s}=1$ and $\underline{V_{out}}=H(\omega)$ such that 
+    \begin{center}
+        \resizebox{0.45\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+            \draw (0,0) to [V, l_={\large $1$}] (0,-2); 
+            \draw (0,0) to [R={$R$}] (3,0);
+            \draw (3,0) to [C={$1/j\omega C$}] (3,-2);
+            \draw (3,0) to [short, -*] (6,0);
+            \draw (0,-2) to [short, -*] (6,-2);
+            \draw (6,0) to [open, v^>={\large $H(\omega)$}] (6,-2);
+        \end{circuitikz}}
+    \end{center}
+    The frequency response is given by  
+    \begin{align*}
+        H(\omega) &= \frac{1/j\omega C}{R + 1/j\omega C} = \frac{1}{1+j\omega RC} \\
+        |H(\omega)| &= \frac{1}{\sqrt{1+4\omega^2}} \\ 
+        \phase{H(\omega)} &= -\arctan(2\omega)
+    \end{align*}
+    Then for 
+    \begin{align*}
+        H(\omega = 0) &= 1 \\
+        |H(\omega = n\omega_0)| &= \frac{1}{\sqrt{1+(n\pi)^2}} \\
+        \phase{H(\omega = n\omega_0)} &= -\arctan(n\pi),
+    \end{align*}
+    the output voltage is given by 
+    \begin{align*}
+        v_{out}(t) = 2.5 + \sum_{n=1}^{\infty} \left[\frac{20}{n\pi}\sin\left(\frac{n\pi}{4}\right)\right]\left[\frac{1}{\sqrt{1+(n\pi)^2}}\right] \cos\left( n\omega_0 t -\arctan(n\pi) -\frac{(n \text{ mod } 4)\pi}{4} \right).
+    \end{align*}
+\end{solution}
+
+\end{document}

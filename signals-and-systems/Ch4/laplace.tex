@@ -1,0 +1,1496 @@
+\documentclass{report}
+\input{../../preamble.tex}
+
+\begin{document}
+\setcounter{chapter}{3}
+\chapter{Laplace Transform}
+Previously, we have seen that LTI systems can be characterized by their impulse responses $h(t)$, and the outputs of those systems can be computed 
+by taking the convolution of the input signal and the impulse response. 
+\\ \\ 
+In fact, all LTI systems can be characterized by some impulse response. Going back 
+to the affine transformation on the independent variable, its impulse response is given by 
+\begin{align}
+    h(t)=\delta(at-b)=\frac{1}{|a|}\delta\left(t-\frac{b}{a}\right).
+\end{align}
+As seen in the first two chapters, some LTI systems can be represented by LCCDEs. While one could find the system response by solving the differential equation, 
+it is more difficult to solve it that way. Here, we introduce a concept called the Laplace transform which offers a simpler way to solve differential equations 
+by mapping them to a domain that uses algebraic equations.
+\\ \\
+As signals and systems in the physical world are causal, we are particularly interested in the unilateral (one-sided) Laplace transform. 
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (in) at (-3,+4){$x(t)$};
+        \node [] (out) at (+3,+4){$y(t)$};
+        \node [draw,
+                fill=green!30, 
+                minimum width=2.8cm, 
+                minimum height=0.8cm
+            ] (sys) at (-3,+2.25){System};
+        \node [draw,
+                fill=blue!30, 
+                minimum width=2.8cm, 
+                minimum height=1.2cm
+            ] (diff) at (-3,0){\shortstack{Differential Eq. \\ (Time Domain)}};
+        \node [draw,
+                fill=blue!30, 
+                minimum width=2.8cm, 
+                minimum height=1.2cm
+            ] (sol_t) at (+3,0){\shortstack{Solution \\ (Time Domain)}};
+        \node [draw,
+                fill=red!30, 
+                minimum width=2.8cm, 
+                minimum height=1.2cm
+            ] (alg) at (-3,-3){\shortstack{Algebraic Eq. \\ ($s$-Domain)}};
+        \node [draw,
+                fill=red!30, 
+                minimum width=2.8cm, 
+                minimum height=1.2cm
+            ] (sol_s) at (+3,-3){\shortstack{Solution \\ ($s$-Domain)}};
+        \draw [-latex, line width=1.5pt] (in) -- (sys) node[midway,left]{Input};
+        \draw [-latex, line width=1.5pt] (sys) -- (diff);
+        \draw [-latex, line width=1.5pt] (diff) -- (alg) node[midway,right]{\shortstack{Laplace \\ Transform}};
+        \draw [-latex, line width=1.5pt] (alg) -- (sol_s);
+        \draw [-latex, line width=1.5pt] (sol_s) -- (sol_t) node[midway,right]{\shortstack{Inverse Laplace \\ Transform}};
+        \draw [-latex, line width=1.5pt] (sol_t) -- (out) node[midway,right]{Output};
+    \end{tikzpicture}
+\end{center}
+
+\section{Unilateral Laplace Transform}
+The \emph{unilateral Laplace transform} of a signal $x(t)$ is defined as  
+\begin{align}
+    X(s) = \mathcal{L}[x(t)] = \int_{0^-}^{\infty} x(t) e^{-st} \,dt,
+\end{align}
+where $s=\sigma + j\omega$ is the \emph{complex frequency}. 
+\\ \\ 
+The Laplace transform essentially is an operator that maps a signal defined in the \emph{time domain} to another signal 
+defined in the \emph{$s$-domain}. $x(t)$ and $X(s)$ constitute a \emph{Laplace transform pair}. This relationship can be written as 
+\begin{align}
+    x(t) \iff X(s).
+\end{align}
+Because of this relationship, there exists an \emph{inverse Laplace transform} defined by 
+\begin{align}
+    x(t) = \mathcal{L}^{-1}[X(s)] = \frac{1}{j2\pi}\int_{\sigma-j\infty}^{\sigma+j\infty} X(s) e^{+st} \,ds,
+\end{align}
+though direct computation of the inverse integral is often more cumbersome than referencing a table of Laplace transform pairs.
+\\ \\
+Additionally, for signal $x(t)$ to be transformable, the unilateral Laplace integral must be absolutely integrable such that 
+\begin{align}
+    \int_{0^-}^{\infty} |x(t) e^{-st}| \,dt &= \int_{0^-}^{\infty} |x(t)||e^{-(\sigma+j\omega)t}| \,dt \nonumber \\
+    &= \int_{0^-}^{\infty} |x(t)| |e^{-\sigma t}| |e^{-j\omega t}| \,dt < \infty. \\
+\end{align}
+From above, $|e^{-j\omega t}|<1$ and $\sigma$ is real. Therefore, the integrable condition simplifies to 
+\begin{align}
+    \int_{0^-}^{\infty} |x(t)| e^{-\sigma t} \,dt < \infty.
+\end{align}
+The \emph{region of convergence} (ROC) is then defined as the values for $s$ for which the unilateral Laplace integral is absolutely integrable 
+for a given signal $x(t)$ for all $t$. Here, the ROC is defined by a set of values for $\sigma = \Re(s)$.
+\\ \\
+For the unilateral Laplace transform, the ROC informs if there exists a unilateral Laplace transform for some signal $x(t)$ that can be mapped back to the time domain. 
+Since we are more interested in causal signals and systems, signals that are physically realizable always have a unilateral Laplace transform. 
+\\ \\
+Since all physically realizable signals and systems have a Laplace transform, the ROC is not necessary when modeling those entities. In fact, all causal signals have a unique 
+unilateral Laplace transform.
+\\ \\
+Table \ref{laplace_prop} lists the properties of the unilateral Laplace transform.
+\begin{table}[hbt!]
+    \centering
+    \caption{Properties of the Unilateral Laplace Transform}
+    \label{laplace_prop}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Property & $x(t)$ & $X(s)=\mathcal{L}[x(t)]$ \\[0.15cm]
+        \hline
+        & & \\
+        Superposition & $K_1x_1(t)+K_2x_2(t)$ & $K_1X_1(s)+K_2X_2(s)$ \\[0.5cm]
+        Time scaling & $x(at),\text{ } a>0$ & $\dfrac{1}{a}X\left(\dfrac{s}{a}\right)$ \\[0.5cm]
+        Time shift & $x(t-T)u(t-T),\text{ } T>0$ & $e^{-Ts}X(s)$ \\[0.5cm]
+        Frequency shift & $e^{-at}x(t)$ & $X(s+a)$ \\[0.5cm]
+        Time 1st derivative & $x'(t)=\dfrac{dx(t)}{dt}$ & $sX(s) - x(0^-)$ \\[0.5cm]
+        Time 2nd derivative & $x''(t)=\dfrac{d^2x(t)}{dt^2}$ & $s^2X(s) - sx(0^-) - x'(0^-)$ \\[0.5cm]
+        Time $n$th derivative & $x^{(n)}(t)=\dfrac{d^nx(t)}{dt^n}$ & $s^nX(s) - \displaystyle\sum_{k=1}^{n}s^{n-k}x^{(k-1)}(0^-)$ \\[0.5cm]
+        Time integral & $\displaystyle\int_{0^-}^{t} x(\tau) \,d\tau$ & $\dfrac{1}{s} X(s)$ \\[0.5cm]
+        Frequency derivative & $t\cdot x(t)$ & $-\dfrac{dX(s)}{ds} = -X'(s)$\\[0.5cm]
+        Frequency integral & $\dfrac{x(t)}{t}$ & $\displaystyle\int_{s}^{\infty} X(\gamma) \,d\gamma$ \\[0.5cm]
+        Convolution & $x_1(t)*x_2(t)$ & $X_1(s)X_2(s)$ \\[0.5cm]
+        Multiplication & $x_1(t)x_2(t)$ & $X_1(s)*X_2(s)$ \\[0.5cm]
+        Initial value theorem & $x(0^+)$ & $\displaystyle\lim_{s\to\infty} X(s)$ \\[0.5cm]
+        Final value theorem & $x(\infty)$ & $\displaystyle\lim_{s\to 0} X(s)$ \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{example}
+    Find the unilateral Laplace transform of $x(t)=e^{-at}u(t)$, for $a>0$. 
+\end{example}
+\begin{solution}
+    Using the unilateral Laplace integral, 
+    \begin{align*}
+        X(s) = \mathcal{L}[x(t)] = \int_{0^-}^{\infty} x(t) e^{-st} \,dt, 
+    \end{align*}
+    we get
+    \begin{align*}
+        X(s) = \int_{0^-}^{\infty} [e^{-at}u(t)]e^{-st} \,dt = \int_{0^-}^{\infty} e^{-(s+a)t} \,dt = \left[\frac{e^{-(s+a)t}}{-(s+a)}\right|_{0^-}^{\infty} = \frac{1}{s+a}.
+    \end{align*}
+\end{solution}
+
+Table \ref{laplace_pairs} lists some common unilateral Laplace transform pairs. While one could find the inverse Laplace transform using the inverse Laplace integral, 
+it is much simpler to reference a table of transform pairs. 
+
+\begin{example}
+    Suppose a signal $x(t)= u(t-2)-u(t-4)$ is inputted into an LTI system characterized by $h(t)=t\cdot u(t)$. Find the unilateral Laplace transform of 
+    the output signal $y(t)$.
+\end{example}
+\begin{solution}
+    First, let $x_0(t) = u(t)$. From the convolution property, we can find the unilateral Laplace transforms of both $x_0(t)$ and $h(t)$, then take the product $X_0(s)H(s)$. 
+    \begin{align*}
+        X_0(s) &= \int_{0^-}^{\infty} u(t)e^{-st} \,dt = \left[\frac{e^{-st}}{-s}\right|_{0^-}^{\infty} = \frac{1}{s} \\
+        H(s) &=\int_{0^-}^{\infty} t\cdot u(t)e^{-st} \,dt = \left[\frac{e^{-st}}{s^2}(-st-1)\right|_{0^-}^{\infty} = \frac{1}{s^2} \\
+        \Longrightarrow Y_0(s) &= X_0(s)H(s) = \frac{1}{s^3}
+    \end{align*}
+    Using the table of unilateral transform pairs, we inverse-transform the product back to the time domain to get 
+    \begin{align*}
+        y_0(t) = \mathcal{L}^{-1}[Y_0(s)] &= \mathcal{L}^{-1}\left[\frac{1}{s^3}\right] \\
+        &= \mathcal{L}^{-1}\left[\frac{1}{2}\cdot\frac{2}{s^3}\right] \\
+        &= \frac{1}{2}\cdot\mathcal{L}^{-1}\left[\frac{2}{s^3}\right] = \frac{1}{2}\cdot t^2u(t).
+    \end{align*}
+    By the superposition principle for LTI systems, it follows that 
+    \begin{center}
+        \begin{tikzpicture}
+            \node [] (input) at (-4,0){$x(t)=x_0(t-2)-x_0(t-4)$};
+            \node [] (output) at (+4,0){$y(t)=y_0(t-2)-y_0(t-4)$};
+            \node [draw,
+                fill=yellow!50, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (system) at (0,0){$h(t)$};
+            \draw [-latex, line width=1.5pt] (input) -- (system);
+            \draw [-latex, line width=1.5pt] (system) -- (output);
+        \end{tikzpicture}
+    \end{center}
+    Therefore, 
+    \begin{align*}
+        y(t) &= y_0(t-2)-y_0(t-4) \\
+        &= \frac{1}{2}\cdot (t-2)^2u(t-2) - \frac{1}{2}\cdot (t-4)^2u(t-4).
+    \end{align*}
+\end{solution}
+
+\begin{table}[hbt!]
+    \centering
+    \caption{Unilateral Laplace Transform Pairs}
+    \label{laplace_pairs}
+    \begin{tabular}{|c|c|}
+        \hline
+        $x(t)$ & $X(s)=\mathcal{L}[x(t)]$ \\[0.15cm]
+        \hline
+        & \\[0.1cm]
+        $\delta(t)$ & $1$ \\[0.5cm]
+        $u(t)$ & $\dfrac{1}{s}$ \\[0.5cm]
+        $e^{-at}u(t)$ & $\dfrac{1}{s+a}$ \\[0.5cm]
+        $t\cdot u(t)$ & $\dfrac{1}{s^2}$ \\[0.5cm]
+        $t^2\cdot u(t)$ & $\dfrac{2}{s^3}$ \\[0.5cm]
+        $te^{-at}u(t)$ & $\dfrac{1}{(s+a)^2}$ \\[0.5cm]
+        $t^2e^{-at}u(t)$ & $\dfrac{2}{(s+a)^3}$ \\[0.5cm]
+        $t^{n-1}e^{-at}u(t)$ & $\dfrac{(n-1)!}{(s+a)^n}$ \\[0.5cm]
+        $\sin(\omega_0 t)u(t)$ & $\dfrac{\omega_0}{s^2+\omega_0^2}$ \\[0.5cm]
+        $\sin(\omega_0 t+\theta)u(t)$ & $\dfrac{s\sin\theta + \omega_0\cos\theta}{s^2+\omega_0^2}$ \\[0.5cm]
+        $\cos(\omega_0 t)u(t)$ & $\dfrac{s}{s^2+\omega_0^2}$ \\[0.5cm]
+        $\cos(\omega_0 t+\theta)u(t)$ & $\dfrac{s\cos\theta - \omega_0\sin\theta}{s^2+\omega_0^2}$ \\[0.5cm]
+        $e^{-at}\sin(\omega_0 t)u(t)$ & $\dfrac{\omega_0}{(s+a)^2+\omega_0^2}$ \\[0.5cm]
+        $e^{-at}\cos(\omega_0 t)u(t)$ & $\dfrac{s+a}{(s+a)^2+\omega_0^2}$ \\[0.5cm]
+        $2e^{-at}\cos(bt-\theta)u(t)$ & $\dfrac{e^{+j\theta}}{s+a+jb}+\dfrac{e^{-j\theta}}{s+a-jb}$ \\[0.5cm]
+        $e^{-at}\cos(bt-\theta)u(t)$ & $\dfrac{(s+a)\cos\theta+b\sin\theta}{(s+a)^2+b^2}$ \\[0.5cm]
+        $\dfrac{2t^{n-1}}{(n-1)!}e^{-at}\cos(bt-\theta)u(t)$ & $\dfrac{e^{+j\theta}}{(s+a+jb)^n}+\dfrac{e^{-j\theta}}{(s+a-jb)^n}$ \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+
+\pagebreak [4]
+\section{Bilateral Laplace Transform}
+The \emph{bilateral Laplace transform} of a signal $x(t)$ is defined as  
+\begin{align}
+    X(s) = \mathcal{L}[x(t)] = \int_{-\infty}^{+\infty} x(t) e^{-st} \,dt.
+\end{align}
+Similar to the unilateral Laplace transform, for a signal $x(t)$ to be transformable, the bilateral Laplace integral must be absolutely integrable such that 
+the simplified integrable condition given by 
+\begin{align}
+    \int_{-\infty}^{+\infty} |x(t)| e^{-\sigma t} \,dt < \infty
+\end{align}
+holds true. However, the region of convergence (ROC) plays a bigger role for the bilateral Laplace transform. 
+\\ \\ 
+While the unilateral Laplace transform refers to the ROC 
+to validate the existence of a unilateral transform pair, the bilateral Laplace transform needs the ROC to correctly map the $s$-domain solution to the time domain. 
+That is, the ROC informs the mapping for the inverse bilateral transform. Two different signals may have the same Laplace transform and only differ by their ROCs. 
+\\ \\
+For instance, consider the causal signal $x(t)=e^{-at}u(t)$ with the integrable condition
+\begin{align*}
+    \int_{-\infty}^{+\infty} |e^{-at}u(t)| e^{-\sigma t} \,dt = \int_{0^-}^{\infty} e^{-(a+\sigma) t} \,dt < \infty.
+\end{align*}
+If $\Re(s) > -a$, then it follows that 
+\begin{align*}
+    \int_{0^-}^{\infty} e^{-(a+\sigma) t} \,dt = \left[\frac{e^{-(a+\sigma) t}}{-(a+\sigma)}\right|_{0^-}^{\infty} < \infty.
+\end{align*}
+If $\Re(s) \leq -a$, then for $\epsilon=-(a+\sigma)\geq 0$, it follows that
+\begin{align*}
+    \int_{0^-}^{\infty} e^{-(a+\sigma) t} \,dt = \int_{0^-}^{\infty} e^{+\epsilon t} \,dt = \left[\frac{e^{\epsilon t}}{\epsilon}\right|_{0^-}^{\infty} = \infty.
+\end{align*}
+However, the anticausal signal $x_{A}(t)= -e^{-at}u(-t)$ has an ROC of $\Re(s)\leq -a$ such that 
+\begin{align*}
+    \int_{-\infty}^{+\infty} |-e^{-at}u(-t)|e^{-(a+\sigma) t} \,dt = \int_{-\infty}^{0^+} e^{-(a+\sigma)t} \,dt = \left[\frac{e^{-(a+\sigma) t}}{-(a+\sigma)}\right|_{-\infty}^{0^+} < \infty.
+\end{align*}
+Here, we see two signals -- one of which is causal and the other anticausal -- that would have the same bilateral Laplace transform $X(s)=\frac{1}{s+a}$ but with 
+different ROCs.
+\\ \\
+Generally, while the unilateral Laplace transform is convenient for solving differential equations with initial conditions, the bilateral Laplace transform provides insight into system characteristics 
+such as stability, causality, and frequency response. 
+\\ \\ 
+However, we can avoid using the bilateral Laplace transform (and avoid ROC calculations) when analyzing system characteristics by setting zero initial conditions and/or using other 
+tools such as the Fourier transform, which will be covered in a later chapter. 
+\\ \\
+For the rest of the text, when referring to the Laplace transform, we will be using the unilateral form.
+
+\section{Partial Fraction Expansion}
+When converting a solution from $s$-domain back to time domain, we will often have a $s$-domain solution in the form of a rational function that may need to be rewritten as a sum of parts, with 
+each part having a Laplace transform pair.
+\\ \\
+Consider an $s$-domain function with the form
+\begin{align}
+    X(s) = \frac{N(s)}{D(s)},
+\end{align}
+written as a ratio of a polynomial numerator $N(s)$ to a polynomial denominator $D(s)$. 
+\\ \\
+The roots of the numerator are called the \emph{zeros} of $X(s)$ and are defined by 
+\begin{align}
+    N(s) = 0,
+\end{align}
+whereas the roots of the denominator are called the \emph{poles} of $X(s)$ and are defined by 
+\begin{align}
+    D(s) = 0.
+\end{align}
+Before even performing partial fraction expansion, first we examine the orders of the numerator and denominator. Let 
+\begin{align}
+    m &= \deg[N(s)], \\ 
+    n &= \deg[D(s)].
+\end{align}
+There are three types of rational functions, each with a different task at hand.
+\begin{itemize}
+    \item $m < n$: $X(s)$ is \emph{strictly proper}. It is ready for partial fraction expansion, if needed.
+    \item $m = n$: $X(s)$ is \emph{proper}. Perform long division and express $X(s)$ in terms of the quotient and remainder, then determine if the remainder term needs partial fraction expansion.
+    \item $m > n$: $X(s)$ is \emph{improper}. Perform long division and express $X(s)$ in terms of the quotient and remainder, then determine if the remainder term needs partial fraction expansion.
+\end{itemize}
+A term would need partial fraction expansion if there is not an easily matching Laplace transform pair provided by the table. Usually this occurs when $\deg[D(s)]>2$.
+
+\begin{example}
+    Determine if 
+    \begin{align*}
+        X(s) = \frac{2s^2+8s+6}{s^2+2s+1}
+    \end{align*}
+    needs to undergo partial fraction expansion.
+\end{example}
+\begin{solution}
+    Since both the numerator and denominator are of the same polynomic order, first we need to long divide. \\
+    \[ \polylongdiv[vars=s]{2s^2+8s+6}{s^2+2s+1} \]
+    From here, we can rewrite $X(s)$ as 
+    \begin{align*}
+        X(s) = 2 + \frac{4s+4}{s^2+2s+1} = 2 + \frac{4(s+1)}{(s+1)^2} = 2 + \frac{4}{s+1}.
+    \end{align*}
+    Since both addends are similar to the ones in the Laplace transform pairs table, partial fraction expansion is not needed, and 
+    \begin{align*}
+        x(t) = \mathcal{L}^{-1}\left[2 + \frac{4}{s+1}\right] = 2\delta(t) + 4e^{-t}u(t).
+    \end{align*}
+\end{solution}
+
+\begin{example}
+    Determine if 
+    \begin{align*}
+        X(s) = \frac{s^4+4}{s^3-3s-1}
+    \end{align*}
+    needs to undergo partial fraction expansion.
+\end{example}
+\begin{solution}
+    Since both the numerator and denominator are of the same polynomic order, first we need to long divide. \\
+    \[ \polylongdiv[vars=s]{s^4+4}{s^3-3s-1} \]
+    From here, we can rewrite $X(s)$ as 
+    \begin{align*}
+        X(s) = s + \frac{3s^2+s+4}{s^3-3s-1}.
+    \end{align*}
+    Since the remainder term does not have a matching Laplace transform pair, partial fraction expansion is needed.
+\end{solution}
+
+Given that a remainder term requires partial fraction expansion, all poles $p_n$ of $X(s)$ must be solved first so that $D(s)$ is expressed in factored form. That is, 
+\begin{align}
+    X(s) = \frac{N(s)}{D(s)} = \frac{N(s)}{\prod_{\ell=1}^{n}(s-p_{\ell})}.
+\end{align}
+\newpage
+\noindent There are four different cases for partial fraction expansion. Depending on the poles, one or more cases may apply. Each case requires using a technique called the \emph{residue method}, which evaluates a modified expression 
+at a pole $s=p$ so that factors cancel and expansion coefficients can be calculated. 
+\\ \\
+\textbf{\underline{Case 1: Distinct real poles.}} \\[0.25cm]
+Suppose there are $n$ distinct real poles in $X(s)$. Then $X(s)$ can be expanded as 
+\begin{align}
+    X(s) &= \frac{N(s)}{(s-p_1)(s-p_2)\cdots(s-p_n)}=\frac{A_1}{s-p_1}+\frac{A_2}{s-p_2}+\cdots+\frac{A_n}{s-p_n}.
+\end{align}
+The expansion coefficients for Case 1 is then given by
+\begin{align}
+    A_n = (s-p_n)X(s)\big|_{s=p_n}.
+\end{align}
+\begin{example}
+    Use the residue method to expand $X(s) = \dfrac{s^2-4s+3}{s(s+1)(s+3)}$. \\
+\end{example}
+\begin{solution}
+    First, set up the expanded form 
+    \begin{align*}
+        X(s) = \frac{A_1}{s} + \frac{A_2}{s+1} + \frac{A_3}{s+3}.
+    \end{align*}
+    The expansion coefficients are given by 
+    \begin{align*}
+        A_1 &= sX(s)\big|_{s=0} = s\frac{s^2-4s+3}{s(s+1)(s+3)}\bigg|_{s=0} = \frac{s^2-4s+3}{(s+1)(s+3)}\bigg|_{s=0} = 1 \\[0.5cm]
+        A_2 &= (s+1)X(s)\big|_{s=-1} = (s+1)\frac{s^2-4s+3}{s(s+1)(s+3)}\bigg|_{s=-1} = \frac{s^2-4s+3}{s(s+3)}\bigg|_{s=0} = -4 \\[0.5cm]
+        A_3 &= (s+3)X(s)\big|_{s=-3} = (s+3)\frac{s^2-4s+3}{s(s+1)(s+3)}\bigg|_{s=-1} = \frac{s^2-4s+3}{s(s+1)}\bigg|_{s=0} = 4
+    \end{align*}
+    The full expansion is then 
+    \begin{align*}
+        X(s) = \frac{1}{s} - \frac{4}{s+1} + \frac{4}{s+3}.
+    \end{align*}
+    Here, we see that inverse Laplace transform is 
+    \begin{align*}
+        x(t) &= \mathcal{L}^{-1}\left[\frac{1}{s} - \frac{4}{s+1} + \frac{4}{s+3}\right] \\
+        &= u(t) - 4e^{-t}u(t) + 4e^{-3t}u(t).
+    \end{align*}
+\end{solution}
+\textbf{\underline{Case 2: Repeated real poles.}} \\[0.25cm]
+Suppose there is a repeated pole at $s=p$. Then $X(s)$ can be expanded as 
+\begin{align}
+    X(s) = \frac{N(s)}{(s-p)^m} = \frac{B_1}{s-p} + \frac{B_2}{(s-p)^2} + \cdots + \frac{B_m}{(s-p)^m},
+\end{align}
+with expansion coefficients given by 
+\begin{align}
+    B_m &= (s-p)^mX(s)\big|_{s=p} \\ 
+    B_{m-1} &= \left\{\frac{d}{ds}\left[(s-p)^mX(s)\right]\right\}\bigg|_{s=p} \\ 
+    B_{m-2} &= \left\{\frac{1}{2!}\cdot\frac{d^2}{ds^2}\left[(s-p)^mX(s)\right]\right\}\bigg|_{s=p}, 
+\end{align}
+or more generally, 
+\begin{align}
+    B_n = \left\{\frac{1}{(m-n)!}\cdot\frac{d^{m-n}}{ds^{m-n}}\left[(s-p)^mX(s)\right]\right\}\bigg|_{s=p}, \text{ for } n=1,2,...,m.
+\end{align}
+\begin{example}
+    Use the residue method to expand $X(s) = \dfrac{s^2+3s+3}{(s+2)(s+3)^3}$.\\
+\end{example}
+\begin{solution}
+    Setting up the expanded form, 
+    \begin{align*}
+        X(s) = \frac{A_1}{s+2} + \frac{B_1}{s+3} + \frac{B_2}{(s+3)^2} + \frac{B_3}{(s+3)^3}.
+    \end{align*}
+    The expansion coefficients are given by 
+    \begin{align*}
+        A_1 &= sX(s)\big|_{s=-2} = s\frac{s^2+3s+3}{(s+2)(s+3)^3}\bigg|_{s=-2} = \frac{s^2+3s+3}{(s+3)^3}\bigg|_{s=-2} = 1 \\[0.5cm]
+        B_3 &= (s+3)^3X(s)\big|_{s=-3} = (s+3)^3\frac{s^2+3s+3}{(s+2)(s+3)^3}\bigg|_{s=-3} = \frac{s^2+3s+3}{s+2}\bigg|_{s=-3} = -3 \\[0.5cm]
+        B_2 &= \left\{\frac{d}{ds}[(s+3)^3X(s)]\right\}\bigg|_{s=-3} = \frac{d}{ds}\left[\frac{s^2+3s+3}{s+2}\right]\bigg|_{s=-3} = \frac{s^2+4s+3}{(s+2)^2}\bigg|_{s=-3} = 0 \\[0.5cm]
+        B_1 &= \left\{\frac{1}{2!}\cdot\frac{d^2}{ds^2}[(s+3)^3X(s)]\right\}\bigg|_{s=-3} = \frac{1}{2}\cdot\frac{d^2}{ds^2}\left[\frac{s^2+3s+3}{s+2}\right]\bigg|_{s=-3} = \frac{1}{2}\cdot\frac{2}{(s+2)^3}\bigg|_{s=-3} = -1
+    \end{align*}
+    The full expanded form is then 
+    \begin{align*}
+        X(s) = \frac{1}{s+2} - \frac{1}{s+3} - \frac{3}{(s+3)^3},
+    \end{align*}
+    with inverse Laplace transform 
+    \begin{align*}
+        x(t) &= e^{-2t}u(t) - e^{-3t}u(t) - \frac{3}{2}\,t^2e^{-3t}u(t) \\ 
+        &= \left[e^{-2t} - e^{-3t} - \frac{3}{2}\,t^2e^{-3t}\right] u(t).
+    \end{align*}
+\end{solution}
+\textbf{\underline{Case 3: Distinct complex poles.}} \\[0.25cm]
+If $X(s)$ has a complex pole at $s=p$, it also follows that its complex conjugate $s=p^*$ is also a pole. Interestingly, the expansion coefficients associated with 
+both complex poles are also complex conjugates of each other. That is, 
+\begin{align}
+    X(s) = \frac{N(s)}{s^2+as+b} = \frac{C}{s-p} + \frac{C^*}{s-p^*},
+\end{align}
+with expansion coefficient 
+\begin{align}
+    C = (s-p)X(s)\big|_{s=p}.
+\end{align}
+\begin{example}
+    Use the residue method to expand $X(s)=\dfrac{s(s-8)}{(s+2)(s^2+16)}$. \\
+\end{example}
+\begin{solution}
+    It follows that for $s^2+16=0$, there are poles at $s=\pm j4$, along with $s=-2$. The expanded form then is given by 
+    \begin{align*}
+        X(s) = \frac{A_1}{s+2} + \frac{C_1}{s+j4} + \frac{C_1^*}{s-j4},
+    \end{align*}
+    with expansion coefficients
+    \begin{align*}
+        A_1 &= (s+2)X(s)\big|_{s=-2} = (s+2)\frac{s(s-8)}{(s+2)(s^2+16)}\bigg|_{s=-2} = \frac{s(s-8)}{(s^2+16)}\bigg|_{s=-2} = 1 \\[0.5cm]
+        C_1 &= (s+j4)X(s)\big|_{s=-j4} = \frac{s(s-8)}{(s+2)(s-j4)}\bigg|_{s=-j4} = -j = e^{-j\pi/2} \\[0.5cm]
+        C_1^* &= C_1\big|_{j\leftarrow(-j)} = e^{+j\pi/2}
+    \end{align*}
+    The full expanded form is then 
+    \begin{align*}
+        X(s) = \frac{1}{s+2} + \frac{e^{-j\pi/2}}{s+j4} + \frac{e^{+j\pi/2}}{s-j4},
+    \end{align*}
+    with inverse Laplace transform 
+    \begin{align*}
+        x(t) = e^{-2t}u(t) + 2\cos(4t+\pi/2)u(t).
+    \end{align*}
+\end{solution}
+\textbf{\underline{Case 4: Repeated complex poles.}} \\[0.25cm]
+Lastly, for repeated complex poles, the expansion is given by 
+\begin{align}
+    X(s) &= \frac{N(s)}{(s^2+as+b)^m} = \frac{N(s)}{(s-p)^m(s-p^*)^m} \nonumber \\
+    &= \left(\frac{D_1}{s-p} + \frac{D_2}{(s-p)^2} + \cdots + \frac{D_m}{(s-p)^m}\right) + \left(\frac{D_1^*}{s-p^*} + \frac{D_2^*}{(s-p^*)^2} + \cdots + \frac{D_m^*}{(s-p^*)^m}\right),
+\end{align}
+with expansion coefficients
+\begin{align}
+    D_n = \left\{\frac{1}{(m-n)!}\cdot \frac{d^{m-n}}{ds^{m-n}}[(s-p)^mX(s)]\right\}\bigg|_{s=p}, \text{ for } n=1,2,...,m.
+\end{align}
+Table \ref{laplace_pairs_short} lists the corresponding Laplace transform pairs for the four partial fraction expansion cases. 
+\begin{table}[hbt!]
+    \centering
+    \caption{Unilateral Laplace Transform Pairs Based on Poles}
+    \label{laplace_pairs_short}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Pole & $X(s)$ & $x(t)=\mathcal{L}^{-1}[X(s)]$ \\[0.15cm]
+        \hline
+        & & \\
+        Distinct real & $\dfrac{A}{s+a}$ & $Ae^{-at}u(t)$ \\[0.5cm]
+        Repeated real & $\dfrac{A}{(s+a)^n}$ & $\dfrac{At^{n-1}}{(n-1)!}e^{-at}u(t)$ \\[0.5cm]
+        Distinct complex & $\dfrac{Ae^{+j\theta}}{s+a+jb}+\dfrac{Ae^{-j\theta}}{s+a-jb}$ & $2Ae^{-at}\cos(bt-\theta)u(t)$ \\[0.5cm]
+        Repeated complex & $\dfrac{Ae^{+j\theta}}{(s+a+jb)^n}+\dfrac{Ae^{-j\theta}}{(s+a-jb)^n}$ & $\dfrac{2At^{n-1}}{(n-1)!}e^{-at}\cos(bt-\theta)u(t)$ \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+
+\section{Transfer Function}
+Given that all initial conditions of the input and output signals of an LTI system are zero, the \emph{transfer function} is the Laplace transform of the impulse response and 
+is defined as 
+\begin{align}
+    H(s) = \frac{Y(s)}{X(s)} = \mathcal{L}[h(t)].
+\end{align}
+In fact, by the convolution property, it follows that 
+\begin{align}
+    y(t) = x(t) * h(t) \iff Y(s) = X(s)H(s).
+\end{align}
+Symbolically,
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x(t)$};
+        \node [] (output) at (+3,0){$y(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$h(t)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node at (0,0) [double arrow, draw=black, top color=red, bottom color=blue,
+            minimum width = 15pt, double arrow head extend=5pt,
+            minimum height=12mm,
+            rotate=90] {};
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$X(s)$};
+        \node [] (output) at (+3,0){$Y(s)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$H(s)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+As the impulse response is the system response to input $x(t)=\delta(t)$, consider the Laplace transform of the impulse signal $\mathcal{L}[\delta(t)]=1$. Then it also follows that 
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x(t)=\delta(t)$};
+        \node [] (output) at (+3,0){$y(t)=h(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$h(t)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node at (0,0) [double arrow, draw=black, top color=red, bottom color=blue,
+            minimum width = 15pt, double arrow head extend=5pt,
+            minimum height=12mm,
+            rotate=90] {};
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$X(s)=1$};
+        \node [] (output) at (+3,0){$Y(s)=H(s)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$H(s)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+To find the transfer function of an LTI system, there are two approaches:
+\begin{enumerate}
+    \item Find $X(s),Y(s)$. Then calculate $H(s)=Y(s)/X(s)$.
+    \item Find $X(s),Y(s)$. Then substitute $X(s)=1$ and $Y(s)=H(s)$.
+\end{enumerate}
+Typically, the transfer function $H(s)$ is used to analyze the characteristics of the LTI system. Sometimes, when one is interested in  
+representing systems solely for the purpose of finding an output response, the \emph{conditional transfer function} $H_C(s)$ 
+is calculated, where initial conditions are not necessarily zero; this is when the substitution approach works best. However, when including nonzero 
+initial conditions, the system can no longer be called LTI.
+
+\begin{example}
+    Find the transfer function for an LTI system characterized by LCCDE
+    \begin{align*}
+        \frac{d^2y(t)}{dt^2} + 3\frac{dy(t)}{dt} + 2y(t) &= \frac{dx(t)}{dt} + 3x(t), \\
+        x(0^-) &= 0, \\
+        y(0^-)=y'(0^-) &= 1.
+    \end{align*}
+    Then find the conditional transfer function of the system.
+\end{example}
+\begin{solution}
+    To find the transfer function $H(s)$, set all initial conditions to zero and take the Laplace transform of the LCCDE.
+    \begin{align*}
+        \mathcal{L}\left[\frac{d^2y(t)}{dt^2} + 3\frac{dy(t)}{dt} + 2y(t)\right] &= \mathcal{L}\left[\frac{dx(t)}{dt} + 3x(t)\right] \\
+        s^2Y(s)+3sY(s)+2Y(s) &= sX(s) + 3X(s) \\
+        Y(s)[s^2+3s+2] &= X(s)[s+3]
+    \end{align*}
+    Rearranging the equation, we get the transfer function
+    \begin{align*}
+        H(s) = \frac{Y(s)}{X(s)} = \frac{s+3}{s^2+3s+2}.
+    \end{align*}
+    Now we consider the initial conditions to solve the conditional transfer function.
+    \begin{align*}
+        [s^2Y(s)-s-1]+3[sY(s)-1]+2Y(s) &= [sX(s)-0] + 3X(s) \\ 
+        Y(s)[s^2+3s+2] - (s+4) &= X(s)[s+3].
+    \end{align*}
+    Now let $X(s)=1$ and $Y(s)=H_C(s)$. The conditional transfer function is given by 
+    \begin{align*}
+        H_C(s)[s^2+3s+2] - (s+4) &= [1][s+3] \\
+        \Longrightarrow H_C(s) &= \frac{2s+7}{s^2+3s+2}
+    \end{align*}
+\end{solution}
+
+For the rest of this text, unless explicitly specified, only transfer functions with zero initial conditions will be considered.
+
+\subsection{System Stability}
+As previously introduced, zeros are the roots of the numerator of a transfer function ($N(s)=0$), and poles are the roots of the denominator of a transfer function ($D(s)=0$). 
+We can visualize both zeros and poles on the \emph{$s$-plane}, which plots $\Im(s)$ versus $\Re(s)$. As seen in Figure \ref{s_plane}, zeros are plotted with circles, and poles are plotted with crosses.
+\\ \\
+The \emph{open left half-plane} (OLHP) refers to the region of the $s$-plane which describes $\Re(s)<0$. 
+\begin{itemize}
+    \item If an LTI system with transfer function $H(s)$ is strictly proper or proper, then the system is BIBO stable if and only if its poles reside in the OLHP.
+    \item If $H(s)$ is improper, then the system is unstable.
+\end{itemize}
+Note that the imaginary axis is not included in the OLHP; a system with poles on the imaginary axis is not stable.
+
+\begin{figure}[!hbt]
+    \caption{$s$-plane plot of a system with zeros and poles.}
+    \label{s_plane}
+    \centering
+    \begin{tikzpicture}[scale=1.2]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-3, ymax=3, ymajorticks=false, ylabel={$\Im(s)$},
+            xmin=-3, xmax=3, xtick={-2,...,2}, xlabel={$\Re(s)$},
+            domain=-3:3,samples=200,
+            width=8cm, height=6cm]
+            \begin{scope}[on background layer={color=orange!10}]
+                \draw[fill=orange!10] (-3,3) -- (0,3) -- (0,-3) -- (-3,-3);
+            \end{scope}
+            \draw (-1.5,2) node{\small left half-plane};
+            \draw (1.5,-2) node{\small $s$-plane};
+            \draw (-2,0) node[cross=4pt,red, very thick] {};
+            \draw (-1,0) node[cross=4pt,red, very thick] {};
+            \draw (0,0) node[cross=4pt,red, very thick] {};
+            \draw[red, very thick] (1,0) circle (3pt);
+            \draw[red, very thick] (2,0) circle (3pt);
+            % labels
+            \draw (-1.5,1) node{\footnotesize poles};
+            \draw[-latex] (-1.75,0.75) -- (-2,0.25);
+            \draw[-latex] (-1.5,0.75) -- (-1,0.25);
+            \draw[-latex] (-1.1,0.75) -- (-0.25,0.25);
+            \draw (1.5,1) node{\footnotesize zeros};
+            \draw[-latex] (1.75,0.75) -- (2,0.25);
+            \draw[-latex] (1.25,0.75) -- (1,0.25);
+        \end{axis}
+    \end{tikzpicture}
+\end{figure}
+
+\begin{example}
+    Determine if an LTI system with the following impulse response is BIBO stable:
+    \begin{align*}
+        h(t)=(4+j5)e^{(2+j3)t}u(t)+(4-j5)e^{(2-j3)t}u(t)
+    \end{align*}
+\end{example}
+\begin{solution}
+    First, find the transfer function by taking the Laplace transform of the impulse response.
+    \begin{align*}
+        H(s) = \mathcal{L}[h(t)] &= (4+j5)\mathcal{L}[e^{(2+j3)t}u(t)]+(4-j5)\mathcal{L}[e^{(2-j3)t}u(t)] \\
+        &= \frac{4+j5}{s-2-j3} + \frac{4-j5}{s-2+j3} \\
+        &= \frac{8s-46}{(s-2-j3)(s-2+j3)}
+    \end{align*}
+    We can see that the poles are given by $p_1=2+j3$ and $p_2=2-j3$, and the zero is given by $z_1=46/8$. 
+    Since $\Re(p_k)>0$, the poles are not in the OHLP, and thus the system is unstable. \\
+\end{solution}
+
+\subsection{Invertible Systems}
+As previously introduced, a system is invertible if there exists an inverse system that maps an output signal $y(t)$ back to its input $x(t)$. In the LTI case, 
+an inverse system characterized by $g(t)$ exists such that 
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x(t)$};
+        \node [] (output) at (+6,0){$x(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (fwd) at (0,0){$h(t)$};
+        \node [draw,
+            fill=blue!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (inv) at (3,0){$g(t)$};
+        \draw [-latex, line width=1.5pt] (input) -- (fwd);
+        \draw [-latex, line width=1.5pt] (fwd) -- (inv);
+        \draw [-latex, line width=1.5pt] (inv) -- (output);
+    \end{tikzpicture}
+\end{center}
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$y(t)$};
+        \node [] (output) at (+6,0){$y(t)$};
+        \node [draw,
+            fill=blue!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (inv) at (0,0){$g(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (fwd) at (3,0){$h(t)$};
+        \draw [-latex, line width=1.5pt] (input) -- (inv);
+        \draw [-latex, line width=1.5pt] (inv) -- (fwd);
+        \draw [-latex, line width=1.5pt] (fwd) -- (output);
+    \end{tikzpicture}
+\end{center}
+While an inverse system $g(t)$ may exist, it does not necessarily mean it is stable. In fact, for 
+\begin{align}
+    G(s) = \frac{1}{H(s)},
+\end{align}
+in order for a BIBO stable and causal LTI system $H(s)$ to have a stable and causal inverse LTI system $G(s)$, the transfer function $H(s)$ 
+must be a proper rational function (i.e., $\deg[N(s)]=\deg[D(s)]$) with both its poles and zeros all residing in the OLHP of the $s$-plane. 
+Such a system is called a \emph{minimum phase system}. 
+
+\begin{example}
+    An LTI system is characterized by its impulse response 
+    \begin{align*}
+        h(t) = \delta(t) - 4e^{-3t}u(t).
+    \end{align*}
+    Determine if it is a minimum phase system.
+\end{example}
+\begin{solution}
+    \begin{align*}
+        H(s) = \mathcal{L}[h(t)] &= \mathcal{L}[\delta(t)] - 4 \mathcal{L}[e^{-3t}u(t)] \\ 
+        &= 1 - \frac{4}{s+3} = \frac{s-1}{s+3}.
+    \end{align*}
+    From above, there is a pole $p=-3$ and a zero $z=1$. While the forward system may be stable for $\Re(p)<0$, the inverse is not since 
+    $\Re(z)>0$. Therefore, the LTI system is not a minimum phase system.
+\end{solution}
+
+\section{System Response of Second-Order LCCDEs}
+Consider second-order LCCDEs of the form 
+\begin{align}
+    \frac{d^2y(t)}{dt^2} + a_1\frac{dy(t)}{dt} + a_2y(t) = b_1\frac{dx(t)}{dt} + b_2x(t).
+\end{align}
+Setting initial conditions to zero such that the system is LTI, the transfer function is given by 
+\begin{align}
+    s^2Y(s) + a_1sY(s) + a_2Y(s) &= b_1sX(s) + b_2X(s) \nonumber \\
+    \Longrightarrow H(s) = \frac{Y(s)}{X(s)} &= \frac{b_1s+b_2}{s^2+a_1s+a_2s}.
+\end{align}
+Define the following system attributes
+\begin{itemize}
+    \item Attenuation coefficient [Np/s]: $\alpha = \dfrac{a_1}{2}$
+    \item Undamped natural frequency [rad/s]: $\omega_0 = \sqrt{a_2}$
+    \item Damping coefficient [unitless]: $\xi = \dfrac{\alpha}{\omega_0} = \dfrac{a_1}{2\sqrt{a_2}}$
+\end{itemize}
+such that the solutions to the \emph{characteristic equation}
+\begin{align}
+    s^2 + a_1s + a_2 &= 0
+\end{align}
+can be written as 
+\begin{align}
+    s = \frac{-a_1\pm\sqrt{a_1^2-4a_2}}{2} = -\alpha \pm \sqrt{\alpha^2-\omega_0^2} = \omega_0\left[-\xi\pm\sqrt{\xi^2-1}\right].
+\end{align}
+In fact, the solutions to the characteristic equation are the poles $p_1, p_2$ of the system. Since $\Re(p_k) < 0$ must be true for a system to be BIBO stable, 
+it also holds from above that $a_1>0$ and $a_2>0$ must be true for the system to be BIBO stable.
+\\ \\
+Depending on the damping coefficient $\xi$, there are five possible system responses for an input impulse or step signal:
+\begin{itemize}
+    \item $\xi > 1$: overdamped response
+    \item $\xi = 1$: critically damped response
+    \item $0 < \xi < 1$: underdamped response
+    \item $\xi = 0$: undamped response
+    \item $\xi < 0$: unstable response
+\end{itemize}
+\begin{figure}[!hbt]
+    \caption{Second-order system response on the $s$-plane.}
+    \label{s_plane_second}
+    \centering
+    \begin{tikzpicture}[scale=1.2]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-3, ymax=3, ymajorticks=false, ylabel={$\Im(s)$},
+            xmin=-3, xmax=3, xmajorticks=false, xlabel={$\Re(s)$},
+            domain=-3:3,samples=200,
+            width=8cm, height=6cm]
+            \begin{scope}[on background layer={color=orange!10}]
+                \draw[fill=orange!30] (-3,3) -- (-0.1,3) -- (-0.1,0.1) -- (-3,0.1);
+                \draw[fill=orange!30] (-3,-0.1) -- (-0.1,-0.1) -- (-0.1,-3) -- (-3,-3);
+            \end{scope}
+            \draw (-1.5,2) node[text=red]{\scriptsize underdamped};
+            \draw (-1.5,-2) node[text=red]{\scriptsize underdamped};
+            \begin{scope}[on background layer={color=green!50}]
+                \draw[fill=green!50] (-3,0.1) -- (-0.1,0.1) -- (-0.1,-0.1) -- (-3,-0.1);
+            \end{scope}
+            \draw (-1.5,0.2) node[text=darkgreen]{\scriptsize overdamped or};
+            \draw (-1.5,-0.2) node[text=darkgreen]{\scriptsize critically damped};
+            \begin{scope}[on background layer={color=blue!30}]
+                \draw[fill=blue!30] (-0.1,3) -- (0.1,3) -- (0.1,-3) -- (-0.1,-3);
+            \end{scope}
+            \draw (0.2,0) node[text=blue, rotate=90]{\scriptsize undamped};
+            \begin{scope}[on background layer={color=gray!20}]
+                \draw[fill=gray!20] (0.1,3) -- (3,3) -- (3,-3) -- (0.1,-3);
+            \end{scope}
+            \draw (1.5,2) node[text=black]{\scriptsize unstable};
+            \draw (1.5,-2) node[text=black]{\scriptsize unstable};
+        \end{axis}
+    \end{tikzpicture}
+\end{figure}
+We are particularly interested in the first three damping responses as they describe how a system response reaches \emph{steady-state}, or \emph{equilibrium}. That is, it describes 
+how fast and in what manner a system approaches the final value of the system response. 
+\\ \\
+As seen in Figure \ref{damping}, overdamped responses slowly approach steady-state, whereas underdamped responses quickly but oscillatorily approach steady-state at a \emph{damped natural frequency} of 
+\begin{align}
+    \omega_d = \sqrt{\omega_0^2-\alpha^2} = \omega\sqrt{1-\xi^2}.
+\end{align}
+Critically damped responses represent the quickest non-oscillatory path to steady-state. 
+\begin{figure}
+    \caption{Damping responses.}
+    \label{damping}
+    \centering
+    \resizebox{0.65\textwidth}{!}{%
+        \includestandalone[mode=buildnew, width=\textwidth]{damping}
+    }
+\end{figure}
+
+\begin{example}
+    An LTI system is described by the LCCDE 
+    \begin{align*}
+        \frac{d^2y(t)}{dt^2} + B\frac{dy(t)}{dt} + 25y(t) = \frac{dx(t)}{dt} + 23x(t).
+    \end{align*}
+    Compute the range of values for constant $B$ such that the system impulse response is:
+    \begin{enumerate}[(a)]
+        \item overdamped
+        \item critically damped
+        \item underdamped
+    \end{enumerate}
+    Then let $B=26$ and compute the impulse and step responses of the system.
+\end{example}
+\begin{solution}
+    The characteristic equation of the LCCDE is 
+    \begin{align*}
+        s^2 + Bs + 25 = 0.
+    \end{align*}
+    The damping coefficient is then given by 
+    \begin{align*}
+        \xi = \frac{a_1}{2\sqrt{a_2}} = \frac{B}{2\sqrt{25}} = \frac{B}{10}.
+    \end{align*}
+    It then follows that
+    \begin{itemize}
+        \item overdamped: $\xi > 1 \Longrightarrow B > 10$
+        \item critically damped: $\xi = 1 \Longrightarrow B = 10$
+        \item underdamped: $0<\xi<1 \Longrightarrow 0<B<10$
+    \end{itemize}
+    Letting $B=26$ and setting initial conditions to zero, the Laplace transform of the LCCDE is
+    \begin{align*}
+        Y(s)[s^2+26s+25] &= X(s)[s+23].
+    \end{align*}
+    The transfer function is given by
+    \begin{align*}
+        H(s) &= \frac{Y(s)}{X(s)} = \frac{s+23}{s^2+26s+25} = \frac{s+23}{(s+1)(s+25)} = \frac{A_1}{s+1} + \frac{A_2}{s+25}, \\
+        A_1 &= (s+1)H(s)\big|_{s=-1} = 22/24 = 11/12, \\
+        A_2 &= (s+25)H(s)\big|_{s=-25} = (-2)/(-24) = 1/12.
+    \end{align*}
+    Therefore the impulse response is 
+    \begin{align*}
+        h(t) = \mathcal{L}^{-1}[H(s)] = \frac{1}{12}\left[11e^{-t}u(t) + e^{-25t}u(t)\right].
+    \end{align*}
+    The step response can be calculated from 
+    \begin{align*}
+        y_{step}(t) &= \int_{-\infty}^{t} h(\tau) \,d\tau \iff Y_{step}(s) = \frac{1}{s}H(s). \\[0.5cm]
+        Y_{step}(s) &= \frac{s+23}{s(s+1)(s+25)} = \frac{A_0}{s} + \frac{A_1}{s+1} + \frac{A_2}{s+25}, \\
+        A_0 &= sY_{step}(s)\big|_{s=0} = 23/25 \\
+        A_1 &= (s+1)Y_{step}(s)\big|_{s=-1} = 22/(-24) = -11/12, \\
+        A_2 &= (s+25)Y_{step}(s)\big|_{s=-25} = (-2)/600 = -1/300. \\[0.5cm]
+        y_{step}(t) &= \mathcal{L}^{-1}[Y_{step}(s)] = \frac{23}{25}u(t) - \frac{11}{12}e^{-t}u(t) - \frac{1}{300}e^{-25t}u(t).
+    \end{align*}
+\end{solution}
+
+\section{System Response Partitions}
+Given some system response $y(t)$, there are three different ways to partition the response, with each partition describing a particular 
+characteristic of the system response:
+\begin{enumerate}
+    \item Zero-state / zero-input partition
+    \item Natural / forced partition
+    \item Transient / steady-state partition
+\end{enumerate}
+\textbf{\underline{Type 1: Zero-state / zero-input partition.}} \\[0.25cm]
+As the names imply,
+\begin{itemize}
+    \item the \emph{zero-state response} (ZSR) is the system response when there are no initial conditions, and
+    \item the \emph{zero-input response} (ZIR) is the system response when there is no input signal (but there are initial conditions).
+\end{itemize}
+It follows that 
+\begin{align}
+    y(t) = y_{ZSR}(t) + y_{ZIR}(t).
+\end{align}
+Any exponentials $e^{-\lambda_k t}$ in the zero-input response $y_{ZIR}(t)$ are referred to as the \emph{characteristic modes} (also called \emph{natural modes}, or simply modes) 
+of the system. The zero-input response is comprised of only natural modes, whereas the zero-state response has a mix of natural modes and ``forced'' modes from the input excitation function $x(t)$.
+\\ \\ \noindent
+\textbf{\underline{Type 2: Natural / forced partition.}} \\[0.25cm]
+On the discussion of natural modes and forced modes,
+\begin{itemize}
+    \item the \emph{natural response} is the part of the system response with only natural modes which describe the natural identity of the system, and
+    \item the \emph{forced response} is the part of the system response with only forced modes which mimic the character of the excitation function $x(t)$.
+\end{itemize}
+It follows that 
+\begin{align}
+    y(t) = y_{nat}(t) + y_{forc}(t).
+\end{align}
+The natural response is closely related to the zero-input response; since the zero-input response is composed exclusively of modes, we can use it to identify the modes, 
+then collect all terms with those modes to find the natural response. Naturally, the characteristic modes can also be determined by finding the solutions $s$ of the characteristic equation 
+and calculating $e^{-st}$.
+\\ \\ \noindent
+\textbf{\underline{Type 3: Transient / steady-state partition.}} \\[0.25cm]
+The end behavior of the terms of the system response can be analyzed such that
+\begin{itemize}
+    \item the \emph{transient response} is the part of the system response that decays to zero as $t\to\infty$, and
+    \item the \emph{steady-state response} is the part of the system response that remains after the transient response goes to zero.
+\end{itemize}
+It follows that 
+\begin{align}
+    y(t) = y_{tr}(t) + y_{ss}(t).
+\end{align}
+We have seen this behavior before with the damping response of a stable LTI system described by a second-order LCCDE. The curves eventually approach a final value $K$, with 
+the approach rate and shape dependent on the damping coefficient $\xi$. The damping response actually can be written as a sum of transient terms and the steady-state response $K\cdot u(t)$.
+\\ \\
+Again, notice here that we reserve the term ``LTI system'' for systems that have zero initial conditions, in addition to the superposition principle condition. Partitions can be applied to any LTI or ``LTI-like'' system response, 
+whether or not the initial conditions are zero.
+\begin{example}
+    Suppose a system can be characterized by the LCCDE 
+    \begin{align*}
+        \frac{d^2y(t)}{dt^2} + 5\frac{dy(t)}{dt} + 4y(t) &= \frac{dx(t)}{dt} + 3x(t), \\ 
+        y(0) = y'(0) &= 1, \\ 
+        x(t) &= u(t).
+    \end{align*}
+    Identify all six partitioned responses of the system response.
+\end{example}
+\begin{solution}
+    Taking the Laplace transform of the LCCDE, it follows that 
+    \begin{align*}
+        \mathcal{L}\left[\frac{d^2y(t)}{dt^2} + 3\frac{dy(t)}{dt} + 2y(t)\right] &= \mathcal{L}\left[\frac{dx(t)}{dt} + 3x(t)\right] \\
+        [s^2Y(s)-s-1] + 3[sY(s)-1] + 2Y(s) &= [sX(s)-0] + 3X(s) \\
+        Y(s)[s^2+3s+2] - (s+4) &= X(s)[s+3].
+    \end{align*}
+    Since $X(s) = \mathcal{L}[u(t)] = \dfrac{1}{s}$, it follows that
+    \begin{align*}
+        Y(s)[s^2+3s+2] - (s+4) &= \frac{s+3}{s} \\
+        Y(s)[(s+1)(s+2)] &= \frac{s^2+5s+3}{s} \\
+        \Longrightarrow Y(s) &= \frac{s^2+5s+3}{s(s+1)(s+2)} = \frac{A_1}{s} + \frac{A_2}{s+1} + \frac{A_3}{s+2}.
+    \end{align*}
+    After partial fraction decomposition, the inverse Laplace transform gives 
+    \begin{align*}
+        y(t) = 1.5u(t) + e^{-t}u(t) -1.5e^{-2t}u(t).
+    \end{align*}
+    To find the modes, first solve for $y_{ZIR}(t)$. We can do this by taking the Laplace transform of the LCCDE and setting $X(s)=0$.
+    \begin{align*}
+        Y(s)[s^2+3s+2] - (s+4) &= X(s)[s+3] = 0 \\
+        \Longrightarrow Y_{ZIR}(s) &= \frac{s+4}{s^2+3s+2} = \frac{s+4}{(s+1)(s+2)} = \frac{3}{s+1} - \frac{2}{s+2}.
+    \end{align*}
+    Then it follows that 
+    \begin{align*}
+        y_{ZIR}(t) &= 3e^{-t}u(t) - 2e^{-2t}u(t), \\
+        y_{ZSR}(t) &= y(t) - y_{ZIR}(t) = 1.5u(t) - 2e^{-t}u(t) + 0.5e^{-2t}u(t).
+    \end{align*}
+    From $y_{ZIR}(t)$, the characteristic modes are given by exponentials $\{e^{-t}, e^{-2t}\}$. Therefore, by grouping natural modes together and forced modes together, 
+    \begin{align*}
+        y_{nat}(t) &= e^{-t}u(t) - 1.5e^{-2t}u(t), \\
+        y_{forc}(t) &= 1.5u(t).
+    \end{align*}
+    Lastly, we can group decaying terms together and the remaining terms together such that 
+    \begin{align*}
+        y_{tr} &= e^{-t}u(t) - 1.5e^{-2t}u(t), \\
+        y_{ss} &= 1.5u(t).
+    \end{align*}
+\end{solution}
+
+\section{$s$--Domain Circuit Analysis}
+Just as differential equations can be solved in the $s$-domain, the systems represented by differential equations can be solved in the $s$-domain. For instance, 
+an electric circuit can be transformed to an $s$-domain equivalent and solved using algebraic equations, with the $s$-domain electrical components referred to  
+as impedances. The equivalent $s$-domain models can be seen in Table \ref{s_circ}.
+\\ \\
+While only Thévenin equivalent models with voltage sources are shown in Table \ref{s_circ}, Norton equivalent models with current sources can be drawn instead, though the relation between the Thévenin equivalents 
+and the steady-state equivalents are easier to visualize. \\ \\
+\newpage
+\begin{table}[!hbt]
+    \caption{Circuit models for electrical components in the $s$-domain.}
+    \label{s_circ}
+    \centering
+    \begin{tabular}{ |c|c|c|c| }
+        \hline
+        \shortstack{Electrical \\ Component} & \shortstack{Time \\ Domain} & \shortstack{$s$-Domain \\ with Initial Conditions} & \shortstack{$s$-Domain \\ at Steady State} \\
+        \hline
+        & & & \\
+        Resistor &
+        \adjustbox{valign=m}{
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw (0,0) to [R=$R$, f=$i_R$, v=$v_R$, voltage shift = 1.2] (0,-3); 
+        \end{circuitikz}} & 
+        \adjustbox{valign=m}{
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw (0,0) to [R=$R$, f=$I_R$, v=$V_R$, voltage shift = 1.2] (0,-3); 
+        \end{circuitikz}} & 
+        \adjustbox{valign=m}{
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw (0,0) to [R=$R$, f=$I_R$, v=$V_R$, voltage shift = 1.2] (0,-3); 
+        \end{circuitikz}}\\[1.5cm]
+        \hline
+        & & & \\
+        Capacitor & 
+        \adjustbox{valign=m}{
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw (0,0) to [C=$C$, f=$i_C(t)$, v=$v_C(t)$, voltage shift=1.2] (0,-3); 
+        \end{circuitikz}} &
+        \adjustbox{valign=m}{
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw (0,0) to [C=$\dfrac{1}{sC}$] (0,-1); 
+            \draw (0,-1) to [short, f=$I_C$] (0,-1.5);
+            \draw (0,-1.5) to [V, l^=$\dfrac{v_c(0^-)}{s}$] (0,-3); 
+            \draw (-1,0) to [open,v=$V_C$] (-1,-3);
+        \end{circuitikz}} &
+        \adjustbox{valign=m}{
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw (0,0) to [C=$\dfrac{1}{sC}$, f=$I_C$, v=$V_C$, voltage shift=1.2] (0,-3); 
+        \end{circuitikz}} \\[1.5cm]
+        \hline
+        & & & \\
+        Inductor & 
+        \adjustbox{valign=m}{
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw (0,0) to [L=$L$, f=$i_L(t)$, v=$v_L(t)$, voltage shift=1.2] (0,-3); 
+        \end{circuitikz}} &
+        \adjustbox{valign=m}{
+        \begin{circuitikz}[american voltages]
+            \draw (0,0) to [L=$sL$, f=$I_L$] (0,-1.5); 
+            \draw (0,-3) to [V, l_=$Li_L(0^-)$] (0,-1.5); 
+            \draw (-1,0) to [open,v=$V_L$] (-1,-3);
+        \end{circuitikz}} &
+        \adjustbox{valign=m}{
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw (0,0) to [L=$sL$, f=$I_L$, v=$V_L$, voltage shift=1.2] (0,-3); 
+        \end{circuitikz}} \\[1.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+Recall that the unit step function $u(t)$ can be treated as an ``on switch'', where the signal being multiplied gets turned on at time $t=0$. 
+Similarly here, circuit switches can be represented using signals multiplied by $u(t)$, as seen in Figure \ref{switch}. Because of how switches operate, 
+here we see that the initial condition is zero.
+\begin{figure}[!hbt]
+    \caption{Equivalent signal representation of switches.}
+    \label{switch}
+    \centering
+    \begin{circuitikz}[american voltages,raised voltages]
+        \draw (0,0) to [V, l_=$v_{in}(t)$] (0,-2); 
+        \draw (0,-2) to [short] (3,-2);
+        \draw (3,0) to [R=$R$] (3,-2);
+        \draw (0,0) to [closing switch] (3,0);
+        \draw (1.5,0.5) node {$t=0$};
+    \end{circuitikz}
+    \begin{tikzpicture}
+        \node at (0,0) [double arrow, draw=white, left color=white, right color=white,
+      minimum width = 15pt, double arrow head extend=5pt,
+      minimum height=12mm] {};
+    \end{tikzpicture}
+    \begin{circuitikz}[american voltages,raised voltages]
+        \draw (0,0) to [V, l_=$v_{in}(t)u(t)$] (0,-2); 
+        \draw (0,-2) to [short] (3,-2);
+        \draw (3,0) to [R=$R$] (3,-2);
+        \draw (0,0) to [short] (3,0);
+    \end{circuitikz}
+\end{figure}
+\newpage
+\begin{example}
+    Find the output response $v_{out}(t)$ of the following circuit, given that the switch closes at time $t=0$ and $v_1(0^-)= 20\,[V]$. \\
+    \resizebox{\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+        \draw (0,0) to [V, l_={$35\,[V]$}] (0,-2); 
+        \draw (0,0) to [closing switch] (3,0);
+        \draw (1.5,0.5) node {$t=0$};
+        \draw (3,0) to [R={$1\,[\Omega]$}] (4.5,0);
+        \draw (4.5,0) to [C={$1\,[F]$},v=$v_1(t)$] (8,0);
+        \draw (8,0) to [C={$2\,[F]$}] (8,-2);
+        \draw (8,0) to [short, -*] (12.5,0);
+        \draw (10,0) to [R={$0.5\,[\Omega]$}] (10,-2);
+        \draw (0,-2) to [short, -*] (12.5,-2);
+        \draw (12.5,0) to [open, v^>={\large $v_{out}(t)$}] (12.5,-2);
+    \end{circuitikz}}
+\end{example}
+\begin{solution}
+    Using the equivalent model for switches, first we redraw the circuit as
+    \begin{center}
+        \resizebox{0.8\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+            \draw (2,0) to [V, l_={$35u(t)\,[V]$}] (2,-2); 
+            \draw (2,0) to [R={$1\,[\Omega]$}] (4.5,0);
+            \draw (4.5,0) to [C={$1\,[F]$},v=$v_1(t)$] (8,0);
+            \draw (8,0) to [C={$2\,[F]$}] (8,-2);
+            \draw (8,0) to [short, -*] (12.5,0);
+            \draw (10,0) to [R={$0.5\,[\Omega]$}] (10,-2);
+            \draw (2,-2) to [short, -*] (12.5,-2);
+            \draw (12.5,0) to [open, v^>={\large $v_{out}(t)$}] (12.5,-2);
+        \end{circuitikz}}
+    \end{center}
+    Now we can transform the circuit into an $s$-domain equivalent model:
+    \begin{center}
+        \resizebox{0.8\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+            \draw (2,0) to [V, l_={$\dfrac{35}{s}$}] (2,-2); 
+            \draw (2,0) to [R={$1$}] (4.5,0);
+            \draw (4.5,0) to [C={$1/s$}] (6,0);
+            \draw (6,0) to [V, l^={$20/s$}] (8,0);
+            \draw (8,0) to [C={$1/(2s)$}] (8,-2);
+            \draw (8,0) to [short, -*] (12.5,0);
+            \draw (10,0) to [R={$0.5$}] (10,-2);
+            \draw (2,-2) to [short, -*] (12.5,-2);
+            \draw (12.5,0) to [open, v^>={\large $V_{out}(s)$}] (12.5,-2);
+        \end{circuitikz}}
+    \end{center}
+    We can algebraically combine the two voltage sources together, the two series impedances together, and the two parallel impedances together:
+    \begin{center}
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw (0,0) to [V, l_={$\dfrac{15}{s}$}] (0,-2); 
+            \draw (0,0) to [european resistor, l={$Z_1=1+1/s$}] (3,0);
+            \draw (3,0) to [european resistor, l={$Z_2=\dfrac{0.5}{s+1}$}] (3,-2);
+            \draw (3,0) to [short, -*] (6.5,0);
+            \draw (0,-2) to [short, -*] (6.5,-2);
+            \draw (6.5,0) to [open, v^>={\large $V_{out}(s)$}] (6.5,-2);
+        \end{circuitikz}
+    \end{center}
+    From here, the $s$-domain output response can be calculated using the voltage divider:
+    \begin{align*}
+        V_{out}(s) = \frac{15}{s}\cdot\left[\frac{Z_2}{Z_1+Z_2}\right] = \frac{7.5}{s^2+2.5s+1} = \frac{5}{s+0.5} - \frac{5}{s+2}.
+    \end{align*}
+    Lastly, taking the solution to the time domain, we get
+    \begin{align*}
+        v_{out}(t) = 5e^{-0.5t}u(t) - 5e^{-2t}u(t) \,[V].
+    \end{align*}
+\end{solution}
+
+\begin{example}
+    Given the plot of input excitation $v_s(t)$, find the conditional transfer function $H_C(s)=V_{out}(s)/V_s(s)$ of the circuit below for time $t\geq 0$. Then find $v_{out}(t)$ for $t\geq 0$. 
+    Note that an ellipsis indicates a continuing pattern on the corresponding end. \\ \\
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (\x < 0) * (1) + and(\x >= 0, \x < 1) * (0) + and(\x >= 1, \x <= 2) * (1) + (\x > 2) * (0); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=2, ytick={0,1}, ylabel={$v_s(t)$},
+            xmin=-2, xmax=3, xtick={0,...,3}, xlabel={$t$ [s]},
+            domain=-1.3:3,samples=200,
+            width=7cm, height=4cm]
+        \addplot [blue,thick]{func(x)};
+        \addplot [blue!50,only marks,mark options={scale=0.5}] (-1.5,1);
+        \addplot [blue!50,only marks,mark options={scale=0.5}] (-1.65,1);
+        \addplot [blue!50,only marks,mark options={scale=0.5}] (-1.8,1);
+        \end{axis}
+    \end{tikzpicture} \\ \\
+    \resizebox{0.85\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+        \draw (0,0) to [V, l_={\large $v_s(t)$}] (0,-2); 
+        \draw (0,0) to [L={$1\,[H]$}] (3,0);
+        \draw (3,0) to [R={$1\,[\Omega]$}] (6,0);
+        \draw (6,0) to [short, -*] (9,0);
+        \draw (0,-2) to [short, -*] (9,-2);
+        \draw (3,0) to [R={$1\,[\Omega]$}] (3,-2);
+        \draw (6,0) to [C={$1\,[F]$}] (6,-2);
+        \draw (9,0) to [open, v^>={\large $v_{out}(t)$}] (9,-2);
+    \end{circuitikz}}
+\end{example}
+\begin{solution}
+    First, find the initial conditions at time $t=0^-$. Since $v_s(t)=1$ for $t<0$, we can assume the circuit is at steady-state at $t=0^-$. 
+    The steady-state circuit for $t < 0$ is given by 
+    \begin{center}
+        \resizebox{0.5\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+            \draw (0,0) to [V, l_={$1\,[V]$}] (0,-2); 
+            \draw (0,0) to [short, f={$i_L(0^-)$}] (3,0);
+            \draw (3,0) to [R={$1\,[\Omega]$}, -*] (6,0);
+            \draw (0,-2) to [short, -*] (6,-2);
+            \draw (3,0) to [R={$1\,[\Omega]$}] (3,-2);
+            \draw (6,0) to [open, v^>={\large $v_c(0^-)$}] (6,-2);
+        \end{circuitikz}}
+    \end{center}
+    Here we see that $i_L(0^-) = 1\,[V]/1\,[\Omega] = 1\,[A]$ and $v_c(0^-) = 1\,[V]$. 
+    Using these initial conditions, we can set up an $s$-domain equivalent of the circuit for $t\geq 0$.
+    \begin{center}
+        \resizebox{0.7\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+            \draw (0,0) to [V, l_={\large $V_s(s)$}] (0,-3); 
+            \draw (0,0) to [L={$s$}] (1.5,0);
+            \draw (3,0) to [V, l_={$1$}] (1.5,0);
+            \draw (3,0) to [R={$1$}] (6,0);
+            \draw (6,0) to [short, -*] (9,0);
+            \draw (0,-3) to [short, -*] (9,-3);
+            \draw (3,0) to [R={$1$}] (3,-3);
+            \draw (6,0) to [C={$1/s$}] (6,-1.5);
+            \draw (6,-1.5) to [V, l^={$1/s$}] (6,-3);
+            \draw (9,0) to [open, v^>={\large $V_{out}(s)$}] (9,-3);
+            \draw[-latex, blue] (1.25,-1) arc(110:-110:6mm) node[blue, midway, left, font=\large] {$I_1$};
+            \draw[-latex, blue] (4.25,-1) arc(110:-110:6mm) node[blue, midway, left, font=\large] {$I_2$};
+        \end{circuitikz}}
+    \end{center}
+    We can use the mesh current method to solve the circuit. 
+    \begin{align*}
+        -V_s(s) + sI_1 - 1 + 1\cdot(I_1 - I_2) &= 0 \Longrightarrow (s+1)I_1 - I_2 = V_s(s) + 1 \\
+        1\cdot(I_2 - I_1) + I_2 (1 + 1/s) + 1/s &= 0 \Longrightarrow -sI_1 + (2s + 1)I_2 = -1
+    \end{align*}
+    In matrix form, the mesh current equations can be written as 
+    \begin{align*}
+        \begin{bmatrix}
+            s+1 & -1 \\
+            -s & 2s+1
+        \end{bmatrix}
+        \begin{bmatrix}
+            I_1 \\
+            I_2
+        \end{bmatrix} = 
+        \begin{bmatrix}
+            V_s(s)+1 \\
+            -1
+        \end{bmatrix}.
+    \end{align*}
+    From here, we can use Cramer's rule to solve for $I_2$ which can then be used to solve for $V_{out}(s)$.
+    \begin{align*}
+        \Delta &= 
+        \begin{vmatrix}
+            s+1 & -1 \\
+            -s & 2s+1
+        \end{vmatrix} 
+        = 2s^2 + 2s + 1 \\[1pt]
+        \Delta_2 &= 
+        \begin{vmatrix}
+            s+1 & V_s(s)+1 \\
+            -s & -1
+        \end{vmatrix} 
+        = sV_s(s) - 1 \\[1pt]
+        I_2 &= \frac{\Delta_2}{\Delta} = \frac{sV_s(s)-1}{2s^2+2s+1}
+    \end{align*}
+    The conditional transfer function can now be solved.
+    \begin{align*}
+        V_{out}(s) &= I_2\cdot \frac{1}{s} + \frac{1}{s} = \frac{sV_s(s)-1}{s(2s^2+2s+1)} + \frac{1}{s} = \frac{sV_s(s)+2s^2+2s}{s(2s^2+2s+1)} \\
+        \Longrightarrow H_C(s) &= [V_{out}(s)\big|_{V_s(s)=1} = \frac{2s+3}{2s^2+2s+1} = \frac{s+1.5}{s^2+s+0.5}
+    \end{align*}
+    With the Laplace transform of input $v_s(t)$ for $t\geq 0$ given by 
+    \begin{align*}
+        V_s(s)=\mathcal{L}[v_s(t)]=\mathcal{L}[u(t-1)-u(t-2)]=\frac{1}{s}(e^{-s}-e^{-2s}),
+    \end{align*}
+    the equation for $V_{out}(s)$ is given by
+    \begin{align*}
+        V_{out}(s) = H_C(s)V_s(s) &= (e^{-s}-e^{-2s})\left[\frac{s+1.5}{s(s^2+s+0.5)}\right] \\ 
+        &= (e^{-s}-e^{-2s})\left[\frac{3}{s} + \frac{-1.5-j0.5}{s+0.5+j0.5} + \frac{-1.5+j0.5}{s+0.5-j0.5}\right] \\
+        &= (e^{-s}-e^{-2s})\underbrace{\left[\frac{3}{s} + \frac{1.581e^{-j2.82}}{s+0.5+j0.5} + \frac{1.581e^{+j2.82}}{s+0.5-j0.5}\right]}_{G(s)}.
+    \end{align*}
+    The inverse Laplace transform of $G(s)$ is 
+    \begin{align*}
+        g(t) = 3u(t) + 3.162e^{-0.5t}\cos(0.5t+2.82\text{ [rad]})u(t)
+    \end{align*}
+    The output voltage $v_{out}(t)$ for $t\geq 0$ (with phase expressed in radians) is then 
+    \begin{align*}
+        v_{out}(t) &= \mathcal{L}^{-1}[(e^{-s}-e^{-2s})G(s)] = g(t-1) - g(t-2) \\ 
+        &= 3u(t-1) + 3.162e^{-0.5(t-1)}\cos(0.5(t-1)+2.82)u(t-1) \\ 
+        &\qquad - 3u(t-2) - 3.162e^{-0.5(t-2)}\cos(0.5(t-2)+2.82)u(t-2).
+    \end{align*}
+\end{solution}
+
+\pagebreak
+\section{$s$--Domain Block Diagrams}
+Similar to the interconnection of LTI systems in the time domain, LTI systems can be combined in the $s$-domain. When LTI systems are connected in series, the interconnection has 
+the following equivalence:
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$X(s)$};
+        \node [] (output) at (+6,0){$Y(s)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys1) at (0,0){$H_1(s)$};
+        \node [draw,
+            fill=red!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys2) at (3,0){$H_2(s)$};
+        \draw [-latex, line width=1.5pt] (input) -- (sys1);
+        \draw [-latex, line width=1.5pt] (sys1) -- (sys2);
+        \draw [-latex, line width=1.5pt] (sys2) -- (output);
+    \end{tikzpicture} \\[0.25cm] 
+    \begin{tikzpicture}
+        \node at (0,0) [double arrow, draw=black, top color=red, bottom color=blue,
+      minimum width = 15pt, double arrow head extend=5pt,
+      minimum height=12mm,
+      rotate=90] {};
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$X(s)$};
+        \node [] (output) at (+6,0){$Y(s)$};
+        \node [draw,
+            fill=blue!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (1.5,0){$H_1(s)H_2(s)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture} \\
+\end{center}
+When LTI systems are connected in parallel, the interconnection has the following equivalence:
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$X(s)$};
+        \node [] (output) at (+6,0){$Y(s)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys1) at (1.5,1){$H_1(s)$};
+        \node [draw,
+            fill=orange!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys2) at (1.5,-1){$H_2(s)$};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            fill=red!30
+        ] (sum) at (4,0){\large +};
+        \draw [-, line width=1.5pt] (input) -- (-1,0);
+        \draw [-, line width=1.5pt] (-1,-1) -- (-1,1);
+        \draw [-latex, line width=1.5pt] (-1,1) -- (sys1);
+        \draw [-latex, line width=1.5pt] (-1,-1) -- (sys2);
+        \draw [-, line width=1.5pt] (sys1) -- (4,1);
+        \draw [-, line width=1.5pt] (sys2) -- (4,-1);
+        \draw [-latex, line width=1.5pt] (4,1) -- (sum);
+        \draw [-latex, line width=1.5pt] (4,-1) -- (sum);
+        \draw [-latex, line width=1.5pt] (sum) -- (output);
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node at (0,0) [double arrow, draw=black, top color=red, bottom color=blue,
+      minimum width = 15pt, double arrow head extend=5pt,
+      minimum height=12mm,
+      rotate=90] {};
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$X(s)$};
+        \node [] (output) at (+6,0){$Y(s)$};
+        \node [draw,
+            fill=blue!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (1.5,0){$H_1(s)+H_2(s)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+A minus sign adjacent to an arrowhead at a summation node indicates that the corresponding addend signal is multiplied by $-1$ before being summed. 
+When an interconnection of LTI systems implement \emph{negative feedback}, it has the following equivalence:
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,1){$X(s)$};
+        \node [] (output) at (+6,1){$Y(s)$};
+        \node [draw,
+            fill=green!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys1) at (1.5,1){$G(s)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys2) at (1.5,-1){$H(s)$};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            fill=red!30
+        ] (sum) at (-1,1){\large +};
+        \node [] at (-0.5,0.35){\Huge -};
+        \node [] at (+5,-0.75){\shortstack{Feedback \\ loop}};
+        \draw [-latex, line width=1.5pt] (input) -- (sum);
+        \draw [-latex, line width=1.5pt] (-1,-1) -- (sum);
+        \draw [-latex, line width=1.5pt] (sum) -- (sys1);
+        \draw [-, line width=1.5pt] (4,1) -- (4,-1);
+        \draw [-, line width=1.5pt] (sys2) -- (-1,-1);
+        \draw [-, line width=1.5pt] (sys1) -- (4,1);
+        \draw [-latex, line width=1.5pt] (4,-1) -- (sys2);
+        \draw [-latex, line width=1.5pt] (sys1) -- (output);
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node at (0,0) [double arrow, draw=black, top color=red, bottom color=blue,
+      minimum width = 15pt, double arrow head extend=5pt,
+      minimum height=12mm,
+      rotate=90] {};
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$X(s)$};
+        \node [] (output) at (+6,0){$Y(s)$};
+        \node [draw,
+            fill=blue!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (1.5,0){$\dfrac{G(s)}{1+G(s)H(s)}$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+\emph{Feedback} takes a sample of the output signal and feeds it back to the input signal. A system without feedback is called an \emph{open-loop system}, whereas a system that utilizes 
+feedback to form a \emph{feedback loop} is called a \emph{closed-loop system}.
+\\ \\
+A closed-loop system has \emph{positive feedback} if the strength of the input signal is increased as a result; otherwise, a closed-loop system is said to have \emph{negative feedback} if the strength 
+of the input signal is decreased. 
+\\ \\
+An interconnection of LTI systems with feedback loops can be simplified to an equivalent single-transfer-function model.
+\begin{enumerate}
+    \item Condense any systems in parallel or series first.
+    \item Count the number of summation nodes left. The number of equations needed is the number of summation nodes plus one, with the one representing the output.
+    \item Define an intermediary signal $E_n(s)$ after each summation node $n$.
+    \item Starting from the output signal $Y(s)$, write an equation for the output. Then working backwards from $Y(s)$, write equations for each summation node.
+    \item Begin substituting and rearranging equations until a single equation in terms of only $X(s)$ and $Y(s)$ is left.
+\end{enumerate}
+
+\begin{example}
+    Find an equivalent transfer function for the following interconnection of LTI systems. \\ \\
+    \resizebox{0.95\textwidth}{!}{
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){\LARGE $X(s)$};
+        \node [] (output) at (+12,0){\LARGE $Y(s)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys1) at (3,0){\LARGE $\dfrac{10}{s+1}$};
+        \node [draw,
+            fill=orange!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys2) at (8,0){\LARGE $\dfrac{1}{s}$};
+        \node [draw,
+            fill=green!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys3) at (6,-2){\LARGE $2$};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            fill=red!30
+        ] (sum1) at (0,0){\Huge +};
+        \node [] at (0.65,-0.75){\Huge -};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            fill=red!30
+        ] (sum2) at (6,-4){\Huge +};
+        \node [] at (6.75,-4.65){\Huge -};
+        \draw [-latex, line width=1.5pt] (input) -- (sum1);
+        \draw [-latex, line width=1.5pt] (sum1) -- (sys1);
+        \draw [-latex, line width=1.5pt] (sys1) -- (sys2);
+        \draw [-latex, line width=1.5pt] (sys2) -- (output);
+        \draw [-latex, line width=1.5pt] (6,0) -- (sys3);
+        \draw [-latex, line width=1.5pt] (sys3) -- (sum2);
+        \draw [-, line width=1.5pt] (10,0) -- (10,-4);
+        \draw [-latex, line width=1.5pt] (10,-4) -- (sum2);
+        \draw [-, line width=1.5pt] (sum2) -- (0,-4);
+        \draw [-latex, line width=1.5pt] (0,-4) -- (sum1);
+    \end{tikzpicture}}
+\end{example}
+\begin{solution}
+    There are two summation nodes. We will need to define $E_1(s), E_2(s)$ and write three equations. \\ \\
+    \resizebox{0.65\textwidth}{!}{
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){\LARGE $X(s)$};
+        \node [] (output) at (+12,0){\LARGE $Y(s)$};
+        \node [] at (2,0.5){\LARGE $E_1(s)$};
+        \node [] at (4,-3.5){\LARGE $E_2(s)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys1) at (4,0){\LARGE $\dfrac{10}{s+1}$};
+        \node [draw,
+            fill=orange!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys2) at (8,0){\LARGE $\dfrac{1}{s}$};
+        \node [draw,
+            fill=green!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys3) at (6,-2){\LARGE $2$};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            fill=red!30
+        ] (sum1) at (0,0){\Huge +};
+        \node [] at (0.65,-0.75){\Huge -};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            fill=red!30
+        ] (sum2) at (6,-4){\Huge +};
+        \node [] at (6.75,-4.65){\Huge -};
+        \draw [-latex, line width=1.5pt] (input) -- (sum1);
+        \draw [-latex, line width=1.5pt] (sum1) -- (sys1);
+        \draw [-latex, line width=1.5pt] (sys1) -- (sys2);
+        \draw [-latex, line width=1.5pt] (sys2) -- (output);
+        \draw [-latex, line width=1.5pt] (6,0) -- (sys3);
+        \draw [-latex, line width=1.5pt] (sys3) -- (sum2);
+        \draw [-, line width=1.5pt] (10,0) -- (10,-4);
+        \draw [-latex, line width=1.5pt] (10,-4) -- (sum2);
+        \draw [-, line width=1.5pt] (sum2) -- (0,-4);
+        \draw [-latex, line width=1.5pt] (0,-4) -- (sum1);
+    \end{tikzpicture}} \\ \\
+    We can first write an equation for $Y(s)$, following the feedforward path at the top.
+    \begin{align*}
+        Y(s) &= E_1(s) \cdot \frac{10}{s+1} \cdot \frac{1}{s} \\ 
+        &= E_1(s) \left[\frac{10}{s(s+1)}\right]
+    \end{align*}
+    Now we write an equation for $E_2(s)$ using the rightmost branch.
+    \begin{align*}
+        E_2(s) &= E_1(s) \cdot \frac{10}{s+1} \cdot 2 - Y(s) \\
+        &= E_1(s) \cdot \frac{10}{s+1} \cdot 2 - E_1(s) \left[\frac{10}{s(s+1)}\right] \\ 
+        &= E_1(s) \cdot \frac{10}{s+1} \left[2-\frac{1}{s}\right] \\
+        &= E_1(s) \left[\frac{10(2s-1)}{s(s+1)}\right]
+    \end{align*}
+    Lastly, we write an equation for $E_1(s)$ using the leftmost branch.
+    \begin{align*}
+        E_1(s) &= X(s) - E_2(s) = X(s) - E_1(s) \left[\frac{10(2s-1)}{s(s+1)}\right] \\
+        \Longrightarrow X(s) &= E_1(s)\left[1 + \frac{10(2s-1)}{s(s+1)}\right]
+    \end{align*}
+    We can rearrange the equation for $Y(s)$ and substitute into $X(s)$.
+    \begin{align*}
+        E_1(s) &= Y(s)\left[\frac{s(s+1)}{10}\right] \\
+        \Longrightarrow X(s) &= E_1(s)\left[1 + \frac{10(2s-1)}{s(s+1)}\right] \\
+        &= Y(s)\left[\frac{s(s+1)}{10}\right]\left[1 + \frac{10(2s-1)}{s(s+1)}\right] \\
+        &= Y(s)\left[\frac{s(s+1)}{10} + (2s-1)\right] \\
+        &= Y(s)\left[\frac{s^2+21s-10}{10}\right]
+    \end{align*}
+    Then the equivalent transfer function $H(s)$ is  
+    \begin{align*}
+        H(s) = \frac{Y(s)}{X(s)} = \frac{10}{s^2+21s-10}.
+    \end{align*}
+\end{solution}
+\end{document}

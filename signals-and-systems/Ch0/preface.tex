@@ -1,0 +1,236 @@
+\documentclass{report}
+\input{../../preamble.tex}
+
+\begin{document}
+
+\chapter*{Preface}
+
+\section*{Complex Numbers}
+\subsection*{Definition of Complex Numbers}
+A complex number $z$ can be written in \emph{rectangular form} (also called \emph{Cartesian form})
+\begin{align}
+    z = x + jy,
+\end{align}
+where $x,y$ are real numbers and $j=\sqrt{-1}$ is the \emph{imaginary unit}. 
+\\ \\
+On its own, $x$ is called the \emph{real part} of $z$, and $y$ is called the \emph{imaginary part} of $z$. This can be written as 
+\begin{align}
+    \Re(z) &= x \\
+    \Im(z) &= y.
+\end{align}
+Alternatively, $z$ can be written in \emph{polar form}
+\begin{align}
+    z = |z|e^{j\theta} = |z|\phase{\theta},
+\end{align}
+where 
+\begin{align}
+    |z|=\sqrt{x^2+y^2}
+\end{align} 
+is the magnitude of $z$, and 
+\begin{align}
+    \theta = \arg(z) = \arg(x+jy) = \operatorname{atan2}(y,x) = 
+    \begin{cases}
+        \arctan\left(\dfrac{y}{x}\right), & x > 0 \\[0.25cm]
+        \arctan\left(\dfrac{y}{x}\right) \pm \pi, & x < 0 \\[0.25cm]
+        \operatorname{sgn}(y)\cdot\dfrac{\pi}{2}, & x = 0 \text{ and } y \neq 0 \\[0.25cm]
+        \text{undefined}, & x = 0 \text{ and } y = 0 
+    \end{cases}
+\end{align}
+is its phase angle, calculated from the four-quadrant inverse tangent function $\operatorname{atan2}$.
+\\ \\
+From \emph{Euler's formula},
+\begin{align}
+    e^{j\theta} = \cos\theta + j\sin\theta.
+\end{align}
+Combining Eqs. (1), (4), and (7), it also then follows that 
+\begin{align}
+    x &= |z| \cos(\theta), \\
+    y &= |z| \sin(\theta).
+\end{align} 
+\newpage
+\noindent Graphically, a complex number $z_0$ can be drawn on the \emph{complex plane} as a vector from the origin to point $(x_0,y_0)$, with $x=\Re(z)$ as the 
+horizontal axis and $y=\Im(z)$ as the vertical axis. 
+\begin{center}
+    \begin{tikzpicture}[scale=2.5]
+        \draw (0,-0.25) -- (0,1.25) node[above] {\large $y=\Im(z)$} (-0.25,0)--(1.25,0) node[right] {\large $x=\Re(z)$};
+        \draw [-latex, very thick, color=blue] (0,0) -- (1,1);
+        \draw [dashed] (1,0) node[below] {\large $x_0$} -- (1,1);
+        \draw[fill=black](1,1) circle (0.75 pt) node [above] {\large $z_0$};
+        \draw [dashed] (0,1) node[left] {\large $y_0$} -- (1,1);
+        \draw (0.35,0.6) node {\large $|z_0|$};
+        \path [->] (0.5,0) edge[bend right] node [left] {} ({0.5/sqrt(2)},{0.5/sqrt(2)});
+        \draw (0.65,0.25) node {\large $\theta_0$};
+    \end{tikzpicture}
+\end{center}
+
+\subsection*{Operations with Complex Numbers}
+The \emph{complex conjugate} of $z$ is given by 
+\begin{align}
+    z^* = (x+jy)^* = x-jy.
+\end{align}
+This is achieved by substituting $j\leftarrow (-j)$ and can be written as 
+\begin{align}
+    z^* = \big[z\big|_{j\leftarrow (-j)} = \big[x+jy\big|_{j\leftarrow (-j)} = x-jy.
+\end{align}
+It then follows that the norm of $z$ is
+\begin{align}
+    |z| = \sqrt{zz^*} = \sqrt{x^2+y^2}.
+\end{align}
+Some operations between two complex numbers 
+\begin{align*}
+    z_1=x_1+jy_1=|z_1|e^{j\theta_1} \\
+    z_2=x_2+jy_2=|z_2|e^{j\theta_2}
+\end{align*}
+are defined in the following list:
+\begin{itemize}
+    \item Addition/subtraction: $z_1 \pm z_2=(x_1\pm x_2) + j(y_1\pm y_2)$
+    \item Multiplication: $z_1z_2=|z_1||z_2|e^{j(\theta_1+\theta_2)}$
+    \item Division: $\dfrac{z_1}{z_2}=\dfrac{|z_1|}{|z_2|}e^{j(\theta_1-\theta_2)}$
+\end{itemize}
+Recall from \emph{Euler's formula} that $e^{j\theta} = \cos\theta + j\sin\theta$. The sinusoids can be rewritten such that
+\begin{align}
+    \cos\theta = \frac{e^{j\theta}+e^{-j\theta}}{2} \\
+    \sin\theta = \frac{e^{j\theta}-e^{-j\theta}}{j2}.
+\end{align}
+Generalizing Euler's formula, exponentiation of a complex number gives
+\begin{align}
+    e^z = e^{x+jy} = e^x e^{jy} = e^x(\cos\theta +j\sin\theta).
+\end{align}
+\emph{De Moivre's formula} defines the $n^{th}$ power of a complex number $z$, for $n$ is a positive integer:
+\begin{align}
+    z^n = [|z|(\cos\theta + j\sin\theta)]^n = |z|^n[\cos(n\theta)+j\sin(n\theta)].
+\end{align}
+In a similar vein, the $n^{th}$ root of a complex number $z$ (for $n$ is a positive integer) is
+\begin{align}
+    z^{1/n} &= [|z|(\cos\theta + j\sin\theta)]^{1/n} \nonumber \\ 
+    &= |z|^{1/n}\left[\cos\left(\frac{\theta+2k\pi}{n}\right)+j\sin\left(\frac{\theta+2k\pi}{n}\right)\right], \text{ for } k=0,1,2,...,n-1.
+\end{align}
+Solutions to the equation $z^n=1$ are called \emph{$n^{th}$ roots of unity} and are defined as 
+\begin{align}
+    z=\cos\left(\frac{2k\pi}{n}\right)+j\sin\left(\frac{2k\pi}{n}\right)=e^{j2k\pi/n}, \text{ for } k=0,1,2,...,n-1.
+\end{align}
+The following are common equivalences for powers of imaginary unit $j$:
+\begin{align}
+    j &= \sqrt{-1} = e^{j\pi/2} \\ 
+    j^2 &= -1 = e^{-j\pi} \\
+    j^3 &= -j = e^{-j \pi/2} \\
+    j^4 &= 1 \\
+    \sqrt{j} &= \pm e^{j\pi/4} = \pm \frac{(1+j)}{\sqrt{2}} \\
+    \sqrt{-j} &= \pm e^{-j\pi/4} = \pm \frac{(1-j)}{\sqrt{2}}
+\end{align}
+
+\subsection*{Regions in the Complex Plane}
+Let $z$ be a complex variable and $z_0=x_0+jy_0$ be a complex number. Then 
+\begin{align}
+    |z-z_0| = r
+\end{align} 
+graphically represents a circle of radius 2 centered at $(x_0,y_0)$. In the inequality form,
+\begin{align}
+    |z-z_0| < r
+\end{align} 
+represents the interior of the circle, whereas 
+\begin{align}
+    |z-z_0| > r
+\end{align} 
+represents the entire region of the complex plane outside of the circle. 
+\begin{center}
+    \begin{tikzpicture} [scale=2.5]
+        \draw (0,-1.25) -- (0,0.25) node[above] {\large $y=\Im(z)$} (-0.25,0)--(1.25,0) node[right] {\large $x=\Re(z)$};
+        \draw[fill=none, color=darkgreen](0.5,-0.5) circle (0.5) node [yshift=-1.6cm] {\large $|z-z_0|=r$};
+        \draw[fill=black](0.5,-0.5) circle (0.75 pt) node [above] {\large $z_0$};
+        \draw[](0.5,-0.5) -- (1.0,-0.5) node [midway,above] {\large $r$};
+    \end{tikzpicture}
+\end{center}
+This can be proven by plugging in $z=x+jy$ and $z_0=x_0+jy_0$ to get the rectangular equation of a circle
+\begin{align}
+    \sqrt{(x-x_0)^2+(y-y_0)^2} = r \Longrightarrow (x-x_0)^2+(y-y_0)^2 = r^2.
+\end{align} 
+$\Re(z_0)$ represents a vertical line at $x=x_0$, and $\Im(z_0)$ represents a horizontal line at $y=y_0$. The inequality forms 
+are evident in the rectangular form.
+\begin{center}
+    \begin{tikzpicture} [scale=2.5]
+        \draw (0,-1.25) -- (0,1.25) node[above] {\large $y=\Im(z)$} (-1.25,0)--(1.25,0) node[right] {\large $x=\Re(z)$};
+        \draw[dashed, blue](0.5,-1) -- (0.5,1) node[above] {\normalsize $x=\Re(z_0)$};
+        \draw[dashed, red](-1,-0.5) -- (1,-0.5) node[right] {\normalsize $y=\Im(z_0)$};
+    \end{tikzpicture}
+\end{center}
+In general, any region described by a complex equation or inequality can be identified by solving in rectangular form and using candidate values of $z$ 
+to test the regions of validity.
+
+\subsection*{Complex Functions of Time}
+Just as with complex numbers and complex variables, complex functions of time $z(t)$ also follow many of the same properties. In rectangular form,
+\begin{align}
+    z(t)&=x(t)+jy(t) \\
+    \Re[z(t)] &= x(t) \\
+    \Im[z(t)] &= y(t).
+\end{align}
+In polar form,
+\begin{align}
+    z(t)&=|z(t)|\exp[{j\theta(t)}] \\
+    |z(t)| &= \sqrt{x^2(t)+y^2(t)} \\
+    \theta(t) &= \arg[x(t)+jy(t)].
+\end{align}
+Here, while the Steinmetz phasor notation $\phase{\theta(t)}$ can be used as an equivalent notation for $exp[{j\theta(t)}]$, it can also be used as 
+a phase operator, where
+\begin{align}
+    \phase{z(t)} = \theta(t).
+\end{align}
+The phase operator can also be extended to complex numbers and variables, with $\phase{z}=\theta$.
+\\ \\
+Just as before, $x(t),y(t),|z(t)|,$ and $\phase{z(t)}$ are all real-valued functions of time. 
+\\ \\
+The complex conjugate function $z^*(t)$ has the following properties:
+\begin{align}
+    z^*(t) &= [z(t)|_{j\leftarrow (-j)} \\
+    &= [x(t)+jy(t)|_{j\leftarrow (-j)} = x(t) - jy(t) \\
+    |z(t)|^2 &= z(t)z^*(t) = z^*(t)z(t).
+\end{align}
+While Euler's and De Moivre's formulas also apply to complex functions of time, we are not particularly interested in their applications. 
+Often, the polar form of complex functions of time are the only complex equations of interest. 
+
+\section*{Operations as Functions}
+Here, we introduce some functions that do not represent signals, but rather they serve as mathematical operations for analysis. 
+\\ \\
+The \emph{indicator function}, also called the \emph{characteristic function}, is a Boolean function given by 
+\begin{align}
+    \mathbbm{1}_A(a) = 
+    \begin{cases}
+        1, & a\in A \\
+        0, & otherwise
+    \end{cases}.
+\end{align}
+The \emph{signum (or sign) function} captures the sign of the value $a$: 
+\begin{align}
+    \operatorname{sgn}(a) = 
+    \begin{cases}
+        -1, & a<1 \\
+        0, & a=0 \\
+        1, & a>1
+    \end{cases}.
+\end{align}
+The \emph{floor function} lowers the value of $a$ to the nearest integer below $a$:
+\begin{align}
+    \operatorname{floor}(a) = 
+    \begin{cases}
+        a, & a\in \mathbb{Z} \\
+        \operatorname{RoundDown}(a), & otherwise
+    \end{cases}
+\end{align}
+The \emph{ceiling function} raises the value of $a$ to the nearest integer above $a$:
+\begin{align}
+    \operatorname{ceil}(a) = 
+    \begin{cases}
+        a, & a\in \mathbb{Z} \\
+        \operatorname{RoundUp}(a), & otherwise
+    \end{cases}
+\end{align}
+Note that 
+\begin{align}
+    \operatorname{floor}(a) \leq a \leq \operatorname{ceil}(a).
+\end{align}
+The \emph{remainder function} returns the remainder of division $a/b$ and is borrowed from the integer modulo operation:
+\begin{align}
+    \operatorname{mod}(a,b) = (a \mod b) = a - b\cdot\operatorname{floor}(a/b).
+\end{align}
+
+\end{document}

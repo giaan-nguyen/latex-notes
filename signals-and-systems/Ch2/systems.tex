@@ -1,0 +1,1068 @@
+\documentclass{report}
+\input{../../preamble.tex}
+
+\begin{document}
+\setcounter{chapter}{1}
+\chapter{Systems}
+From the previous chapter, we introduce the idea of modifying signals by an affine transformation on the independent variable. 
+In fact, this was the very first introduction to the concept of \emph{systems}. A system essentially transforms an \emph{input signal} 
+into an \emph{output signal}. Furthermore, a system can be modeled as an operator that maps an input function to an output function.
+\\ \\
+Given an input signal $x(t)$ and an output signal $y(t)$, a system can be depicted using a block diagram:
+
+\begin{center}
+\begin{tikzpicture}
+    \node [] (input) at (-3,0){$x(t)$};
+    \node [] (output) at (+3,0){$y(t)$};
+    \node [draw,
+        fill=yellow!50, 
+        minimum width=2cm, 
+        minimum height=1.2cm
+    ] (system) at (0,0){$system$};
+    \draw [-latex, line width=1.5pt] (input) -- (system);
+    \draw [-latex, line width=1.5pt] (system) -- (output);
+\end{tikzpicture}
+\end{center}
+
+There are many practical examples of systems in the real world, including circuits, signal processing systems, 
+communications systems, and feedback control systems, those of which are depicted in Figures \ref{RC_circuit} -- \ref{feedback}.
+
+\begin{figure}[!hbt]
+    \caption{A simple RC circuit.}
+    \label{RC_circuit}
+    \centering
+    \resizebox{0.4\textwidth}{!}{
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw 
+                (0,3) to [V, l_={\Large $v_s(t)$}] (0,0)
+                to [short, -*] (6,0)
+                (0,3) to [R, v_={\Large $i(t)$}, voltage=straight, l^={\Large $R$}] (4,3)
+                to [C, l_={\Large $C$}] (4,0)
+                (4,3) to [short, -*] (6,3) 
+                to [open, v^>={\Large $v_c(t)$}] (6,0);
+        \end{circuitikz}}
+\end{figure}
+
+\begin{figure}[!hbt]
+    \caption{Signal processing systems.}
+    \label{sig_proc_sys}
+    \centering
+    \resizebox{\textwidth}{!}{
+        \begin{tikzpicture}
+            \node [] (in) at (-8,0){\shortstack{Input \\ CT Signal}};
+            \node [] (out) at (+8,0){\shortstack{Output \\ CT Signal}};
+            \node [] at (-2.25,0.7){\shortstack{Pre-processed \\ DT Signal}};
+            \node [] at (+2.25,0.7){\shortstack{Post-processed \\ DT Signal}};
+            \node [draw,
+                fill=orange!50, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (cd) at (-4.5,0){\shortstack{C/D \\ Converter}};
+            \node [draw,
+                fill=yellow!50, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (sys) at (0,0){DT System};
+            \node [draw,
+                fill=green!50, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (dc) at (4.5,0){\shortstack{D/C \\ Converter}};
+            \draw [-latex, line width=1.5pt] (in) -- (cd);
+            \draw [-latex, line width=1.5pt] (cd) -- (sys);
+            \draw [-latex, line width=1.5pt] (sys) -- (dc);
+            \draw [-latex, line width=1.5pt] (dc) -- (out);
+        \end{tikzpicture}}
+        \resizebox{\textwidth}{!}{
+        \begin{tikzpicture}
+            \node [] (in) at (-8,0){\shortstack{Input \\ DT Signal}};
+            \node [] (out) at (+8,0){\shortstack{Output \\ DT Signal}};
+            \node [] at (-2.25,0.7){\shortstack{Pre-processed \\ CT Signal}};
+            \node [] at (+2.25,0.7){\shortstack{Post-processed \\ CT Signal}};
+            \node [draw,
+                fill=green!50, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (dc) at (-4.5,0){\shortstack{D/C \\ Converter}};
+            \node [draw,
+                fill=yellow!50, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (sys) at (0,0){CT System};
+            \node [draw,
+                fill=orange!50, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (cd) at (4.5,0){\shortstack{C/D \\ Converter}};
+            \draw [-latex, line width=1.5pt] (in) -- (dc);
+            \draw [-latex, line width=1.5pt] (dc) -- (sys);
+            \draw [-latex, line width=1.5pt] (sys) -- (cd);
+            \draw [-latex, line width=1.5pt] (cd) -- (out);
+        \end{tikzpicture}}
+\end{figure}
+
+\begin{figure}[!hbt]
+    \caption{Communications system.}
+    \label{comms}
+    \centering
+    \resizebox{\textwidth}{!}{
+        \begin{tikzpicture}
+            \node [] (msg) at (-8,0){\shortstack{Message \\ Signal}};
+            \node [] (est) at (+8,0){\shortstack{Estimate of \\ Message Signal}};
+            \node [] at (-2.25,0.7){\shortstack{Transmitted \\ Signal}};
+            \node [] at (+2.25,0.7){\shortstack{Received \\ Signal}};
+            \node [draw,
+                fill=blue!30, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (tx) at (-4.5,0){\shortstack{Transmitter \\ (Tx)}};
+            \node [draw,
+                fill=yellow!50, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (ch) at (0,0){Channel};
+            \node [draw,
+                fill=red!30, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (rx) at (4.5,0){\shortstack{Receiver \\ (Rx)}};
+            \draw [-latex, line width=1.5pt] (msg) -- (tx);
+            \draw [-latex, line width=1.5pt] (tx) -- (ch);
+            \draw [-latex, line width=1.5pt] (ch) -- (rx);
+            \draw [-latex, line width=1.5pt] (rx) -- (est);
+        \end{tikzpicture}}
+\end{figure}
+
+\begin{figure}[!hbt]
+    \caption{Feedback control system.}
+    \label{feedback}
+    \centering
+    \resizebox{\textwidth}{!}{
+        \begin{tikzpicture}
+            \node [] (in) at (-8.5,0){\shortstack{Reference \\ Input}};
+            \node [] (out) at (+7,0){\shortstack{Actual \\ Output}};
+            \node [] at (-5.5,-0.65){\Huge -};
+            \node [] at (-5,0.5){\shortstack{Error \\ Signal }};
+            \node [] at (+3,-1.5){\shortstack{Feedback \\ Signal}};
+            \node [] at (-3,-1.5){\shortstack{Measurement \\ Output}};
+            \node[draw,
+                circle,
+                minimum size=0.6cm,
+                fill=red!30
+            ] (sum) at (-6,0){\LARGE +};
+            \node [draw,
+                fill=green!50, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (ctrl) at (-3,0){Controller};
+            \node [draw,
+                fill=orange!50, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (actr) at (0,0){Actuator};
+            \node [draw,
+                fill=yellow!50, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (proc) at (3,0){\shortstack{Process \\ (Plant)}};
+            \node [draw,
+                fill=blue!30, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (sens) at (0,-2){Sensor};
+            \draw [-latex, line width=1.5pt] (in) -- (sum);
+            \draw [-latex, line width=1.5pt] (sum) -- (ctrl);
+            \draw [-latex, line width=1.5pt] (ctrl) -- (actr);
+            \draw [-latex, line width=1.5pt] (actr) -- (proc);
+            \draw [-latex, line width=1.5pt] (proc) -- (out);
+            \draw [-, line width=1.5pt] (5.25,0) -- (5.25,-2);
+            \draw [-latex, line width=1.5pt] (5.25,-2) -- (sens);
+            \draw [-, line width=1.5pt] (sens) -- (-6,-2);
+            \draw [-latex, line width=1.5pt] (-6,-2) -- (sum);
+        \end{tikzpicture}}
+\end{figure}
+
+This chapter will go over different types of systems and why we are particularly interested in a class of systems called 
+\emph{linear time-invariant (LTI) systems}.
+
+\section{Classification of Systems Based on Mapping}
+Systems can be classified by the type of signals that are being inputted and outputted.
+
+\subsection{Multichannel vs Multidimensional}
+A system that deals with multichannel input and output systems is called a \emph{multichannel system}. There are four types of multichannel systems, described by the number 
+of channels in the input and output signals and aptly named so:
+\begin{itemize}
+    \item Single-input single-output (SISO) systems
+    \item Single-input multiple-output (SIMO) systems
+    \item Multiple-input single-output (MISO) systems
+    \item Multiple-input multiple-output (MIMO) systems
+\end{itemize}
+A system that deals with multidimensional input and output signals is called a \emph{multidimensional system}. 
+\\ \\
+The rest of this text will cover one-dimensional SISO systems.
+
+\subsection{Continuous-Time vs Discrete-Time}
+A system that handles CT input and output signals is called a \emph{continuous-time system}, whereas a system that deals with DT input and output signals 
+is called a \emph{discrete-time system}. Furthermore, a system that handles analog input and output signals is called a \emph{analog system}, and a system 
+that deals with digital input and output signals is called a \emph{digital system}. 
+\\ \\
+Interestingly, there are cases where a system maps a CT input signal to a DT output signal, or a DT input signal to a CT output signal. The most common example is 
+the analog-to-digital and digital-to-analog converters. Such systems are called \emph{hybrid systems}.
+\\ \\
+The rest of this text will cover only analog systems.
+
+\subsection{Deterministic vs Stochastic}
+A system that maps a deterministic input signal to a \emph{predictable} deterministic output signal is called a \emph{deterministic system}. A system that maps a random input signal 
+to an \emph{unpredictable} random signal is called a \emph{stochastic system}; stochastic systems may be modeled by some probability distribution but cannot be precisely predicted. \\ \\ 
+A system that deals with deterministic input signals and unpredictable output signals is called a \emph{chaotic system}.
+\\ \\
+The rest of this text will cover only deterministic systems.
+
+\section{Classification of Systems Based on Properties}
+Systems can also be classified by $how$ it maps inputs to outputs. Here, the content of the output signal with respect to the input signal is analyzed.
+\\ \\
+For this chapter, let $\Psi[\cdot]$ represent some operator that the system resembles, with the new block diagram shown.
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x(t)$};
+        \node [] (output) at (+3,0){$y(t)=\Psi[x(t)]$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$\Psi[\cdot]$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+From the previous chapter, an affine transformation on the independent variable can be represented as a system with $y(t)=\Psi[x(t)]=x(at-b)$.
+
+\subsection{Linear vs Nonlinear}
+A system is said to be \emph{linear} if it follows the \emph{superposition principle}, as depicted in the block diagram below with constants $c_1,c_2$, input signal 
+addends $x_1(t), x_2(t)$, and output signal addends $y_1(t),y_2(t)$:
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$c_1x_1(t)+c_2x_2(t)$};
+        \node [] (output) at (+3,0){$c_1y_1(t)+c_2y_2(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$\Psi[\cdot]$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+In practice, if the superposition principle is met, then a sum of $N$ input addends will generate a sum of $N$ output addends. \\ \\
+The superposition principle can be broken down into its two properties: additivity and scalability. 
+\\ \\ 
+A system has \emph{additive property} if for $y_1(t)=\Psi[x_1(t)]$ and $y_2(t)=\Psi[x_2(t)]$, the system-generated output from 
+the summed inputs is the sum of the outputs $\Psi[x_1(t)+x_2(t)]=y_1(t)+y_2(t)$. That is:
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x_1(t)+x_2(t)$};
+        \node [] (output) at (+3,0){$y_1(t)+y_2(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$\Psi[\cdot]$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+A system has \emph{scaling property} if for some constant $c$, the system-generated output for a scaled input is 
+an appropriately scaled output $\Psi[c\cdot x(t)]=c\cdot y(t)$. That is:
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$c\cdot x(t)$};
+        \node [] (output) at (+3,0){$c\cdot y(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$\Psi[\cdot]$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+If a system has both scaling and additive properties, then the superposition principle is met, and the system is linear. If the superposition principle is not met, 
+then the system is said to be \emph{nonlinear}.
+
+\begin{example}
+    Determine if the system characterized by the following equation is linear:
+    \begin{align*}
+        \frac{d^2y(t)}{dt}+2\frac{dy(t)}{dt}+3y(t)=4\frac{dx(t)}{dt}+5x(t)
+    \end{align*}
+\end{example}
+\begin{solution}
+    First, determine if the system is additive. Consider the following sum: \\
+    \begin{center}
+        \begin{tabular}{ cc }
+            & $\left[\dfrac{d^2y_1(t)}{dt}+2\dfrac{dy_1(t)}{dt}+3y_1(t)=4\dfrac{dx_1(t)}{dt}+5x_1(t)\right]$ \\[0.3cm]
+            + & $\left[\dfrac{d^2y_2(t)}{dt}+2\dfrac{dy_2(t)}{dt}+3y_2(t)=4\dfrac{dx_2(t)}{dt}+5x_2(t)\right]$ \\[0.3cm]
+        \end{tabular}
+        \begin{tabular}{ c }
+            \hline\\
+            $\dfrac{d^2[y_1(t)+y_2(t)]}{dt}+2\dfrac{d[y_1(t)+y_2(t)]}{dt}+3[y_1(t)+y_2(t)]=4\dfrac{d[x_1(t)+x_2(t)]}{dt}+5[x_1(t)+x_2(t)]$ \\[0.75cm]
+        \end{tabular}
+    \end{center} 
+    We are able to combine input components and output components due to the additive nature of the derivative. Here we can see that 
+    $\Psi[x_1(t)+x_2(t)]=\Psi[x_1(t)]+\Psi[x_2(t)]=y_1(t)+y_2(t)$. Therefore, the system is additive. 
+    \\ \\
+    Lastly, determine if the system is scalable. Consider the following product:
+    \begin{align*}
+        \dfrac{d^2[c\cdot y(t)]}{dt}+2\dfrac{d[c\cdot y(t)]}{dt}+3[c\cdot y(t)] &= 4\dfrac{d[c\cdot x(t)]}{dt}+5[c\cdot x(t)] \\
+        \Longrightarrow c\cdot \left[\dfrac{d^2y(t)}{dt}+2\dfrac{dy(t)}{dt}+3y(t)\right] &= c\cdot \left[4\dfrac{dx(t)}{dt}+5x(t)\right]
+    \end{align*}
+    We are able to factor out $c$ because of the scaling property of the derivative. Here we can see that $\Psi[c\cdot x(t)]=c\cdot\Psi[x(t)]=c\cdot y(t)$. 
+    Therefore, the system is scalable.
+    \\ \\
+    Since the system is both additive and scalable, the superposition principle is met, and the system is linear.
+\end{solution}
+
+\subsection{Time-Invariant vs Time-Variant}
+A system is said to be \emph{time-invariant} if a delay in the input signal results in a corresponding delay in the output signal such that $\Psi[x(t-T)]=y(t-T)$. That is:
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x(t-T)$};
+        \node [] (output) at (+3,0){$y(t-T)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$\Psi[\cdot]$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+One way to check is to consider the following two block diagrams, with the ``D''-block representing a delay of $T$ seconds:
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x_1(t)$};
+        \node [] (output) at (+3,0){$y_1(t)$};
+        \node [] (delayed) at (+9,0){$y_1(t-T)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$\Psi[\cdot]$};
+        \node [draw,
+            fill=green!50,
+            minimum width=1.2cm,
+            minimum height=1.2cm
+        ] (delay) at (5.8,0){$\mathbf{D}$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+        \draw [-latex, line width=1.5pt] (output) -- (delay);
+        \draw [-latex, line width=1.5pt] (delay) -- (delayed);
+    \end{tikzpicture}
+    \\[0.5cm]
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x_1(t)$};
+        \node [] (delayed) at (+2,0){$x_2(t)=x_1(t-T)$};
+        \node [] (output) at (+8,0){$y_2(t)$};
+        \node [draw,
+            fill=green!50,
+            minimum width=1.2cm,
+            minimum height=1.2cm
+        ] (delay) at (-1,0){$\mathbf{D}$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (+5.5,0){$\Psi[\cdot]$};
+        \draw [-latex, line width=1.5pt] (input) -- (delay);
+        \draw [-latex, line width=1.5pt] (delay) -- (delayed);
+        \draw [-latex, line width=1.5pt] (delayed) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+From the outputs above, if $y_2(t)=y_1(t-T)$, then the system is time-invariant. Otherwise, if the outputs are not equal, 
+then the system is \emph{time-variant}, in which $\Psi[x(t-T),T]=y(t-T)$ results in an additional dependence on $T$.
+
+\begin{example}
+    Determine if the system characterized by the following equation is time-invariant.
+    \begin{align*}
+        y(t) = \frac{t\cdot x(t+2)}{x(t-1)}
+    \end{align*}
+\end{example}
+\begin{solution}
+    If we feed the input into the system first then delay the output, then we get:
+    \begin{align*}
+        y_1(t) &= \frac{t\cdot x_1(t+2)}{x_1(t-1)} \\
+        y_1(t-T) &= \frac{(t-T)\cdot x_1((t-T)+2)}{x_1((t-T)-1)}
+    \end{align*}
+    If we delay the input first then feed the delayed input into the system, then we get:
+    \begin{align*}
+        x_2(t) &= x_1(t-T) \\
+        y_2(t) &= \frac{t\cdot x_2(t+2)}{x_2(t-1)} = \frac{t\cdot x_1((t-T)+2)}{x_1((t-T)-1)}
+    \end{align*}
+    Since $y_2(t) \neq y_1(t-T)$, the system is time-variant.
+\end{solution}
+
+Systems that are both linear and time-invariant are called linear time-invariant (LTI) systems. We will explore LTI systems more later. 
+
+\subsection{Dynamic vs Memoryless}
+A system is said to be \emph{memoryless} or \emph{static} if the output $y(t)$ at time $t$ depends only on the input $x(t)$ at time $t$. The only LTI system 
+that is also memoryless has the form $y(t)=ax(t)$ for $a$ is a constant. \\ \\
+Otherwise, a system whose output additionally depends on past and/or future values of the input is a \emph{dynamic} system; that is, the output at $t$ 
+depends on the input at $t-T$ for any $T\neq 0$. Most systems in the physical world are dynamic.
+
+\subsection{Causal vs Noncausal}
+\emph{Causal} systems, also called \emph{physically realizable systems}, are systems whose output at time $t$ only depend on the past and present values of the input at time $t-T$ for $T>0$ and time $t$, respectively. 
+Otherwise, a system that anticipates a future value of the input at time $t+T$ before generating an output at time $t$ is said to be \emph{noncausal}. \\ \\
+Essentially, noncausal systems see the future, which is impossible in the physical world. 
+Generally, from the affine transformation on the independent variable, any system with a time advance or a temporal expansion of the input signal is classified as noncausal.
+\\ \\
+One way to determine causality is by using an impulse signal $\delta(t)$ as input and observing its output $h(t)$, also called the \emph{impulse response}. If $h(t)=0$ for all $t<0$, 
+then the system is causal; otherwise it is noncausal.
+
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$\delta(t)$};
+        \node [] (output) at (+3,0){$h(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$\Psi[\cdot]$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+
+\begin{example}
+    Determine if the following circuit is a causal system. \\ \\
+    \resizebox{0.5\textwidth}{!}{
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw 
+                (0,3) to [V, l_={\Large $x(t)$}] (0,0)
+                to [short, -*] (6,0)
+                (0,3) to [R, v_={\Large $i(t)$}, voltage=straight, l^={\Large $R$}] (4,3)
+                to [C, l_={\Large $C$}] (4,0)
+                (4,3) to [short, -*] (6,3) 
+                to [open, v^>={\Large $y(t)$}] (6,0);
+        \end{circuitikz}}
+\end{example}
+\begin{solution}
+    From Kirchhoff's voltage law (KVL):
+    \begin{align*}
+        R\cdot i(t) + y(t) &= x(t) \\
+        \Longrightarrow RC \cdot \frac{dy(t)}{dt} + y(t) &= x(t).
+    \end{align*}
+    Let $\tau=RC$. Then
+    \begin{align*}
+        \frac{dy(t)}{dt} + \frac{1}{\tau} \cdot y(t) = \frac{1}{\tau} \cdot x(t).
+    \end{align*}
+    Since the integrating factor is $\exp\left(\int 1/\tau \,dt\right) = \exp(t/\tau)$, multiply the whole equation by $\exp(t/\tau)$ such that 
+    \begin{align*}
+        e^{t/\tau} \cdot \frac{dy(t)}{dt} + \frac{e^{t/\tau}}{\tau} \cdot y(t) &= \frac{e^{t/\tau}}{\tau} \cdot x(t) \\
+        \frac{d}{dt} \big[e^{t/\tau} y(t)\big] &= \frac{e^{t/\tau}}{\tau} \cdot x(t).
+    \end{align*}
+    Inputting in an impulse function for the input, we get
+    \begin{align*}
+        \frac{d}{dt} \big[e^{t/\tau} h(t)\big] &= \frac{e^{t/\tau}}{\tau} \cdot \delta(t).
+    \end{align*}
+    Integrating both sides:
+    \begin{align*}
+        \int_{0^-}^{T} \left(\frac{d}{dt} \big[e^{t/\tau} h(t)\big]\right) \,dt &= \int_{0^-}^{T} \left(\frac{e^{t/\tau}}{\tau} \cdot \delta(t)\right) \,dt \\
+        e^{T/\tau} h(T) &= \int_{0^-}^{T} \left(\frac{e^{0}}{\tau} \cdot \delta(t)\right) \,dt \\
+        e^{T/\tau} h(T) &= \frac{1}{\tau} u(T).
+    \end{align*}
+    Rearranging the equation and substituting $T\leftarrow t$, we get
+    \begin{align*}
+        h(t) = \frac{e^{-t/\tau}}{\tau} u(t).
+    \end{align*}
+    Since $h(t)$ is causal, the circuit is a causal system.
+\end{solution}
+
+\subsection{BIBO Stable vs Unstable}
+A signal $x(t)$ is said to be \emph{bounded} if there exists some constant $C$ such that 
+\begin{align}
+    |x(t)| \leq C, \text{ for } \forall t.
+\end{align}
+A system with a \emph{bounded input, bounded output} (BIBO, for short) is said to be \emph{BIBO stable}; that is, every bounded input signal results in a bounded output signal. Otherwise, if a system 
+produces an unbounded output for a bounded input, it is said to be \emph{unstable}.
+\\ \\
+For LTI systems, we can particularly look at the impulse response $h(t)$. An LTI system is BIBO stable if and only if $h(t)$ is \emph{absolutely integrable} such that
+\begin{align}
+    \int_{-\infty}^{+\infty} |h(t)| \,dt = C, \text{ for $C$ is finite.}
+\end{align}
+
+\begin{example}
+    Determine if an LTI system with impulse response $h(t)=e^{-|t|}$ is stable.
+\end{example}
+\begin{solution}
+    \begin{align*}
+        \int_{-\infty}^{+\infty} |h(t)| \,dt = \int_{-\infty}^{+\infty} |e^{-|t|}| \,dt &= 2\int_{0}^{+\infty} e^{-t} \,dt \\
+        &= 2 \left[-e^{-t}\right|_0^{+\infty} = 2 [0 - (-1)] = 2 < \infty
+    \end{align*}
+    Since $h(t)$ is absolutely integrable, the system is BIBO stable.
+\end{solution}
+
+\begin{example}
+    Let $C=A+jB$ and $\gamma = \alpha + j\beta$ be complex values. 
+    Show that all LTI systems with exponential decay $h(t)=Ce^{\gamma t}u(t)$ as impulse responses are BIBO stable if and only if $\Re(\gamma) < 0$. 
+\end{example}
+\begin{solution}
+    First, let $\alpha < 0$. Then 
+    \begin{align*}
+        \int_{-\infty}^{+\infty} |h(t)| \,dt &= \int_{-\infty}^{+\infty} |Ce^{\gamma t}u(t)| \,dt = \int_{0}^{+\infty} |C|\cdot |e^{\alpha t}|\cdot |e^{j\beta t}| \,dt \\
+        &= |C|\int_{0}^{+\infty} e^{\alpha t}\,dt = |C|\int_{0}^{+\infty} e^{-|\alpha| t}\,dt = |C| \left[-\frac{e^{-|\alpha|t}}{|\alpha|}\right|_0^{+\infty} = \frac{|C|}{|\alpha|} < \infty.
+    \end{align*}
+    Now, let $\alpha = 0$. Then 
+    \begin{align*}
+        \int_{-\infty}^{+\infty} |h(t)| \,dt = \left[|C|\int_{0}^{+\infty} e^{\alpha t}\,dt\right|_{\alpha=0}  = |C|\int_{0}^{+\infty} 1\,dt = |C| \big[t\big|_0^{+\infty} = \infty.
+    \end{align*}
+    Lastly, let $\alpha>0$. Then
+    \begin{align*}
+        \int_{-\infty}^{+\infty} |h(t)| \,dt = |C|\int_{0}^{+\infty} e^{\alpha t}\,dt = |C| \left[\frac{e^{|\alpha|t}}{|\alpha|}\right|_0^{+\infty} = \infty.
+    \end{align*}
+    Since $h(t)$ is only absolutely integrable when $\alpha<0$, the system is only stable when $\Re(\gamma)<0$. \\
+\end{solution}
+
+\subsection{Invertible vs Non-Invertible}
+A system is said to be \emph{invertible} if it generates unique output signals for every unique input signal. That is, an invertible system has a one-to-one mapping between 
+inputs and outputs. If a system has a many-to-one mapping between inputs and outputs, then it is said to be \emph{non-invertible}. 
+\\ \\
+Alternatively, an invertible system has an inverse system $\Psi^{-1}[\cdot]$ that maps outputs back to the inputs of the forward system $\Psi[\cdot]$ -- it may be delayed but the shape of the waveform is maintained. 
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x(t)$};
+        \node [] (output) at (+6,0){$x(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (fwd) at (0,0){$\Psi[\cdot]$};
+        \node [draw,
+            fill=blue!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (inv) at (3,0){$\Psi^{-1}[\cdot]$};
+        \draw [-latex, line width=1.5pt] (input) -- (fwd);
+        \draw [-latex, line width=1.5pt] (fwd) -- (inv);
+        \draw [-latex, line width=1.5pt] (inv) -- (output);
+    \end{tikzpicture}
+\end{center}
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$y(t)$};
+        \node [] (output) at (+6,0){$y(t)$};
+        \node [draw,
+            fill=blue!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (inv) at (0,0){$\Psi^{-1}[\cdot]$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (fwd) at (3,0){$\Psi[\cdot]$};
+        \draw [-latex, line width=1.5pt] (input) -- (inv);
+        \draw [-latex, line width=1.5pt] (inv) -- (fwd);
+        \draw [-latex, line width=1.5pt] (fwd) -- (output);
+    \end{tikzpicture}
+\end{center}
+While a system can be invertible, it does not mean it is implementable. For this very reason, when inverting LTI systems, generally we are also interested in the properties of the 
+inverse system; that is, if the original system is BIBO stable and causal, we would want the inverse system to be BIBO stable and causal as well. 
+
+\begin{example}
+    Determine if the system characterized by $y(t)=x(2t-3)$ is invertible.
+\end{example}
+\begin{solution}
+    Here we can solve for $x(t)$. First, define $y(\tau)=x(2\tau-3)$. Then 
+    \begin{align*}
+        t = 2\tau - 3 \Longrightarrow \tau = \frac{1}{2}\left(t+3\right).
+    \end{align*}
+    Substituting this relationship in, we get 
+    \begin{align*}
+        x(t) = y\left(\frac{1}{2}(t+3)\right).
+    \end{align*}
+    Since both forward and inverse systems are affine transformations on the independent variable, the system is invertible.
+\end{solution}
+
+\begin{example}
+    Determine if the system characterized by $y(t)=\dfrac{d}{dt}\big[x(t)\big]$ is invertible.
+\end{example}
+\begin{solution}
+    Let $x(t)=x_0(t)+c$, where $x_0(t)$ is the non-constant portion of the function and $c$ is the constant in the function.
+    \\ \\
+    Regardless of the value of $c$, the function $x(t)$  will always map to the derivative of $x_0(t)$ since the derivative of a constant is zero. 
+    \begin{center}
+        \begin{tikzpicture}
+            \node [] (input) at (-3.6,0){$x(t)=x_0(t)+c$};
+            \node [] (output) at (+4.4,0){$y(t)=\Psi[x(t)]=\dfrac{d}{dt}\big[x_0(t)\big]$};
+            \node [draw,
+                fill=yellow!50, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (system) at (0,0){$\Psi[\cdot]$};
+            \draw [-latex, line width=1.5pt] (input) -- (system);
+            \draw [-latex, line width=1.5pt] (system) -- (output);
+        \end{tikzpicture}
+    \end{center}
+    This is a many-to-one mapping. Therefore the system is non-invertible.
+\end{solution}
+
+\section{LTI Systems}
+By now, we know that an \emph{LTI system} is a system that is both linear and time-invariant. But why are we particularly study in 
+LTI systems? We study LTI systems because of their predictable nature. As long as we know the system response to a few select input signals, we can 
+accurately predict the output for all input signals.
+\\ \\
+Although many systems in the real world are not LTI systems, they might be ``locally nearly LTI'', where the behavior of the system could possibly be approximated with 
+an LTI system within a small analytic region. Because we are modeling real systems using LTI systems, we would need to choose an LTI model that is also dynamic, causal, and stable.
+
+\subsection{LTI System Response to Singularity Signals}
+As prefaced before, the \emph{impulse response} $h(t)$ of a system is the system response to an inputted impulse signal $\delta(t)$, given zero initial conditions. 
+The impulse response of an LTI system is depicted in the following block diagram:
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$\delta(t)$};
+        \node [] (output) at (+3,0){$h(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){LTI};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+For LTI systems, the impulse response plays an important role. An LTI system can be characterized by its impulse response such that any output signal can be predicted by 
+performing an operation called \emph{convolution} between the input signal and the impulse response. The block diagram of an LTI system can be depicted as:
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x(t)$};
+        \node [] (output) at (+3,0){$y(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$h(t)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+Convolution is an operation defined by the \emph{convolution integral}
+\begin{align}
+    x(t) * h(t) &= \int_{-\infty}^{+\infty} x(\tau)h(t-\tau) \,d\tau \\
+    &= \int_{-\infty}^{+\infty} x(t-\tau)h(\tau) \,d\tau.
+\end{align}
+All LTI systems characterized by $h(t)$ abide by convolution. Convolution will be explored further in the next chapter.
+\\ \\
+The \emph{step response} $y_{step}(t)$ of a system is the system response to an inputted unit step signal $u(t)$, given zero initial conditions. 
+The step response of an LTI system is depicted in the following block diagram:
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$u(t)$};
+        \node [] (output) at (+3,0){$y_{step}(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){LTI};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+While not as prevalent in signal processing applications, the step response appears in primarily control-based applications, where 
+we are interested in how well a system ``tracks'' a step input.
+\\ \\
+Interestingly, just as $u(t)$ is the antiderivative of $\delta(t)$, the step response $y_{step}(t)$ is the antiderivative of the impulse response $h(t)$. That is,
+\begin{align}
+    h(t) &= \frac{dy_{step}(t)}{dt}, \\
+    y_{step}(t) &= \int_{-\infty}^{t} h(\tau) \,d\tau.
+\end{align}
+For both the impulse response and step response, all initial conditions must be zero in order to generalize the performance of any system modeled 
+by that particular LTI system. If initial conditions were left as nonzero, we must deal with case-specific systems, where an LTI model with nonzero initial 
+conditions can only be applicable for one system with those specific initial conditions. 
+
+\subsection{LTI System Response to Exponential and Sinusoidal Signals}
+Using the convolution integral, we can generalize the LTI system response to a complex exponential signal $e^{j\omega t}$.
+\begin{align*}
+    x(t) * h(t) &= \int_{-\infty}^{+\infty} x(t-\tau)h(\tau) \,d\tau \\
+    \Longrightarrow e^{j\omega t} * h(t) &= \int_{-\infty}^{+\infty} e^{j\omega (t-\tau)}h(\tau) \,d\tau \\
+    &= e^{j\omega t} \underbrace{\int_{-\infty}^{+\infty} h(\tau)e^{-j\omega\tau} \,d\tau}_\textrm{$H(\omega)$}.
+\end{align*}
+Therefore, the LTI system response to a complex exponential can be depicted as: 
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$e^{j\omega t}$};
+        \node [] (output) at (+3,0){$H(\omega)e^{j\omega t}$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$h(t)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+Here, $H(\omega)$ is called the \emph{frequency response} of the system. Note that $H(\omega)$ is independent of time $t$, 
+is a complex function of $j\omega$, and is defined for an everlasting complex exponential. $H(\omega)$ also has conjugate symmetry, in which 
+\begin{align}
+    H^*(\omega) = H(-\omega)
+\end{align}
+It then also follows that 
+\begin{align}
+    |H(\omega)| = |H(-\omega)| \\
+    \phase{H(-\omega)} = -\phase{H(\omega)}
+\end{align}
+In a later chapter, the relationship between the impulse reponse and the frequency response will be explored. There exists some operator in which the impulse response can be 
+mapped to the frequency response and vice versa.
+\\ \\
+Since sinusoids form the real and imaginary parts of a complex exponential, the LTI sinusoidal response can also be depicted: 
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$A\cos(\omega t+\phi)$};
+        \node [] (output) at (+4.5,0){$A|H(\omega)|\cos\big(\omega t+\phase{H(\omega)}+\phi\big)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$h(t)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+
+\begin{example}
+    The input and output to an LTI system is given by 
+    \begin{align*}
+        x(t) &= u(t)+2\cos(2t), \\ 
+        y(t) &= u(t) - e^{-2t}u(t) +\sqrt{2}\cos(2t-45^{\circ}).
+    \end{align*}
+    Suppose a different signal is now inputted to the very same LTI system and is defined as 
+    \begin{align*}
+        x(t) = 5u(t-3) + 3\sqrt{2}\cos(2t-60^{\circ}).
+    \end{align*}
+    Determine the new output $y(t)$.
+\end{example}
+\begin{solution}
+    From the superposition principle, we know that as long as we know the response to each addend of the input signal, 
+    we can combine each of the responses to get the overall output.
+    \\ \\
+    By observation, we first analyze just the unit step addends.
+    \begin{center}
+        \begin{tikzpicture}
+            \node [] (input) at (-3,0){$u(t)$};
+            \node [] (output) at (+4,0){$(1-e^{-2t})u(t)$};
+            \node [draw,
+                fill=yellow!50, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (system) at (0,0){LTI};
+            \draw [-latex, line width=1.5pt] (input) -- (system);
+            \draw [-latex, line width=1.5pt] (system) -- (output);
+        \end{tikzpicture}
+    \end{center}
+    Since this is an LTI system, any delay in the input will have the same corresponding delay in the output. Additionally, an input signal that is scaled by 
+    some factor will be scaled by the same factor in the output. Therefore,
+    \begin{center}
+        \begin{tikzpicture}
+            \node [] (input) at (-3,0){$5u(t-3)$};
+            \node [] (output) at (+4,0){$5(1-e^{-2(t-3)})u(t-3)$};
+            \node [draw,
+                fill=yellow!50, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (system) at (0,0){LTI};
+            \draw [-latex, line width=1.5pt] (input) -- (system);
+            \draw [-latex, line width=1.5pt] (system) -- (output);
+        \end{tikzpicture}
+    \end{center}
+    Next, we analyze just the sinusoidal addends.
+    \begin{center}
+        \begin{tikzpicture}
+            \node [] (input) at (-3,0){$2\cos(2t)$};
+            \node [] (output) at (+4,0){$\sqrt{2}\cos(2t-45^{\circ})$};
+            \node [draw,
+                fill=yellow!50, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (system) at (0,0){LTI};
+            \draw [-latex, line width=1.5pt] (input) -- (system);
+            \draw [-latex, line width=1.5pt] (system) -- (output);
+        \end{tikzpicture}
+    \end{center}
+    From the LTI sinusoidal response, it follows that 
+    \begin{align*}
+        |H(\omega)| &= \frac{\sqrt{2}}{2}, \\ 
+        \phase{H(\omega)} &= -45^{\circ}.
+    \end{align*}
+    Therefore, the LTI sinusoidal response of the new addend is given by 
+    \begin{center}
+        \begin{tikzpicture}
+            \node [] (input) at (-3,0){$3\sqrt{2}\cos(2t-60^{\circ})$};
+            \node [] (output) at (+4,0){$3\sqrt{2}\left(\dfrac{\sqrt{2}}{2}\right)\cos(2t-60^{\circ}-45^{\circ})$};
+            \node [draw,
+                fill=yellow!50, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (system) at (0,0){LTI};
+            \draw [-latex, line width=1.5pt] (input) -- (system);
+            \draw [-latex, line width=1.5pt] (system) -- (output);
+        \end{tikzpicture}
+    \end{center}
+    Summing the two LTI system responses, the overall output is given by 
+    \begin{align*}
+        y(t) = 5[1-e^{-2(t-3)}]u(t-3) + 3\cos(2t-105^{\circ}).
+    \end{align*}
+\end{solution}
+
+\subsection{Eigenfunctions of LTI Systems}
+An \emph{eigenfunction} of an LTI system is some function $x(t)$ such that the system response is $\lambda x(t)$ for some scalar $\lambda$ (independent of $t$). That is,  
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x(t)$};
+        \node [] (output) at (+3,0){$\lambda x(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){LTI};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+For LTI systems characterized by $h(t)$, we can use the convolution integral to determine if a function 
+is an eigenfunction of the system. 
+\\ \\
+Previously, we saw that for a complex exponential input $e^{j\omega t}$, 
+we get a scaled output $H(\omega)e^{j\omega t}$. Therefore, the complex exponential is an eigenfunction of the system. 
+In fact, this particular eigenfunction yields the frequency response function $H(\omega)$, which is crucial for Fourier transforms 
+in a later chapter.
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$e^{j\omega t}$};
+        \node [] (output) at (+3,0){$H(\omega)e^{j\omega t}$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){LTI};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+
+\begin{example}
+    Determine if $e^{st}$ is an eigenfunction of LTI systems, for $s=\sigma + j\omega$.
+\end{example}
+\begin{solution}
+    \begin{align*}
+        e^{st} * h(t) &= \int_{-\infty}^{+\infty} e^{s(t-\tau)}h(\tau) \,d\tau = e^{st} \underbrace{\int_{-\infty}^{+\infty} h(\tau)e^{-s\tau} \,d\tau}_\textrm{$H(s)$}
+    \end{align*}
+    Since $H(s)$ is a constant for a given $s$ and is scaling $e^{st}$, the function $e^{st}$ is an eigenfunction of LTI systems. 
+    In fact, it yields the transfer function $H(s)$, which is crucial for Laplace transforms in a later chapter.
+    \\ \\ 
+    \begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$e^{st}$};
+        \node [] (output) at (+3,0){$H(s)e^{st}$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){LTI};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+    \end{center}
+\end{solution}
+
+\begin{example}
+    Determine if $3^t u(t)$ is an eigenfunction of LTI systems.
+\end{example}
+\begin{solution}
+    \begin{align*}
+        3^t u(t) * h(t) &= \int_{-\infty}^{+\infty} 3^{t-\tau}u(t-\tau)h(\tau) \,d\tau = 3^t \int_{-\infty}^{t} 3^{-\tau}h(\tau) \,d\tau
+    \end{align*}
+    Since the integral is dependent on time $t$, it is not a constant. Therefore $3^t u(t)$ is not an eigenfunction of LTI systems.
+\end{solution}
+
+\subsection{Linear Constant-Coefficient Differential Equations (LCCDE)}
+LTI systems can be characterized by a class of differential equations called 
+\emph{linear constant-coefficient differential equations} (LCCDE):
+\begin{align}
+    \sum_{k=0}^{N} a_{N-k} \frac{d^k y(t)}{dt^k} = \sum_{k=0}^{M} b_{M-k} \frac{d^k x(t)}{dt^k}.
+\end{align}
+However, higher-order nonhomogeneous LCCDEs are generally difficult to solve, which is why it is generally not covered until after Laplace and/or Fourier transforms are studied. 
+Because of that, the LTI system response of LCCDEs will not be addressed until a later chapter.
+
+\section{Interconnection of LTI Systems}
+We have briefly seen that the convolution of input $x(t)$ and impulse response $h(t)$ of an LTI system gives us the output $y(t)$ of the system.
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x(t)$};
+        \node [] (output) at (+3,0){$y(t)=x(t)*h(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$h(t)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+Suppose we begin introducing multiple LTI systems that are somehow connected to each other. When we are only interested in the corresponding output signal to an 
+input signal, we do not particularly care about an individual LTI system -- rather, we are more interested in the interconnection of LTI systems as a whole. In these cases, 
+we want to find an equivalent impulse response that characterizes the interconnection and not just a single LTI system. 
+\\ \\
+When LTI systems are connected in series, the interconnection has the following equivalence:
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x(t)$};
+        \node [] (output) at (+6,0){$y(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys1) at (0,0){$h_1(t)$};
+        \node [draw,
+            fill=red!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys2) at (3,0){$h_2(t)$};
+        \draw [-latex, line width=1.5pt] (input) -- (sys1);
+        \draw [-latex, line width=1.5pt] (sys1) -- (sys2);
+        \draw [-latex, line width=1.5pt] (sys2) -- (output);
+    \end{tikzpicture} \\[0.25cm] 
+    \begin{tikzpicture}
+        \node at (0,0) [double arrow, draw=black, top color=red, bottom color=blue,
+      minimum width = 15pt, double arrow head extend=5pt,
+      minimum height=12mm,
+      rotate=90] {};
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x(t)$};
+        \node [] (output) at (+6,0){$y(t)$};
+        \node [draw,
+            fill=blue!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (1.5,0){$h_1(t)*h_2(t)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture} \\
+\end{center}
+When LTI systems are connected in parallel, the interconnection has the following equivalence:
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x(t)$};
+        \node [] (output) at (+6,0){$y(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys1) at (1.5,1){$h_1(t)$};
+        \node [draw,
+            fill=orange!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys2) at (1.5,-1){$h_2(t)$};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            fill=red!30
+        ] (sum) at (4,0){\large +};
+        \draw [-, line width=1.5pt] (input) -- (-1,0);
+        \draw [-, line width=1.5pt] (-1,-1) -- (-1,1);
+        \draw [-latex, line width=1.5pt] (-1,1) -- (sys1);
+        \draw [-latex, line width=1.5pt] (-1,-1) -- (sys2);
+        \draw [-, line width=1.5pt] (sys1) -- (4,1);
+        \draw [-, line width=1.5pt] (sys2) -- (4,-1);
+        \draw [-latex, line width=1.5pt] (4,1) -- (sum);
+        \draw [-latex, line width=1.5pt] (4,-1) -- (sum);
+        \draw [-latex, line width=1.5pt] (sum) -- (output);
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node at (0,0) [double arrow, draw=black, top color=red, bottom color=blue,
+      minimum width = 15pt, double arrow head extend=5pt,
+      minimum height=12mm,
+      rotate=90] {};
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x(t)$};
+        \node [] (output) at (+6,0){$y(t)$};
+        \node [draw,
+            fill=blue!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (1.5,0){$h_1(t)+h_2(t)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+
+\begin{example}
+    Consider the following interconnection of LTI systems. Find the equivalent impulse response for the interconnection. \\ \\
+    \resizebox{\textwidth}{!}{
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){\LARGE $x(t)$};
+        \node [] (output) at (+14.5,0){\LARGE $y(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys1) at (0,0){\LARGE $h_1(t)$};
+        \node [draw,
+            fill=orange!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys2) at (3.5,2){\LARGE $h_2(t)$};
+        \node [draw,
+            fill=green!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys3) at (8,2){\LARGE $h_3(t)$};
+        \node [draw,
+            fill=blue!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys4) at (8,0){\LARGE $h_4(t)$};
+        \node [draw,
+            fill=violet!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (sys5) at (8,-2){\LARGE $h_5(t)$};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            fill=red!30
+        ] (sum) at (12,0){\Huge +};
+        \draw [-latex, line width=1.5pt] (input) -- (sys1);
+        \draw [-, line width=1.5pt] (sys1) -- (0,2);
+        \draw [-latex, line width=1.5pt] (0,2) -- (sys2);
+        \draw [-, line width=1.5pt] (sys1) -- (0,-2);
+        \draw [-latex, line width=1.5pt] (0,-2) -- (sys5);
+        \draw [-latex, line width=1.5pt] (sys2) -- (sys3);
+        \draw [-, line width=1.5pt] (5.75,2) -- (5.75,0);
+        \draw [-latex, line width=1.5pt] (5.75,0) -- (sys4);
+        \draw [-, line width=1.5pt] (sys3) -- (12,2);
+        \draw [-, line width=1.5pt] (sys5) -- (12,-2);
+        \draw [-latex, line width=1.5pt] (12,2) -- (sum);
+        \draw [-latex, line width=1.5pt] (sys4) -- (sum);
+        \draw [-latex, line width=1.5pt] (12,-2) -- (sum);
+        \draw [-latex, line width=1.5pt] (sum) -- (output);
+    \end{tikzpicture}}
+\end{example}
+\begin{solution}
+    In the top-right corner of the interconnection, two systems are in parallel. This parallel set is itself in series with $h_2(t)$. 
+    Therefore, the top branch can be rewritten as 
+    \begin{align*}
+        h_2(t)*[h_3(t)+h_4(t)].
+    \end{align*}
+    The top branch equivalent and the bottom branch are in parallel and can be rewritten as 
+    \begin{align*}
+        h_2(t)*[h_3(t)+h_4(t)]+h_5(t).
+    \end{align*}
+    Lastly, the two-branch equivalent and $h_1(t)$ are in series such that the overall equivalent impulse response is 
+    \begin{align*}
+        h(t) = h_1(t) * \{h_2(t)*[h_3(t)+h_4(t)]+h_5(t)\}.
+    \end{align*}
+\end{solution}
+
+\end{document}

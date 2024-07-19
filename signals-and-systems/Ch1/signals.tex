@@ -1,0 +1,1015 @@
+\documentclass{report}
+\input{../../preamble.tex}
+
+\begin{document}
+
+\chapter{Signals}
+Signals are essentially functions that convey information about some (usually physical) phenomenon. 
+
+\section{Classification of Signals Based on Mapping}
+Since signals are functions, signals can be classified by their domain and codomain. 
+
+\subsection{Multichannel vs Multidimensional}
+Signals that can be expressed as vector-valued functions are called \emph{multichannel signals}. These signals typically are generated 
+from multiple sources or multiple sensors. An \emph{N-channel} signal may be written as 
+\begin{align}
+    \mathbf{S}(t) = 
+    \begin{bmatrix}
+        S_1(t) \\
+        S_2(t) \\
+        \vdots \\
+        S_N(t)
+    \end{bmatrix} \text{, for } t \in \mathbb{R}.
+\end{align}
+An example of a multichannel signal is the electrocardiogram (ECG or EKG), which utilizes either 3 leads or 12 leads to measure 
+the electrical activity of the heart. As a result, 3-channel or 12-channel signals are recorded.
+
+Phased arrays, commonly used for radar and 5G MIMO communications, also transmit multichannel signals. Each element in the antenna array is applied different  
+phase shifts such that the collective beam is steered to a specific direction. Here, each element represents a different channel.
+\\ \\
+Signals that can be expressed as multivariate functions are called \emph{multidimensional signals}. An \emph{M-dimensional} signal may 
+be written as
+\begin{align}
+    S(x_1,x_2,...,x_M) \text{, for } 
+    \begin{bmatrix}
+        x_1 \\
+        x_2 \\
+        \vdots \\
+        x_M
+    \end{bmatrix} \in \mathbb{R}^M.
+\end{align}
+
+An example of a multidimensional signal is a black-and-white image. The intensity or brightness of each point in an image is a function of two 
+variables, often notated as $I(x,y)$. This can be extended to 3-dimensional signals in the form of black-and-white videos, notated as $I(x,y,t)$. 
+After all, a single frame of a video is merely just an image.
+\\ \\
+Some signals can be both multichannel and multidimensional. That is, 
+\begin{align}
+    \mathbf{S}(x_1,x_2,...x_M) = 
+    \begin{bmatrix}
+        S_1(x_1,x_2,...x_M) \\
+        S_2(x_1,x_2,...x_M) \\
+        \vdots \\
+        S_N(x_1,x_2,...x_M)
+    \end{bmatrix}  \text{, for } 
+    \begin{bmatrix}
+        x_1 \\
+        x_2 \\
+        \vdots \\
+        x_M
+    \end{bmatrix} \in \mathbb{R}^M.
+\end{align}
+With the introduction of color in digital media, the RGB (red, green, blue) model becomes prevalent in 
+creating techological devices that can display color such as monitors and mobile phones. As a result, color images are both 3-channel and 2-dimensional, with intensity 
+denoted as 
+\begin{align}
+    \mathbf{I}(x,y)= 
+    \begin{bmatrix}
+        I_R(x,y) \\
+        I_G(x,y) \\
+        I_B(x,y)
+    \end{bmatrix},
+\end{align}
+and color videos are 3-channel and 3-dimensional, with intensity denoted as
+\begin{align}
+    \mathbf{I}(x,y,t)= 
+    \begin{bmatrix}
+        I_R(x,y,t) \\
+        I_G(x,y,t) \\
+        I_B(x,y,t)
+    \end{bmatrix}.
+\end{align}
+
+For the rest of this text, we will only discuss single-channel, one-dimensional signals (specifically time-varying signals) -- these will simply be referred to as signals. There are 
+countless examples of these signals, some of which include audio (mono, as stereo is 2-channel), speech, circuit voltages, and transmitted messages.
+
+\subsection{Continuous-Time vs Discrete-Time}
+\emph{Continuous-time signals} (or CT signals for short) are defined for every value of time $t\in\mathbb{R}$ -- whether or not many of these values end up being zero depends on the physical nature of the 
+signal itself. Another way to rephrase is that continuous-time signals operate in the continuous time domain. These signals are often notated with parentheses, $x(t)$.
+\\ \\
+\emph{Discrete-time signals} (or DT signals for short) are defined only at specific values of time, usually integers $n\in\mathbb{Z}$. That is, discrete-time signals operate in the discrete time domain. 
+Sampling a continuous-time signal at periodic intervals produces a discrete-time signal. Discrete-time signals are often notated with brackets, $x[n]$, and are represented as sequences.
+\\ \\ 
+Note that the terms continuous-time and discrete-time describe signals that vary with time. For multidimensional signals that vary with location such as images, the terms \emph{continuous-space} and \emph{discrete-space} 
+are more appropriate.
+
+\subsection{Continuous-Valued vs Discrete-Valued}
+If the amplitude of a signal can take on any value within a finite or infinite range, the signal is \emph{continuous-valued}. Otherwise, if a signal can only take on a finite set of values 
+within the range as its amplitude, the signal is said to be \emph{discrete-valued}. 
+\\ \\
+For instance, given a range of $[0,1]$, if the signal can capture values of 0.234567, $\pi/4$, 0.8999..., and every number between those values, then it is continuous-valued. A discrete-valued signal may only 
+be able to take on $\{0,0.5\}$, or perhaps $\{0,0.25,0.5,0.75\}$, or $\{0, 1/8, ..., 7/8\}$ -- usually there is a logic to what intermediate values these countable sets are limited to. An $N$-bit quantizer would influence 
+the precision of the values within $2^{-N}$.
+\\ \\
+Furthermore, a signal that is both continuous-valued and continuous-time is called an \emph{analog signal}. Similarly, a signal that is both discrete-valued and discrete-time is called 
+a \emph{digital signal}.
+
+\begin{center}
+    \begin{tabular}{ |c|c|c| } 
+    \hline
+    & Continuous-Valued & Discrete-Valued \\ 
+    \hline
+    Continuous-Time (CT) & Analog & --- \\ 
+    \hline
+    Discrete-Time (DT) & --- & Digital \\ 
+    \hline
+    \end{tabular}
+\end{center}
+
+\begin{figure}[hbt!]
+    \begin{center}
+    \caption{Signals based on time and range}
+    \label{diff_signals}
+    \begin{tikzpicture}
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-1.75, ymax=1.75, ytick={-1,0,1}, ylabel={Analog signal, $x(t)$},
+            xmin=0, xmax=6, xtick={0,...,5}, xlabel={$t$ [s]},
+            domain=-1:5.5,samples=200,
+            width=8cm, height=4.5cm]
+            \addplot [blue,thick]{sin(deg(x))};
+        \end{axis}
+    \end{tikzpicture} \\
+    \begin{tikzpicture}
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-1.75, ymax=1.75, ytick={-1,0,1}, ylabel={DT continuous-valued signal, $x[n]$},
+            xmin=0, xmax=6, xtick={0,...,5}, xlabel={$n$},
+            domain=-1:5.5,samples=200,
+            width=8cm, height=4.5cm]
+            \addplot+ [
+                ycomb,
+            ] coordinates {
+                (0,0) (1,0.8415) (2,0.9093) (3,0.1411) (4,-0.7568) (5,-0.9589)
+            };
+        \end{axis}
+    \end{tikzpicture} \\
+    \begin{tikzpicture}
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-1.75, ymax=1.75, ytick={-1,0,1}, ylabel={Digital signal, $x_q[n]$},
+            xmin=0, xmax=6, xtick={0,...,5}, xlabel={$n$},
+            domain=-1:5.5,samples=200,
+            width=8cm, height=4.5cm]
+            \addplot+ [
+                ycomb,
+            ] coordinates {
+                (0,0) (1,1) (2,1) (3,0) (4,0) (5,-1)
+            };
+        \end{axis}
+    \end{tikzpicture} \\
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (\x < 1) * (0) + and(\x >= 1, \x < 3) * (1) + and(\x >= 3, \x < 5) * (0) + (\x >= 5) * (-1); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-1.75, ymax=1.75, ytick={-1,0,1}, ylabel={CT discrete-valued signal, $x_q(t)$},
+            xmin=0, xmax=6, xtick={0,...,5}, xlabel={$t$ [s]},
+            domain=-1:5.5,samples=200,
+            width=8cm, height=4.5cm]
+            \addplot [blue,thick]{func(x)};
+        \end{axis}
+    \end{tikzpicture}
+    \end{center}
+\end{figure}
+
+In Figure \ref{diff_signals}, an analog signal $x(t)$ is first plotted. When \emph{sampled}, a discrete-time continuous-valued signal $x[n]$ 
+is formed. Because of the precision that modern processors offer, sometimes these signals are also confusingly referred to as digital signals; however, while $x[n]$ can have infinite precision, 
+a digital signal $x_q[n]$ has limited precision. Digital signal $x_q[n]$ is plotted, where in this version, the signal has limited \emph{quantization levels} $\{-1,0,1\}$.  
+This \emph{quantized} signal $x_q[n]$ can then be ``\emph{held}'' such that a continuous-time discrete-valued signal $x_q(t)$ is formed. \\ \\
+For the rest of this text, only analog signals are of interest. 
+
+
+\subsection{Deterministic vs Random}
+Lastly, if a signal can be reproduced without randomness dictating the future of the signal, then it is said to be a \emph{deterministic signal}. Otherwise, it is 
+classified as a \emph{random signal}. 
+\\ \\
+While one could argue a noisy sine wave is irreproducible, it is merely a sum of two signals: a deterministic sine wave and random noise. 
+Each counterpart could be studied on its own. For the rest of this text, only deterministic signals are of interest. 
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+Collectively, we will only be looking into signals with the following characteristics for the remainder of this text:
+\begin{itemize}
+    \item single-channel, one-dimensional
+    \item continuous-time, continuous-valued (analog)
+    \item deterministic
+\end{itemize}
+\end{tcolorbox}
+
+\section{Signal Transformations}
+One of the simplest ways a signal can be modified is by an \emph{affine transformation on the independent variable}. That is, $x(t) \mapsto x(at+b)$.
+
+\subsection{Time Shifting}
+A CT signal that is time-shifted by $T$ seconds can be expressed as 
+\begin{align}
+    y(t) = x(t-T).
+\end{align}
+If $T>0$, then $y(t)$ is said to be delayed by $T$ seconds relative to $x(t)$. If $T<0$, then $y(t)$ is advanced by $T$ seconds.
+
+\subsection{Time Scaling}
+A CT signal that is time-scaled by some factor $a$ can be expressed as 
+\begin{align}
+    y(t) = x(at).
+\end{align}
+If $|a|>1$, then $y(t)$ is a temporally compressed version of $x(t)$. If $|a|<1$, then $y(t)$ is a temporally expanded version of $x(t)$.
+
+\subsection{Time Reversal}
+A time reversal is a reflection of some signal over the vertical axis and can be expressed as 
+\begin{align}
+    y(t)=x(-t).
+\end{align}
+
+\subsection{Combined Transformation}
+Let 
+\begin{align}
+    y(t) = x(at-b) = x\left(a\left(t-\frac{b}{a}\right)\right).
+\end{align}
+There are two approaches to transforming the signal $x(t)$ to $y(t)$.
+\begin{table}[hbt!]
+\centering
+\begin{tabular}{ |p{7cm}|p{7cm}| }
+    \hline
+    Approach 1 & Approach 2 \\
+    \hline
+    \begin{enumerate}
+        \itemsep0em
+        \item Time scale by $|a|$. Then reflect if $a<0$.
+        \item Shift by $b/a$ units.
+    \end{enumerate} &
+    \begin{enumerate}
+        \itemsep0em
+        \item Shift by $b$ units.
+        \item Time scale by $|a|$. Then reflect if $a<0$.
+    \end{enumerate}\\
+    \hline
+\end{tabular}
+\end{table}
+
+\begin{example}
+    Let $x(t)$ be characterized by the following plot. \\ \\
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (\x < -1) * (0) + and(\x >= -1, \x < 2) * (abs(\x)) + (\x > 2) * (0); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=2.5, ytick={0,1,2}, ylabel={$x(t)$},
+            xmin=-2, xmax=3, xtick={-2,...,2}, xlabel={$t$ [s]},
+            domain=-2:3,samples=200,
+            width=7cm, height=4cm]
+        \addplot [blue,thick]{func(x)};
+        \end{axis}
+    \end{tikzpicture} \\ \\
+    Plot $y(t)=x\left(\frac{1}{2}(t+4)\right)$.
+\end{example}
+\begin{solution}
+    Using Approach 1: \\ \\
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (\x < -1) * (0) + and(\x >= -1, \x < 2) * (abs(\x)) + (\x > 2) * (0); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=2.5, ytick={0,1,2}, ylabel={$ $},
+            xmin=-3, xmax=5, xtick={-2,...,4}, xlabel={$t$ [s]},
+            domain=-3:5,samples=200,
+            width=8cm, height=4cm]
+        \addplot [blue,thick]{func(x)} node[above,pos=0.6] {$x(t)$};
+        \addplot [dashed,red,thick]{func(x/2)} node[above,pos=0.75] {$x\left(\frac{1}{2}t\right)$};
+        \end{axis}
+    \end{tikzpicture} 
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (\x < -1) * (0) + and(\x >= -1, \x < 2) * (abs(\x)) + (\x > 2) * (0); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=2.5, ytick={0,1,2}, ylabel={$ $},
+            xmin=-6.5, xmax=3, xtick={-6,...,2}, xlabel={$t$ [s]},
+            domain=-7:3,samples=200,
+            width=9.5cm, height=4cm]
+        \addplot [blue,thick]{func(x)} node[above,pos=0.8] {$x(t)$};
+        \addplot [red,thick]{func((x+4)/2)} node[above,left,pos=0.5] {$x\left(\frac{1}{2}(t+4)\right)$};
+        \end{axis}
+    \end{tikzpicture} \\ \\
+    Here, the plot is first expanded to twice the duration. Then the expanded plot is translated 4 units to the left. \\ \\ 
+    Using Approach 2, for $y(t)=x\left(\frac{1}{2}(t+4)\right)=x\left(\frac{1}{2}t+2\right)$: \\ \\ 
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (\x < -1) * (0) + and(\x >= -1, \x < 2) * (abs(\x)) + (\x > 2) * (0); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=2.5, ytick={0,1,2}, ylabel={$ $},
+            xmin=-4, xmax=3, xtick={-3,...,2}, xlabel={$t$ [s]},
+            domain=-4:3,samples=200,
+            width=7.5cm, height=4cm]
+        \addplot [blue,thick]{func(x)} node[above,pos=0.75] {$x(t)$};
+        \addplot [dashed,red,thick]{func(x+2)} node[above,pos=0.2] {$x\left(t+2\right)$};
+        \end{axis}
+    \end{tikzpicture} 
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (\x < -1) * (0) + and(\x >= -1, \x < 2) * (abs(\x)) + (\x > 2) * (0); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=2.5, ytick={0,1,2}, ylabel={$ $},
+            xmin=-6.5, xmax=3, xtick={-6,...,2}, xlabel={$t$ [s]},
+            domain=-7:3,samples=200,
+            width=9.5cm, height=4cm]
+        \addplot [blue,thick]{func(x)} node[above,pos=0.8] {$x(t)$};
+        \addplot [red,thick]{func(x/2+2)} node[above,left,pos=0.5] {$x\left(\frac{1}{2}t+2\right)$};
+        \end{axis}
+    \end{tikzpicture} \\ \\
+    Here, the plot is first translated 2 units to the left. Then the shifted plot is expanded to twice the duration, relative 
+    to time $t=0$.
+\end{solution}
+
+\section{Waveforms}
+\subsection{Exponential and Sinusoidal Signals}
+\emph{Complex exponential functions} are periodic functions that can be described as 
+\begin{align}
+    x(t) = Ae^{j\omega_0 t}=A\operatorname{exp}(j\omega_0 t),
+\end{align}
+with some complex scalar $A = |A|e^{j\theta}$ and \emph{fundamental angular frequency} $\omega_0$. As such, these functions can be rewritten as
+\begin{align}
+    x(t) = |A|e^{j(\omega_0 t + \theta)}.
+\end{align}
+The real and imaginary parts of the exponential function can be isolated to obtain \emph{sinusoids}:
+\begin{align}
+    \Re(Ae^{j\omega_0 t}) = |A| \cos(\omega_0 t + \theta) \\
+    \Im(Ae^{j\omega_0 t}) = |A| \sin(\omega_0 t + \theta)
+\end{align}
+As complex exponential functions are periodic, it follows that both the real and imaginary parts are periodic as well. Therefore, both cosine and sine 
+functions are periodic with fundamental angular frequency $\omega_0$.
+
+\begin{figure}[hbt!]
+    \caption{Complex exponential function and its components}
+    \resizebox{\textwidth}{!}{%
+        \includestandalone[mode=buildnew, width=\textwidth]{complex_3d}
+    }
+\end{figure}
+
+\subsection{Singularity Signals}
+\emph{Singularity functions} are a class of discontinuous functions that are continuous everywhere except at a singularity point. That is, a function which either is not continuous everywhere 
+or has a some-ordered derivative that is not continuous everywhere is considered a singularity function. 
+When not translated, the singularity point is at $t=0$, where the value is undefined. 
+\\ \\
+The \emph{unit impulse function}, also called the \emph{Dirac delta function}, is defined as 
+\begin{align}
+    \delta(t-T) = 
+    \begin{cases} 
+        +\infty, & t=T \\
+        0, & t \neq T
+    \end{cases}, \\
+    \text{with } \int_{-\infty}^{+\infty} \delta(t-T) \,dt = 1.
+\end{align}
+Graphically, $\delta(t-T)$ is plotted with a vertical arrow of length 1 pointing up from the $t$-axis at time $t=T$, with length 1 representing the area under the curve of an impulse 
+function is 1. When multiplied by a scalar $k$, the plot of $k\cdot\delta(t-T)$ has an arrow length $|k|$ and may point down if $k<0$. \\
+Interestingly, when time-scaled by a factor $a$, 
+\begin{align}
+    \delta(at) = \frac{1}{|a|}\cdot \delta(t).
+\end{align}
+The impulse function also has a unique \emph{sampling property}, also called \emph{sifting property}, and is defined as
+\begin{align}
+    \int_{-\infty}^{+\infty} x(t)\delta(t-T) \,dt &= x(T), \\
+    x(t)\delta(t-T) &= x(T)\delta(t-T).
+\end{align} \\
+The antiderivative of the unit impulse function is the \emph{unit step function}, also called the \emph{Heaviside step function}, and is defined as 
+\begin{align}
+    u(t-T) = 
+    \begin{cases} 
+        0, & t<T \\
+        1, & t>T
+    \end{cases}.
+\end{align}
+Essentially, the unit step function can be treated as an ``on switch'', where at time $t=T$, the signal being multiplied gets turned on. In this case, since $u(t-T)=1\cdot u(t-T)$, 
+the constant function is inactive up until time $t=T$, at which the constant function is finally turned on. This concept becomes important in creating other signals. \\ \\
+Similarly, the time-reversed step function $u(T-t)$ can be treated as an ``off switch'', where at time $t=T$, the signal being multiplied gets turned off.
+\\ \\
+The antiderivative of the unit step function is the \emph{unit ramp function}, which is defined as
+\begin{align}
+    r(t-T) = \operatorname{ramp}(t-T) &= (t-T)u(t-T) \\
+    & =
+    \begin{cases} 
+        0, & t<T \\
+        t-T, & t>T
+    \end{cases}.
+\end{align}
+Notice that the ramp function can be written as a product of the linear function and the unit step function. Using the ``on switch'' concept, the linear function is suppressed 
+for all times before $T$; however, once time $t=T$ has arrived, the linear function is activated.
+\\ \\
+The antiderivative of the unit ramp function is the \emph{unit parabolic function}, which is defined as 
+\begin{align}
+    \operatorname{quad}(t-T) &= \frac{1}{2} (t-T)^2 u(t-T) \\
+    &=
+    \begin{cases} 
+        0, & t<T \\
+        \frac{1}{2}(t-T)^2, & t>T
+    \end{cases}.
+\end{align}
+
+\subsection{Modifying Exponential, Sinusoidal, and Singularity Signals}
+The \emph{unit exponential decay} with time constant $\tau$ is defined as
+\begin{align}
+    \operatorname{exp}[-(t-T)/\tau]\ u(t-T), \text{ for } \tau>0.
+\end{align} \\
+The \emph{rectangular pulse} is defined as 
+\begin{align}
+    \operatorname{rect}(t) = \Pi(t) &= u\left(t+\frac{1}{2}\right) - u\left(t-\frac{1}{2}\right) \\
+    &=
+    \begin{cases} 
+        1, & |t|<\frac{1}{2} \\
+        0, & otherwise
+    \end{cases}.
+\end{align}
+More commonly, when written as $\operatorname{rect}\left(\frac{t-T}{\tau}\right)$, the rectangular pulse has a width $\tau$ that is centered at $t=T$.
+\\ \\
+The \emph{unnormalized triangular pulse}, or simply the \emph{triangular pulse}, is defined as 
+\begin{align}
+    \operatorname{tri}(t) = \Lambda(t) =
+    \begin{cases} 
+        1-|t|, & |t|<1 \\
+        0, & otherwise
+    \end{cases}.
+\end{align}
+When written as $\operatorname{tri}\left(\frac{t-T}{\tau}\right)$, the unnormalized triangular pulse has a width $2\tau$ that is centered at $t=T$.
+\\ \\
+The \emph{normalized triangular pulse} is defined as 
+\begin{align}
+    \overline{\operatorname{tri}}(t) = \overline{\Lambda}(t) =
+    \begin{cases} 
+        1-2|t|, & |t|<\frac{1}{2} \\
+        0, & otherwise
+    \end{cases}.
+\end{align}
+When written as $\overline{\operatorname{tri}}\left(\frac{t-T}{\tau}\right)$, the normalized triangular pulse has a width $\tau$ that is centered at $t=T$.
+\\ \\
+The \emph{signum function}, also called the \emph{sign function}, is defined as 
+\begin{align}
+    \operatorname{sgn}(t) &= u(t)-u(-t) \\ 
+    &= 2u(t)-1 \\
+    &=
+    \begin{cases} 
+        -1, & t<0 \\
+        0, & t=0 \\
+        1, & t>0
+    \end{cases}.
+\end{align}
+The \emph{unnormalized sinc function}, also called the \emph{sampling function}, is defined as 
+\begin{align}
+    \operatorname{sinc}_u(t) = \operatorname{Sa}(t)=\frac{\sin(t)}{t}, \text{ for } \operatorname{sinc}_u(0) = 1.
+\end{align}
+The \emph{normalized sinc function}, or simply the \emph{sinc function}, is defined as 
+\begin{align}
+    \operatorname{sinc}(t) = \frac{\sin(\pi t)}{\pi t}, \text{ for } \operatorname{sinc}(0) = 1.
+\end{align} \\
+The waveforms of all signals described in this section can be found in Table \ref{waveforms}. 
+\begin{example}
+    Given $x(t)=u(t-3)u(5-t)$, express $x(-2t-1)$ as a piecewise function.
+\end{example}
+\begin{solution}
+    For $b>a$, the expression $u(t-a)u(b-t)$ can rewritten as $u(t-a)-u(t-b)$. Therefore,
+    \begin{align*}
+        x(t) = u(t-3)u(5-t) &= u(t-3) - u(t-5) \\
+        &= \begin{cases}
+            1, & 3 < t < 5 \\
+            0, & otherwise
+        \end{cases}
+    \end{align*}
+    Substituting $t\leftarrow (-2t-1)$,
+    \begin{align*}
+        x(-2t-1) &= \begin{cases}
+            1, & 3 < -2t-1 < 5 \\
+            0, & otherwise
+        \end{cases} \\
+        &= \begin{cases}
+            1, & -3 < t < -2 \\
+            0, & otherwise
+        \end{cases} \\
+        &= u(t+3)-u(t+2).
+    \end{align*}
+\end{solution}
+
+\begin{center}
+    \begin{table}
+    \small
+    \centering
+    \caption{Common Waveforms}
+    \label{waveforms}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{ c|c|c }
+    Function & Expression & General Shape \\[0.1cm]
+    \hline 
+    Unit impulse & $\delta(t-T) = 
+        \begin{cases} 
+            +\infty, & t=T \\
+            0, & t \neq T
+        \end{cases}$ & 
+    \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.75, ytick={0,1}, ylabel={$\delta(t)$},
+                xmin=-2, xmax=2, xtick={-2,...,2}, xlabel={$t$ [s]},
+                domain=-1.5:1.5,samples=200,
+                width=6cm, height=3cm]
+            \addplot +[dirac] coordinates {(0,1)};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+    Unit step & $u(t-T) = 
+        \begin{cases} 
+            0, & t<T \\
+            1, & t>T
+        \end{cases}$ & 
+    \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= (\x < 0) * (0) + (\x >= 0) * (1); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.75, ytick={0,1}, ylabel={$u(t)$},
+                xmin=-2, xmax=2, xtick={-2,...,2}, xlabel={$t$ [s]},
+                domain=-1.5:1.5,samples=200,
+                width=6cm, height=3cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+    Unit ramp & $r(t-T) = \operatorname{ramp}(t-T) = (t-T)u(t-T)$ & 
+    \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= (\x < 0) * (0) + (\x >= 0) * (\x); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.75, ytick={0,1}, ylabel={$r(t)$},
+                xmin=-2, xmax=2, xtick={-2,...,2}, xlabel={$t$ [s]},
+                domain=-1.5:1.5,samples=200,
+                width=6cm, height=3cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+    Unit parabolic & $\operatorname{quad}(t-T) = \frac{1}{2} (t-T)^2 u(t-T)$ & 
+    \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= (\x < 0) * (0) + (\x >= 0) * (0.5 * \x^2); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.75, ytick={0,1}, ylabel={$\text{quad}(t)$},
+                xmin=-2, xmax=2, xtick={-2,...,2}, xlabel={$t$ [s]},
+                domain=-1.5:1.5,samples=200,
+                width=6cm, height=3cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+    Unit exponential decay & $\operatorname{exp}[-(t-T)/\tau]\ u(t-T)$ & 
+    \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= (\x < 0) * (0) + (\x >= 0) * (exp(-x)); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.75, ytick={0,1}, ylabel={$e^{-t/\tau}u(t)$},
+                xmin=-2, xmax=2, xtick={-2,...,2}, xlabel={$t$ [s]},
+                domain=-1.5:1.5,samples=200,
+                width=6cm, height=3cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+    Rectangular pulse & $\begin{aligned}
+        \operatorname{rect}\left(\frac{t-T}{\tau}\right) &= \Pi\left(\frac{t-T}{\tau}\right) = u(t-T_1) - u(t-T_2) \\
+        T_1 &= T-\frac{\tau}{2},\text{\quad} T_2 = T+\frac{\tau}{2}
+    \end{aligned}$ & 
+    \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= (\x < -0.5) * (0) + and(\x >= -0.5, \x <= 0.5) * (1) + (\x >= 0.5) * (0); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.75, ytick={0,1}, ylabel={$\text{rect}(t)$},
+                xmin=-2, xmax=2, xtick={-2,...,2}, xlabel={$t$ [s]},
+                domain=-1.5:1.5,samples=200,
+                width=6cm, height=3cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+    (Unnormalized) triangular pulse & $\begin{aligned}\operatorname{tri}\left(\frac{t-T}{\tau}\right) = &\Lambda\left(\frac{t-T}{\tau}\right) = r(t-T_1)-2r(t-T)-r(t-T_2) \\ 
+        &T_1 = T-\tau,\text{\quad} T_2 = T+\tau
+    \end{aligned}$ & 
+    \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= (\x < -1) * (0) + and(\x >= -1, \x <= 1) * (1-abs(\x)) + (\x >= 1) * (0); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.75, ytick={0,1}, ylabel={$\text{tri}(t)$},
+                xmin=-2, xmax=2, xtick={-2,...,2}, xlabel={$t$ [s]},
+                domain=-1.5:1.5,samples=200,
+                width=6cm, height=3cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+    Normalized triangular pulse & $\begin{aligned}\overline{\operatorname{tri}}\left(\frac{t-T}{\tau}\right) = &\overline{\Lambda}\left(\frac{t-T}{\tau}\right) = 2r(t-T_1)-4r(t-T)-2r(t-T_2) \\ 
+        &T_1 = T-\frac{\tau}{2},\text{\quad} T_2 = T+\frac{\tau}{2}
+    \end{aligned}$ & 
+    \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= (\x < -0.5) * (0) + and(\x >= -0.5, \x <= 0.5) * (1-2*abs(\x)) + (\x >= 0.5) * (0); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.75, ytick={0,1}, ylabel={$\overline{\text{tri}}(t)$},
+                xmin=-2, xmax=2, xtick={-2,...,2}, xlabel={$t$ [s]},
+                domain=-1.5:1.5,samples=200,
+                width=6cm, height=3cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+    Signum function & $\operatorname{sgn}(t) = u(t)-u(-t)$ & 
+    \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= (\x < 0) * (-1) + (\x == 0) * (0) + (\x > 0) * (1); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-1.75, ymax=1.75, ytick={-1,0,1}, ylabel={$\text{sgn}(t)$},
+                xmin=-2, xmax=2, xtick={-2,...,2}, xlabel={$t$ [s]},
+                domain=-1.5:1.5,samples=200,
+                width=6cm, height=3.75cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+    Sampling function & $\operatorname{sinc}_u(t)=\operatorname{Sa}(t)=\dfrac{\sin(t)}{t}, \text{ for } \operatorname{sinc}_u(0)=1$ & 
+    \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= sin(deg(\x)) / (\x); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-1.25, ymax=1.5, ytick={-1,0,1}, ylabel={$\text{Sa}(t)$},
+                xmin=-5, xmax=5, xtick={-5,...,5}, xlabel={$t$ [s]},
+                domain=-5:5,samples=200,
+                width=6cm, height=3.75cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+    Sinc function & $\operatorname{sinc}(t)=\dfrac{\sin(\pi t)}{\pi t}, \text{ for } \operatorname{sinc}(0)=1$ & 
+    \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= sin(deg(pi*\x)) / (pi*\x); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-1.25, ymax=1.5, ytick={-1,0,1}, ylabel={$\text{sinc}(t)$},
+                xmin=-5, xmax=5, xtick={-5,...,5}, xlabel={$t$ [s]},
+                domain=-5:5,samples=200,
+                width=6cm, height=3.75cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}}} \\
+    \hline
+    \end{tabular}
+    }
+    \end{table}
+\end{center}
+
+\section{Linear Combination of Signals}
+Just as mathematical expressions can be summed, signals (which essentially are functions) can be summed as well. \\ \\
+While any and all real signals are valid candidates for summation, this section will only focus on the unit impulse, 
+unit step, unit ramp, rectangular pulse, and unit exponential decay as addends of interest. 
+In particular, only signals defined for $t\geq 0$ will be synthesized.
+\\ \\
+Ignoring points of discontinuity, these signals graphically represent either slope changes or vertical offsets, which happen 
+at time of \emph{excitation} -- for rectangular pulses, they happen strictly between time of excitation and time of \emph{termination}. 
+These graphical properties can be seen in Table \ref{waveform_fun}. 
+\begin{table}[hbt!]
+    \small
+    \centering
+    \caption{Graphical Properties of Select Waveforms}
+    \label{waveform_fun}
+    \begin{tabular}{ |c|c|c| }
+        \hline
+        & Slope Change, $\Delta m(T) = m(T^+) - m(T^-)$ & Offset, $\Delta y(T) = y(T^+) - y(T^-)$ \\[0.1cm]
+        \hline
+        $k\cdot\delta(t-T)$ & Vertical arrow at $t=T$ of length $k$ & None \\[0.1cm]
+        $k\cdot u(t-T)$ & None & $\Delta y(T) = k$ \\[0.1cm]
+        $k\cdot\operatorname{rect}\left(\frac{t-T}{\tau}\right)$ & None & $\Delta y(T-\tau/2)=k$, $\Delta y(T+\tau/2) = -k$ \\[0.1cm]
+        $k\cdot r(t-T)$ & $\Delta m(T)=k$ & None \\[0.1cm]
+        $k\cdot\exp\left(-\frac{t-T}{\tau}\right)$ & Exponentially decay rate $1/\tau$ for $t>T$ & $\Delta y(T)=k$ \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    Waveform synthesis tips:
+    \begin{itemize}
+        \item Sort the addends by their respective excitation times
+        \item Mark all excitation and termination times on the time axis
+        \item Starting at zero slope and zero offset, make changes at each marked time, going from left to right along the time axis
+    \end{itemize}
+\end{tcolorbox}
+
+\begin{example}
+    Given $x(t)=2\operatorname{rect}\left(\frac{t-2}{2}\right)+r(t-3)u(4-t)+e^{-(t-4)}u(t-4)+\delta(t-5)$, plot $x(-2t+2)$.
+\end{example}
+\begin{solution}
+    We need to plot $x(t)$ before its transformed version. Since the addends are already ordered, we determine the excitation and termination times, labeled $t_0$ and $t_f$.
+    \begin{align*}
+        2\operatorname{rect}\left(\frac{t-2}{2}\right) &\Longrightarrow t_0 = 1, t_f = 3 \\
+        r(t-3)u(4-t) &\Longrightarrow t_0=3, t_f=4 \\
+        e^{-(t-4)}u(t-4) &\Longrightarrow t_0 = 4 \\
+        \delta(t-5) &\Longrightarrow t_0 = 5
+    \end{align*}
+    Next, we make a note of all slope changes $\Delta m$ and offsets $\Delta y$ due to each addend at each time.
+    \begin{align*}
+        2\operatorname{rect}\left(\frac{t-2}{2}\right) &\Longrightarrow \Delta y = 2 \text{ at } t_0 = 1, \Delta y = -2 \text{ at } t_f = 3 \\
+        r(t-3)u(4-t) &\Longrightarrow \Delta m = 1 \text{ at } t_0=3, \Delta m = -1 \text{ and } \Delta y = -1 \text{ at } t_f = 4 \\
+        e^{-(t-4)}u(t-4) &\Longrightarrow \text{exponential decay and } \Delta y = 1 \text{ at } t_0 = 4 \\
+        \delta(t-5) &\Longrightarrow \text{arrow length 1 at } t_0 = 5
+    \end{align*}
+    Collecting the changes with respect to time:
+    \begin{align*}
+        t=1 &\Longrightarrow \Delta y = 2 \\
+        t=3 &\Longrightarrow \Delta m = 1, \Delta y = -2 \\
+        t=4 &\Longrightarrow \text{exponential decay and } \Delta y = -1+1=0 \\
+        t=5 &\Longrightarrow \text{arrow length 1 at } t_0 = 5
+    \end{align*}
+    Using the collection of changes, plot $x(t)$ from left-to-right. \\ \\
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (\x < 1) * (0) + and(\x >= 1, \x < 3) * (2) + and(\x > 3, \x < 4) * (\x - 3) + (\x > 4) * (exp(-(\x - 4))); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=2.5, ytick={0,...,2}, ylabel={$ $},
+            xmin=-1, xmax=6, xtick={-1,...,5}, xlabel={$ $},
+            domain=-1:6,samples=200,
+            width=7.5cm, height=4cm]
+            \addplot [blue,thick]{func(x)};
+            \draw [blue,thick] (5,0.3678) -- (5,1.3678);
+            \addplot [blue,only marks,mark=triangle*,mark options={scale=1.5}] (5,1.3678);
+            \draw [decorate, decoration={brace,amplitude=5pt,raise=1pt,mirror}] (5.1,0.3678) -- (5.1,1.3678) node [midway, xshift=-1mm, auto, swap, outer sep=10pt,font=\scriptsize]{1};
+        \end{axis}
+    \end{tikzpicture} \\ \\
+    When applying signal transformations, note that for the transformed impulse function:
+    \begin{align*}
+        \delta((-2t+2)-5) = \delta(-2t-3) &= \delta(-2(t+1.5)) \\
+        &= \frac{1}{|-2|} \cdot \delta(t+1.5) = \frac{1}{2} \cdot \delta(t+1.5)
+    \end{align*}
+    The new transformed signal is plotted below: \\ \\
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (\x < 1) * (0) + and(\x >= 1, \x < 3) * (2) + and(\x > 3, \x < 4) * (\x - 3) + (\x > 4) * (exp(-(\x - 4))); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=2.5, ytick={0,...,2}, ylabel={$ $},
+            xmin=-3, xmax=2, xtick={-2,...,2}, xlabel={$ $},
+            domain=-2:2,samples=200,
+            width=7.5cm, height=4cm]
+            \addplot [red,thick]{func(-2*x+2)};
+            \draw [red,thick] (-1.5,0.3678) -- (-1.5,0.8678);
+            \addplot [red,only marks,mark=triangle*,mark options={scale=1.5}] (-1.5,0.8678);
+            \draw [decorate, decoration={brace,amplitude=2.5pt,raise=1pt}] (-1.6,0.3678) -- (-1.6,0.8678) node [midway, xshift=-1mm, auto, outer sep=5pt,font=\scriptsize]{0.5};
+        \end{axis}
+    \end{tikzpicture}
+\end{solution}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    Waveform deconstruction tips:
+    \begin{itemize}
+        \item Mark all times when slope changes or offsets happen, and also note when there are impulse or exponential behaviors
+        \item If there is a slope change $\Delta m=m_2-m_1$ at $t=T$, then use addend $\Delta m \cdot r(t-T)$.
+        \item If there is an instantaneous jump $\Delta y=y_2-y_1$ at $t=T$, then use addend $\Delta y\cdot u(t-T)$. If the jump is followed by  
+            exponential decay, then use $\Delta y\cdot \exp(-(t-T)/\tau)$ instead.
+        \item If there is a vertical arrowhead of length $k$ at $t=T$, then use $k\cdot\delta(t-T)$.
+    \end{itemize}
+\end{tcolorbox}
+
+\pagebreak
+\begin{example}
+    Given the plot of $x(t)$ below, find an expression for $x(t)$. \\ \\
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (\x < -0) * (0) + and(\x >= 0, \x < 2) * (2*\x) + and(\x > 2, \x < 4) * (2*(\x-4)) + (\x > 4) * (0); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-5, ymax=5, ytick={-4,4}, ylabel={$x(t)$},
+            xmin=-1, xmax=5, xtick={0,...,4}, xlabel={$t$ [s]},
+            domain=-1:5,samples=200,
+            width=5cm, height=5cm]
+        \addplot [blue,thick]{func(x)};
+        \end{axis}
+    \end{tikzpicture}
+\end{example}
+\begin{solution}
+    First, make note of all times that introduce some behavioral change.
+    \begin{align*}
+        t=0 &\Longrightarrow \Delta m = 2-0 = 2 \\
+        t=2 &\Longrightarrow \Delta y = -4-4 = -8 \\
+        t=4 &\Longrightarrow \Delta m = 0-2 = -2
+    \end{align*}
+    From above, we are likely dealing with a ramp function at $t=0$, a step function at $t=2$, and another ramp function at $t=4$. That is,
+    \begin{align*}
+        x(t) = 2r(t)-8u(t-2)-2r(t-4).
+    \end{align*}
+\end{solution}
+
+\section{Classification of Signals Based on Properties}
+Signals can also be classified by the content of the signals themselves. 
+
+\subsection{Causality}
+In the real world, only causal signals  can ever occur, though theoretical types can be defined.
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \begin{itemize}
+        \item Causal signals: $x(t)=0$ for $t<0$
+        \item Noncausal signals: $x(t)\neq 0$ for $t<0$
+        \item Anticausal signals: $x(t)=0$ for $t>0$
+    \end{itemize}
+\end{tcolorbox}
+
+\subsection{Symmetry}
+A signal could have even symmetry, odd symmetry, or no symmetry.
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \begin{itemize}
+        \item Even signals: $x(t)=x(-t)$
+        \item Odd signals: $x(t)=-x(-t)$, or alternatively $x(-t)=-x(t)$
+    \end{itemize}
+\end{tcolorbox}
+
+One way to visualize symmetry is to imagine ``folding'' the graph of the signal. If the graph aligns with itself when 
+folded along the vertical axis, then it has \emph{even symmetry} (sometimes called \emph{mirror symmetry}). If not, then 
+if the graph aligns with itself when folded along the vertical and then the horizontal (time) axis, then it has 
+\emph{odd symmetry} (sometimes called \emph{rotation symmetry}). If neither the 1-fold nor 2-fold tests pass, 
+then it has no symmetry.
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    When multiplying symmetric functions, take note of the following properties:
+    \begin{itemize}
+        \item $(\text{even}) \times (\text{even}) = \text{even}$
+        \item $(\text{even}) \times (\text{odd}) = \text{odd}$
+        \item $(\text{odd}) \times (\text{odd}) = \text{even}$
+    \end{itemize}
+    This is analagous to using $+1$ for even and $-1$ for odd.
+\end{tcolorbox}
+
+Lastly, while a signal might not have any symmetry, any signal can be expressed as a sum of two component signals: one with even symmetry 
+and the other with odd symmetry. Sometimes it is easier to analyze each individual component rather than analyze the whole signal on its own. For 
+\begin{align}
+    x(t) = x_e(t) + x_o(t),
+\end{align}
+the even and odd components are given by
+\begin{align}
+    x_e(t) &= \frac{1}{2}\left[x(t)+x(-t)\right] \\
+    x_o(t) &= \frac{1}{2}\left[x(t)-x(-t)\right]
+\end{align}
+
+\begin{example}
+    Given $x(t)=e^{2t}$, find its even and odd components.
+\end{example}
+\begin{solution}
+    The even component is given by 
+    \begin{align*}
+        x_e(t) &= \frac{1}{2}\left[x(t)+x(-t)\right] \\
+        &= \frac{1}{2}\left[e^{2t}+e^{-2t}\right] = \cosh(2t),
+    \end{align*}
+    and the odd component is given by 
+    \begin{align*}
+        x_e(t) &= \frac{1}{2}\left[x(t)-x(-t)\right] \\
+        &= \frac{1}{2}\left[e^{2t}-e^{-2t}\right] = \sinh(2t).
+    \end{align*}
+\end{solution}
+\subsection{Periodicity}
+A signal $x(t)$ is said to be $periodic$ if $x(t)=x(t+nT_0)$ for all integers $n$ and time $t$ with fundamental period $T_0$. 
+Note that $\omega_0=2\pi/T_0$ is the fundamental angular frequency, and $f_0=1/T_0=\omega_0/2\pi$ is the fundamental (linear) frequency.
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    The sum of $N$ periodic signals are itself periodic if:    \begin{itemize}
+        \item $\omega_0=\mathbf{GCD}(\omega_1,\omega_2,...,\omega_N)$ exists, where $\omega_k$ is the fundamental angular frequency of the $k^{th}$ signal
+        \item $\forall n\in\left\{\frac{\omega_1}{\omega_0}, \frac{\omega_2}{\omega_0}, ..., \frac{\omega_N}{\omega_0}\right\}$ are integers, 
+        with each $n$ called the $n^{th}$ harmonic (or mode) of fundamental angular frequency $\omega_0$ (or of fundamental frequency $f_0$)
+    \end{itemize}
+\end{tcolorbox}
+
+\begin{example}
+    Determine if $x(t)=\sin(\frac{5\pi}{6}t)+\cos(\frac{3\pi}{4}t)-\exp\left(j\frac{\pi}{3}t\right)$ is periodic or not.
+\end{example}
+\begin{solution}
+Notice that each addend in $x(t)$ is periodic itself. Let $\omega_1=5\pi/6, \omega_2=3\pi/4, \omega_3=\pi/3$. Then
+\begin{align*}
+    \omega_0 &= \mathbf{GCD}(\omega_1,\omega_2,\omega_3) \\
+    &= \mathbf{GCD}\left(\frac{5\pi}{6}, \frac{3\pi}{4}, \frac{\pi}{3}\right) \\
+    &= \mathbf{GCD}\left(\frac{10\pi}{12}, \frac{9\pi}{12}, \frac{4\pi}{12}\right) = \frac{\pi}{12}.
+\end{align*}
+The corresponding harmonics can be calculated
+\begin{align*}
+    \omega_1/\omega_0 &= 10 \\
+    \omega_2/\omega_0 &= 9 \\
+    \omega_3/\omega_0 &= 4
+\end{align*}
+and are shown to be all integers. \\ \\
+Therefore, $x(t)=\sin(10\omega_0 t)+\cos(9\omega_0 t)+e^{j4\omega_0 t}$ is periodic.
+\end{solution}
+
+\subsection{Signal Power and Energy}
+The total \emph{energy} of a signal $x(t)$ is given by 
+\begin{align}
+    E = \int_{-\infty}^{+\infty} |x(t)|^2 \,dt,
+\end{align}
+whereas the \emph{time-average power} of a signal is given by
+\begin{align}
+    P_{av} = \lim_{T\rightarrow \infty} \frac{1}{T}\int_{-T/2}^{+T/2} |x(t)|^2 \,dt.
+\end{align}
+Furthermore, if a signal $x(t)$ is periodic with fundamental period $T_0$, then 
+\begin{align}
+    P_{av} = \frac{1}{T_0}\int_{-T_0/2}^{+T_0/2} |x(t)|^2 \,dt.
+\end{align}
+In fact, if $x(t)=A\sin(\omega_0 t+\theta)$ for $A$ is real, then 
+\begin{align}
+    P_{av} = \frac{A^2}{2}.
+\end{align}
+It can then be said that all periodic signals are power signals.
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    A signal can be classified based on the values of $P_{av}$ and $E$.
+    \begin{itemize}
+        \item Power signals: $P_{av}$ is finite and $E\rightarrow \infty$ 
+        \item Energy signals: $P_{av}=0$ and $E$ is finite
+        \item Non-physical signals: $P_{av}\rightarrow \infty$ and $E\rightarrow \infty$ 
+    \end{itemize}
+\end{tcolorbox}
+
+\begin{example}
+    Find the total energy of the signal 
+    \begin{align*}
+        x(t) = \begin{cases}
+            0, & t\geq 0 \\
+            3t, & 0\leq t\leq 2 \\
+            6e^{-(t-2)}, & t\geq 2
+        \end{cases}
+    \end{align*}
+\end{example}
+\begin{solution}
+    \begin{align*}
+        E = \int_{-\infty}^{+\infty} |x(t)|^2 \,dt &= \int_{0}^{2} |3t|^2 \,dt + \int_{2}^{+\infty} |6e^{-(t-2)}|^2 \,dt \\
+        &= \left[\frac{9t^3}{3}\right|_0^2 + 36e^4 \left[\frac{-e^{-2t}}{2}\right|_2^{+\infty} \\
+        &= (24-0) + 36e^4\left(0+\frac{e^{-4}}{2}\right) \\
+        &= 24 + 18 =  42.
+    \end{align*}
+\end{solution}
+
+\begin{example}
+    Fully describe what type of signal $x(t)=(3-j4)e^{j\pi t/3}$ is.
+\end{example}
+\begin{solution}
+    Since $x(t)$ is a complex exponential function, it is periodic with 
+    \begin{align*}
+        \omega_0 = \frac{\pi}{3} = \frac{2\pi}{T_0} \Longrightarrow T_0 = 6.
+    \end{align*}
+    Therefore, $x(t)$ is also a power signal with average power 
+    \begin{align*}
+        P_{av} = \frac{1}{T_0}\int_{-T_0/2}^{+T_0/2} |x(t)|^2 \,dt &= \frac{1}{6}\int_{-3}^{3} x(t)x^*(t) \,dt \\
+        &= \frac{1}{6}\int_{-3}^{3} [(3-j4)e^{j\pi t/3}][(3+j4)e^{-j\pi t/3}] \,dt \\
+        &= \frac{1}{6}\int_{-3}^{3} 25 \,dt = 25.
+    \end{align*}
+    Checking for symmetry, we find there is none since 
+    \begin{align*}
+        x(-t) &= (3-j4)e^{-j\pi t/3} \neq x(t), \\
+        -x(-t) &= -(3-j4)e^{-j\pi t/3} \neq x(t).
+    \end{align*}
+    Therefore, $x(t)$ is:
+    \begin{itemize}
+        \item an analog signal,
+        \item deterministic, 
+        \item noncausal, 
+        \item asymmetric,
+        \item periodic,
+        \item and a power signal.
+    \end{itemize}
+\end{solution}
+The signal processing equations for signal average power and energy are borrowed from physics itself. The physics equation for instantaneous power is given by 
+\begin{align}
+    p(t) = i^2(t)R = \frac{v^2(t)}{R}
+\end{align}
+It then follows that the physics equation for energy is 
+\begin{align}
+    E = \int_{-\infty}^{+\infty} p(t) \,dt
+\end{align}
+and the physics equation for average power for periodic signals is 
+\begin{align}
+    P_{av} = \frac{1}{T}\int_{-T/2}^{+T/2} p(t) \,dt
+\end{align}
+In this case, we take $|x(t)|^2$ to be analogous to $p(t)$. With signal processing, 
+the equations for signal average power and energy are actually normalized. If the signal of interest $x(t)$ 
+ends up being a voltage or current signal, the units must be accounted for when unnormalizing the values.
+\\ \\
+For cases where normalized signal power and energy need to be converted to unnormalized power and energy describing physical systems such as circuits, we redefine 
+\begin{align}
+    E_{norm} &= \int_{-\infty}^{+\infty} |x(t)|^2 \,dt \\
+    P_{av,norm} &= \lim_{T\rightarrow \infty} \frac{1}{T}\int_{-T/2}^{+T/2} |x(t)|^2 \,dt
+\end{align}
+If $x(t)=v(t)$ is the voltage across a resistor, then it follows that 
+\begin{align}
+    E &= \frac{E_{norm}}{R} \\ 
+    P_{av} &= \frac{P_{av,norm}}{R}
+\end{align}
+Otherwise if $x(t)=i(t)$ is the current through a resistor, then it follows that 
+\begin{align}
+    E &= E_{norm}R \\
+    P_{av} &= P_{av,norm}R
+\end{align}
+
+\end{document}

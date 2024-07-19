@@ -1,0 +1,1022 @@
+\documentclass{report}
+\input{../../preamble.tex}
+
+\begin{document}
+\setcounter{chapter}{5}
+\chapter{Fourier Transform}
+In the previous chapter, we analyzed periodic signals using the Fourier series. However, not all everlasting signals are periodic. While the Fourier transform 
+will not be derived here, the Fourier transform is closely related to the Fourier series, except now letting $T\rightarrow\infty$ to account for nonperiodic waveforms. 
+\\ \\ 
+Generally, the Fourier transform can be applied to any signal. However, for best practices, the following table describes what technique is best used for certain signals. \\ \\
+\resizebox{\textwidth}{!}{
+    \NiceMatrixOptions{cell-space-top-limit=2pt,cell-space-bottom-limit=2pt}
+    \begin{NiceTabular}[c]{cccc}[hvlines]
+    \Block{1-2}{Input $x(t)$} & & \Block{2-1}{Solution Method} & \Block{2-1}{Output $y(t)$} \\ 
+    Duration & Waveform & & \\ 
+    Everlasting & Sinusoid & Phasor Transform & Steady-State Component \\ 
+    Everlasting & Periodic & Fourier Series and Phasor Transform & Steady-State Component \\ 
+    Causal ($x(t)=0$ for $t<0$) & Any & Unilateral Laplace Transform & \shortstack{Complete Solution \\ (transient + steady-state)} \\
+    Everlasting & Any & \shortstack{Fourier Transform \\ or Bilateral Laplace Transform} & \shortstack{Complete Solution \\ (transient + steady-state)} \\ 
+\end{NiceTabular}}
+
+\section{Fourier Transform}
+The \emph{Fourier transform} of a signal $x(t)$ is defined as 
+\begin{align}
+    X(\omega) = \mathcal{F}[x(t)] = \int_{-\infty}^{+\infty} x(t) e^{-j\omega t} \,dt.
+\end{align}
+Similar to the Laplace transform, the Fourier transform is essentially an operator that maps a signal defined in the \emph{time domain} to another signal defined 
+in the \emph{frequency domain}. $x(t)$ and $X(\omega)$ constitute a unique \emph{Fourier transform pair}. This relationship can be written as 
+\begin{align}
+    x(t) \iff X(\omega).
+\end{align}
+Because of this relationship, there exists an \emph{inverse Fourier transform} defined by
+\begin{align}
+    x(t) = \mathcal{F}^{-1}[X(\omega)] = \frac{1}{2\pi}\int_{-\infty}^{+\infty} X(\omega) e^{+j\omega t} \,d\omega,
+\end{align}
+though referencing a table of Fourier transform pairs is a lot simpler than computing the integral. 
+Interestingly, the Fourier transform is related to the bilateral Laplace transform:
+\begin{align}
+    X(\omega) = X(s)\big|_{s=j\omega}
+\end{align}
+The Dirichlet conditions for the Fourier transform is as follows:
+\begin{enumerate}
+    \item $x(t)$ has a finite number of finite discontinuities in every finite interval of time.
+    \item $x(t)$ has a finite number of maxima and minima in every finite interval of time.
+    \item $x(t)$ is absolutely integrable such that $\displaystyle\int_{-\infty}^{+\infty}|x(t)| \,dt < \infty$.
+\end{enumerate}
+If the Dirichlet conditions are met, then $x(t)$ is physically realizable and has a Fourier transform. However, these are sufficient but not necessary conditions 
+as some functions like the constant function or the unit step function are not absolutely integrable, yet they have Fourier transforms. 
+(Instead, limit definitions of those functions are evaluated to obtain the Fourier transform.)
+\\ \\
+Table \ref{fourier_prop} lists the properties of the Fourier transform.
+\begin{table}
+    \centering
+    \caption{Properties of the Fourier Transform}
+    \label{fourier_prop}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Property & $x(t)$ & $X(\omega)=\mathcal{F}[x(t)]$ \\[0.15cm]
+        \hline
+        & & \\
+        Superposition & $K_1x_1(t)+K_2x_2(t)$ & $K_1X_1(\omega)+K_2X_2(\omega)$ \\[0.5cm]
+        Time scaling & $x(at)$ & $\dfrac{1}{|a|}X\left(\dfrac{\omega}{a}\right)$ \\[0.5cm]
+        Time shift & $x(t-t_0)$ & $e^{-j\omega t_0}X(\omega)$ \\[0.5cm]
+        Frequency shift & $e^{j\omega_0 t}x(t)$ & $X(\omega-\omega_0)$ \\[0.5cm]
+        Time derivative & $x'(t)=\dfrac{dx(t)}{dt}$ & $j\omega X(\omega)$ \\[0.5cm]
+        Time $n$th derivative & $x^{(n)}(t)=\dfrac{d^nx(t)}{dt^n}$ & $(j\omega)^nX(\omega)$ \\[0.5cm]
+        Time integral & $\displaystyle\int_{-\infty}^{t} x(\tau) \,d\tau$ & $\dfrac{X(\omega)}{j\omega} + \pi\delta(\omega)\displaystyle\int_{-\infty}^{+\infty}x(t) \,dt$ \\[0.5cm]
+        Frequency derivative & $t^n x(t)$ & $(j)^n \dfrac{d^n X(\omega)}{d\omega^n} = (j)^n X^{(n)}(\omega)$\\[0.5cm]
+        Convolution & $x_1(t)*x_2(t)$ & $X_1(\omega)X_2(\omega)$ \\[0.5cm]
+        Multiplication & $x_1(t)x_2(t)$ & $X_1(\omega)*X_2(\omega)$ \\[0.5cm]
+        Modulation & $x(t)\cos(\omega_0 t)$ & $\dfrac{1}{2}[X(\omega-\omega_0) + X(\omega+\omega_0)]$ \\[0.5cm]
+        Duality & $X(t)$ & $2\pi x(-\omega)$ \\[0.5cm]
+        Conjugate symmetry & $x(t)$ real & 
+        $\begin{cases}
+            X(-\omega) = X^*(\omega) \\
+            \Re(X(\omega)) = \Re(X(-\omega)) \\
+            \Im(X(\omega)) = -\Im(X(\omega)) \\
+            |X(\omega)| = |X(-\omega)| \\
+            \arg[X(\omega)] = -\arg[X(-\omega)]
+        \end{cases}$ \\[0.5cm]
+         & & \\[0.25cm]
+        \shortstack{Even-odd decomposition \\ of real signals} & 
+        $\begin{cases}
+            x_e(t)=\frac{1}{2}[x(t)+x(-t)] \\
+            x_o(t)=\frac{1}{2}[x(t)-x(-t)]
+        \end{cases}$ & 
+        $\begin{cases}
+            \Re(X(\omega)) \\
+            j\Im(X(\omega))
+        \end{cases}$ \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+From the conjugate symmetry property, there are important implications about the properties of $x(t)$ and its Fourier transform $X(\omega)$:
+\begin{center}
+    \begin{tabular}{|c|c|}
+        \hline
+        $x(t)$ & $X(\omega)$ \\
+        \hline
+        Real and even & Real and even \\
+        Real and odd & Imaginary and odd \\
+        Imaginary and even & Imaginary and even \\
+        Imaginary and odd & Real and odd \\
+        \hline
+    \end{tabular}
+\end{center}
+
+\begin{example}
+    Find the Fourier transform of the constant function $x(t)=1$.
+\end{example}
+\begin{solution}
+    Consider the delta function $\delta(t)$. Its Fourier transform is given by 
+    \begin{align*}
+        \mathcal{F}[\delta(t)] = \int_{-\infty}^{+\infty} \delta(t) e^{-j\omega t} \,dt = 1.
+    \end{align*}
+    Then by the duality property, the Fourier transform of 1 is 
+    \begin{align*}
+        \mathcal{F}[1] = 2\pi\delta(-\omega) = 2\pi\delta(\omega).
+    \end{align*}
+\end{solution}
+
+\begin{example}
+    Find the Fourier transform of the unit step function $u(t)$.
+\end{example}
+\begin{solution}
+    From the previous example, the Fourier transform of the delta function $\delta(t)$ is 1. 
+    Recall that the unit step function can be defined as
+    \begin{align*}
+        u(t) = \int_{-\infty}^{t} \delta(\tau) \,d\tau.
+    \end{align*}
+    Then by the time integral property, the Fourier transform of $u(t)$ is 
+    \begin{align*}
+        \mathcal{F}[u(t)] = \mathcal{F}\left[\int_{-\infty}^{t} \delta(\tau) \,d\tau\right] = \frac{1}{j\omega} + \pi\delta(\omega)\int_{-\infty}^{\infty}\delta(t) \,dt = \frac{1}{j\omega} + \pi\delta(\omega).
+    \end{align*}
+\end{solution}
+Table \ref{fourier_pairs} lists some common Fourier transform pairs. While one could find the inverse Fourier transform using the inverse Fourier integral, 
+it is much simpler to reference a table of transform pairs.
+
+\begin{table}
+    \centering
+    \caption{Fourier Transform Pairs}
+    \label{fourier_pairs}
+    \begin{tabular}{|c|c|}
+        \hline
+        $x(t)$ & $X(\omega)=\mathcal{F}[x(t)]$ \\[0.15cm]
+        \hline
+        & \\[0.1cm]
+        $\delta(t)$ & $1$ \\[0.5cm]
+        $\delta(t-t_0)$ & $e^{-j\omega t_0}$ \\[0.5cm]
+        $1$ & $2\pi\delta(\omega)$ \\[0.5cm]
+        $u(t)$ & $\pi\delta(\omega) + \dfrac{1}{j\omega}$ \\[0.5cm]
+        $\operatorname{sgn}(t)$ & $\dfrac{2}{j\omega}$ \\[0.5cm]
+        $\operatorname{rect}\left(\dfrac{t}{\tau}\right)$ & $\tau\operatorname{Sa}\left(\dfrac{\omega\tau}{2}\right)$ \\[0.5cm]
+        $\dfrac{\exp[-t^2/(2\sigma^2)]}{\sqrt{2\pi\sigma^2}}$ & $\exp[-\omega^2\sigma^2/2]$ \\[0.5cm]
+        $e^{-at}u(t)$ & $\dfrac{1}{a+j\omega}$ \\[0.5cm]
+        $e^{at}u(-t)$ & $\dfrac{1}{a-j\omega}$ \\[0.5cm]
+        $\cos(\omega_0 t)$ & $\pi[\delta(\omega-\omega_0) + \delta(\omega+\omega_0)]$ \\[0.5cm]
+        $\sin(\omega_0 t)$ & $\dfrac{\pi}{j}[\delta(\omega-\omega_0) - \delta(\omega+\omega_0)]$ \\[0.5cm]
+        $e^{j\omega_0 t}$ & $2\pi\delta(\omega-\omega_0)$ \\[0.5cm]
+        $te^{-at}u(t)$ & $\dfrac{1}{(a+j\omega)^2}$ \\[0.5cm]
+        $e^{-at}\sin(\omega_0 t)u(t)$ & $\dfrac{\omega_0}{(a+j\omega)^2+\omega_0^2}$ \\[0.5cm]
+        $\sin(\omega_0 t)u(t)$ & $\dfrac{\pi}{2j}[\delta(\omega-\omega_0) - \delta(\omega+\omega_0)] + \dfrac{\omega_0}{\omega_0^2-\omega^2}$ \\[0.5cm]
+        $e^{-at}\cos(\omega_0 t)u(t)$ & $\dfrac{a+j\omega}{(a+j\omega)^2+\omega_0^2}$ \\[0.5cm]
+        $\cos(\omega_0 t)u(t)$ & $\dfrac{\pi}{2}[\delta(\omega-\omega_0) - \delta(\omega+\omega_0)] + \dfrac{j\omega}{\omega_0^2+\omega^2}$ \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+
+\section{Fourier Transform of Periodic Signals}
+Recall that the exponential form of the Fourier series for a physically realizable periodic signal $x(t)$ is given by 
+\begin{align}
+    x(t) = \sum_{n=-\infty}^{+\infty} x_n e^{jn\omega_0 t},
+\end{align}
+with exponential Fourier coefficients
+\begin{align}
+    x_n = \frac{1}{T_0} \int_{t_0}^{t_0+T_0} x(t) e^{-jn\omega_0 t} \,dt.
+\end{align}
+The Fourier transform of periodic signal $x(t)$ with exponential Fourier coefficients $x_n$ is then 
+\begin{align}
+    \mathcal{F}[x(t)] = \mathcal{F}\left[\sum_{n=-\infty}^{+\infty} x_n e^{jn\omega_0 t}\right] = \sum_{n=-\infty}^{+\infty} \mathcal{F}[x_n e^{jn\omega_0 t}] = \sum_{n=-\infty}^{+\infty} x_n 2\pi \delta(\omega - n\omega_0).
+\end{align}
+
+\section{Parseval's Theorem for Fourier Transforms}
+Similar to how Parseval's theorem for Fourier series is essentially a ``conservation of (average) power'' theorem as periodic signals are power signals, 
+Parseval's theorem for Fourier transforms is essentially a ``conservation of energy'' theorem for any physically realizable signal (aperiodic or periodic). 
+When signals are mapped from the continuous-time function to the continuous-frequency Fourier spectrum, the total signal energy is conserved. It follows that 
+the total energy of a physically realizable signal $x(t)$ can be evaluated as:
+\begin{align}
+    E_x = \int_{-\infty}^{+\infty} |x(t)|^2 \,dt = \frac{1}{2\pi}\int_{-\infty}^{+\infty} |X(\omega)|^2 \,d\omega
+\end{align}
+Additionally, we can define the \emph{one-sided energy spectral density} (1-sided ESD) to be 
+\begin{align}
+    ESD_1 = \frac{1}{\pi}|X(\omega)|^2,
+\end{align}
+and the \emph{two-sided energy spectral density} (2-sided ESD) to be 
+\begin{align}
+    ESD_2 = \frac{1}{2\pi}|X(\omega)|^2.
+\end{align}
+Note that the 2-sided ESD is defined for all frequencies, whereas the 1-sided ESD is defined for only nonnegative frequencies. 
+Because of this, the values of the 2-sided ESD are half the values of the 1-sided ESD. In signal processing, we tend to be more interested in the 1-sided ESD.
+
+\begin{example}
+    The signal $x(t)$ is plotted below. Use the properties of the Fourier transform to find: 
+    \begin{enumerate}[(a)]
+        \item $\phase{X(\omega)}$
+        \item $X(\omega)$ at $\omega=0$
+        \item $\int_{-\infty}^{+\infty}X(\omega) \,d\omega$
+        \item $\int_{-\infty}^{+\infty}|X(\omega)|^2 \,d\omega$
+    \end{enumerate}
+    \resizebox{0.7\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > -1, \x < 0) * (2) + and(\x > 0, \x < 2) * (abs(\x-1)+1) + and(\x > 2, \x < 3) * (2); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=2.5, ytick={0,1,2}, ylabel={$x(t)$},
+                xmin=-3.5, xmax=4, xtick={-3,...,3}, xlabel={$t$ [s]},
+                domain=-3.1:3.9,samples=200,
+                width=9cm, height=3cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}}
+\end{example}
+\begin{solution}
+    For part (a), notice that $x(t)$ has hidden symmetry. If we let $y(t) = x(t+1)$, then $y(t)$ is real and even. Therefore, 
+    \begin{align*}
+        y(t) \text{ real and even} \iff Y(\omega) \text{ real and even}
+    \end{align*}
+    Since $Y(\omega)$ is purely real, it has zero phase. Then
+    \begin{align*}
+        y(t) = x(t+1) \iff &Y(\omega) = X(\omega)e^{j\omega} \\
+        &\phase{Y(\omega)} = \phase{X(\omega)} + \omega = 0.
+    \end{align*}
+    Then the phase of $X(\omega)$ is 
+    \begin{align*}
+        \phase{X(\omega)} = -\omega.
+    \end{align*}
+    Substituting $\omega=0$ into the Fourier transform integral for part (b), we get 
+    \begin{align*}
+        X(\omega=0) = \int_{-\infty}^{+\infty} x(t) \,dt = [\text{Area under the curve}] = 7
+    \end{align*}
+    For part (c), we can manipulate the inverse Fourier transform integral such that 
+    \begin{align*}
+        x(t) &= \frac{1}{2\pi}\int_{-\infty}^{+\infty} X(\omega)e^{j\omega t} \,d\omega \\
+        \Longrightarrow 2\pi x(t=0) &= \int_{-\infty}^{+\infty} X(\omega) \,d\omega = 2\pi \times 2 = 4\pi
+    \end{align*}
+    Lastly, for part (d), by Parseval's theorem, 
+    \begin{align*}
+        \int_{-\infty}^{+\infty} |X(\omega)|^2 \,d\omega &= 2\pi\int_{-\infty}^{+\infty} |x(t)|^2 \,dt = \frac{76\pi}{3}
+    \end{align*}
+\end{solution}
+
+\section{LTI Systems with Fourier Transforms}
+Similar to the Laplace transform, LTI systems characterized by LCCDEs can be solved by applying the Fourier transform, computing the $\omega$-domain solution, 
+and mapping the solution back to the domain. While the unilateral Laplace transform can only be used on causal signals and systems, the Fourier transform 
+can be used on all physically realizable signals and LTI systems, though everlasting signals are more adequate.
+\\ \\
+An LCCDE of the form 
+\begin{align}
+    \sum_{\ell=0}^{N} a_{N-\ell} \frac{d^{\ell} y(t)}{dt^{\ell}} = \sum_{\ell=0}^{M} b_{M-\ell} \frac{d^{\ell} x(t)}{dt^{\ell}}
+\end{align}
+can be transformed to the $\omega$-domain to get 
+\begin{align}
+    \left[\sum_{\ell=0}^{N} a_{N-\ell} (j\omega)^{\ell}\right]Y(\omega) = \left[\sum_{\ell=0}^{M} b_{M-\ell} (j\omega)^{\ell}\right]X(\omega).
+\end{align}
+
+\begin{example}
+    An LTI system is characterized by the LCCDE 
+    \begin{align*}
+        \frac{d^2y(t)}{dt^2} + 7\frac{dy(t)}{dt} + 12y(t) = \frac{dx(t)}{dt} + 2x(t).
+    \end{align*}
+    Find the system response to input $x(t)=e^{-2t}u(t)$.
+\end{example}
+\begin{solution}
+    Transforming the LCCDE to $\omega$-domain, we get
+    \begin{align*}
+        [(j\omega)^2 + 7j\omega + 12]Y(\omega) &= [j\omega + 2]X(\omega) \\
+        \Longrightarrow Y(\omega) &= \left[\frac{2+j\omega}{(j\omega)^2 + 7j\omega + 12}\right]X(\omega)
+    \end{align*}
+    From the table of Fourier transform pairs, we see that 
+    \begin{align*}
+        \mathcal{F}[e^{-2t}u(t)] = \frac{1}{2+j\omega} 
+    \end{align*}
+    Therefore, by applying partial fraction expansion with respect to $j\omega$,
+    \begin{align*}
+        Y(\omega) &= \left[\frac{2+j\omega}{(j\omega)^2 + 7j\omega + 12}\right] \frac{1}{2+j\omega} = \frac{1}{(j\omega)^2 + 7j\omega + 12} = \frac{1}{3+j\omega} - \frac{1}{4+j\omega},
+    \end{align*}
+    we get the solution
+    \begin{align*}
+        y(t) &= e^{-3t}u(t) - e^{-4t}u(t).
+    \end{align*}
+\end{solution}
+
+Just as differential equations can be solved in the $\omega$-domain, the systems represented by differential equations can be solved in the $\omega$-domain. For instance, 
+an electric circuit can be transformed to an $\omega$-domain equivalent and solved using algebraic equations, with the $\omega$-domain electrical components referred to  
+as impedances. The equivalent $\omega$-domain models can be seen in Table \ref{omega_circ}.
+
+\begin{table}[!hbt]
+    \caption{Circuit models for electrical components in the $\omega$-domain.}
+    \label{omega_circ}
+    \centering
+    \begin{tabular}{ |c|c|c| }
+        \hline
+        \shortstack{Electrical \\ Component} & \shortstack{Time \\ Domain} & $\omega$-Domain \\
+        \hline
+        & & \\
+        Resistor &
+        \adjustbox{valign=m}{
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw (0,0) to [R=$R$, f=$i_R$, v=$v_R$, voltage shift = 1.2] (0,-3); 
+        \end{circuitikz}} & 
+        \adjustbox{valign=m}{
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw (0,0) to [R=$R$, f=$I_R$, v=$V_R$, voltage shift = 1.2] (0,-3); 
+        \end{circuitikz}}\\[1.5cm]
+        \hline
+        & & \\
+        Capacitor & 
+        \adjustbox{valign=m}{
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw (0,0) to [C=$C$, f=$i_C(t)$, v=$v_C(t)$, voltage shift=1.2] (0,-3); 
+        \end{circuitikz}} &
+        \adjustbox{valign=m}{
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw (0,0) to [C=$\dfrac{1}{j\omega C}$, f=$I_C$, v=$V_C$, voltage shift=1.2] (0,-3); 
+        \end{circuitikz}} \\[1.5cm]
+        \hline
+        & & \\
+        Inductor & 
+        \adjustbox{valign=m}{
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw (0,0) to [L=$L$, f=$i_L(t)$, v=$v_L(t)$, voltage shift=1.2] (0,-3); 
+        \end{circuitikz}} &
+        \adjustbox{valign=m}{
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw (0,0) to [L=$j\omega L$, f=$I_L$, v=$V_L$, voltage shift=1.2] (0,-3); 
+        \end{circuitikz}} \\[1.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{example}
+    Find an equation for the current flowing through the capacitor $i_c(t)$ in the following circuit, given that the input excitation is 
+    \begin{align*}
+        v_s(t) = 10e^{-2t}u(t) \text{ [V]}.
+    \end{align*}
+    \resizebox{0.7\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+        \draw (0,0) to [V, l_={\large $v_s(t)$}] (0,-2); 
+        \draw (0,0) to [R={$2\,[k\Omega]$}] (3,0);
+        \draw (3,0) to [short, f={$i_c(t)$}] (6,0);
+        \draw (0,-2) to [short] (6,-2);
+        \draw (3,0) to [R={$4\,[k\Omega]$}] (3,-2);
+        \draw (6,0) to [C={$0.25\,[mF]$}] (6,-2);
+    \end{circuitikz}}
+\end{example}
+\begin{solution}
+    First, we transform the circuit to the $\omega$-domain. \\ \\
+    \resizebox{0.7\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+        \draw (0,0) to [V, l_={\large $V_s=\dfrac{10}{2+j\omega}$}] (0,-2); 
+        \draw (0,0) to [R={$2000$}] (3,0);
+        \draw (3,0) to [short, f={$I_c$}] (6,0);
+        \draw (0,-2) to [short] (6,-2);
+        \draw (3,0) to [R={$4000$}] (3,-2);
+        \draw (6,0) to [C={$\dfrac{4000}{j\omega}$}] (6,-2);
+        \draw[-latex, blue] (1.25,-0.5) arc(110:-110:6mm) node[blue, midway, left, font=\large] {$I_1$};
+        \draw[-latex, blue] (4.25,-0.5) arc(110:-110:6mm) node[blue, midway, left, font=\large] {$I_2$};
+    \end{circuitikz}}
+    \\ \\
+    Then by using the mesh current method, we get 
+    \begin{align*}
+        -V_s + 2000I_1 + 4000(I_1-I_2) = 0 &\Longrightarrow I_1 = \frac{V_s + 4000I_2}{6000} \\
+        4000(I_2-I_1) + \frac{4000}{j\omega}I_2 = 0 &\Longrightarrow I_1 = \left(1+\frac{1}{j\omega}\right)I_2
+    \end{align*}
+    Setting the two equations together and using partial fraction expansion with respect to $j\omega$:
+    \begin{align*}
+        I_2 = \frac{V_s}{6000}\cdot\frac{3j\omega}{3+j\omega} = \frac{(5\times10^{-3})j\omega}{(2+j\omega)(3+j\omega)} &= \frac{-10\times10^{-3}}{2+j\omega} + \frac{15\times10^{-3}}{3+j\omega} \\ 
+        &= \left(\frac{-10}{2+j\omega} + \frac{15}{3+j\omega}\right)\times 10^{-3}
+    \end{align*}
+    The current running through the capacitor is then given by 
+    \begin{align*}
+        i_c(t) = \mathcal{F}^{-1}[I_2] = (-10e^{-2t} + 15e^{-3t})u(t) \text{ [mA]}.
+    \end{align*}
+\end{solution}
+
+\section{Frequency Response}
+The \emph{frequency response function} is the Fourier transform of the impulse response and 
+is defined as 
+\begin{align}
+    H(\omega) = \frac{Y(\omega)}{X(\omega)} = \mathcal{F}[h(t)].
+\end{align}
+In fact, by the convolution property, it follows that 
+\begin{align}
+    y(t) = x(t) * h(t) \iff Y(\omega) = X(\omega)H(\omega).
+\end{align}
+Symbolically,
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x(t)$};
+        \node [] (output) at (+3,0){$y(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$h(t)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node at (0,0) [double arrow, draw=black, top color=red, bottom color=blue,
+            minimum width = 15pt, double arrow head extend=5pt,
+            minimum height=12mm,
+            rotate=90] {};
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$X(\omega)$};
+        \node [] (output) at (+3,0){$Y(\omega)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$H(\omega)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+As the impulse response is the system response to input $x(t)=\delta(t)$, consider the Fourier transform of the impulse signal $\mathcal{F}[\delta(t)]=1$. Then it also follows that 
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x(t)=\delta(t)$};
+        \node [] (output) at (+3,0){$y(t)=h(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$h(t)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node at (0,0) [double arrow, draw=black, top color=red, bottom color=blue,
+            minimum width = 15pt, double arrow head extend=5pt,
+            minimum height=12mm,
+            rotate=90] {};
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$X(\omega)=1$};
+        \node [] (output) at (+3,0){$Y(\omega)=H(\omega)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$H(s)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+Interestingly, the frequency response is related to the transfer function:
+\begin{align}
+    H(\omega) = H(s)\big|_{s=j\omega}
+\end{align}
+As before, there are two approaches to finding the frequency response of an LTI system:
+\begin{enumerate}
+    \item Find $X(\omega),Y(\omega)$. Then calculate $H(\omega)=Y(\omega)/X(\omega)$.
+    \item Find $X(\omega),Y(\omega)$. Then substitute $X(\omega)=1$ and $Y(\omega)=H(\omega)$.
+\end{enumerate}
+While the frequency response can be used for determining system stability just like the transfer function, 
+the frequency response has the additional tool of analyzing the gain and phase of an LTI system at particular 
+frequencies of interest, as borrowed from the Fourier series analysis. 
+\\ \\
+The magnitude $|H(\omega)|$ of the frequency response is called the \emph{magnitude response} and has an associated \emph{phase reponse} $\phase{H(\omega)}$. 
+The plots of the magnitude response and phase response are two-sided and continuous and are collectively referred to as the \emph{frequency spectrum}. 
+\\ \\ 
+When expressed as $H(\omega)=\dfrac{N(\omega)}{D(\omega)}$, the magnitude and phase responses can be computed as 
+\begin{align}
+    |H(\omega)| &= \frac{|N(\omega)|}{|D(\omega)|} = \frac{\sqrt{[\Re(N(\omega))]^2 + [\Im(N(\omega))]^2}}{\sqrt{[\Re(D(\omega))]^2 + [\Im(D(\omega))]^2}} \\
+    \phase{H(\omega)} &=  \phase{N(\omega)} -  \phase{D(\omega)} = \arctan\left(\frac{\Im(N(\omega))}{\Re(N(\omega))}\right) - \arctan\left(\frac{\Im(D(\omega))}{\Re(D(\omega))}\right)
+\end{align}
+\begin{example}
+    Find the frequency response of the following RC circuit. \\ \\
+    \resizebox{0.5\textwidth}{!}{
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw 
+                (0,3) to [V, l_={\Large $v_s(t)$}] (0,0)
+                to [short, -*] (6,0)
+                (0,3) to [R, l^={\Large $R$}] (4,3)
+                to [C, l_={\Large $C$}] (4,0)
+                (4,3) to [short, -*] (6,3) 
+                to [open, v^>={\Large $v_{out}(t)$}] (6,0);
+        \end{circuitikz}}
+\end{example}
+\begin{solution}
+    Mapping to the $\omega$-domain, we get
+    \begin{center}
+        \resizebox{0.45\textwidth}{!}{
+        \begin{circuitikz}[american voltages,raised voltages]
+            \draw 
+                (0,3) to [V, l_={\Large $V_s(\omega)$}] (0,0)
+                to [short, -*] (6,0)
+                (0,3) to [R, l^={\Large $R$}] (4,3)
+                to [C, l_={\Large $\dfrac{1}{j\omega C}$}] (4,0)
+                (4,3) to [short, -*] (6,3) 
+                to [open, v^>={\Large $V_{out}(\omega)$}] (6,0);
+        \end{circuitikz}}
+    \end{center}
+    From here, we can use the voltage divider rule to get 
+    \begin{align*}
+        V_{out}(\omega) = \left[\frac{1/j\omega C}{R+1/j\omega C}\right] V_s(\omega)
+    \end{align*}
+    The frequency response is then given by 
+    \begin{align*}
+        H(\omega) = \frac{V_{out}(\omega)}{V_s(\omega)} = \frac{1/j\omega C}{R+1/j\omega C} = \frac{1}{1+j\omega RC},
+    \end{align*}
+    with magnitude and phase responses 
+    \begin{align*}
+        |H(\omega)| &= \frac{1}{\sqrt{1+(\omega RC)^2}} \\
+        \phase{H(\omega)} &= -\arctan(\omega RC)
+    \end{align*}
+    Let $RC=1$. The frequency spectrum is plotted below.
+    \begin{center}
+        \resizebox{0.6\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= 1 / sqrt(1 + (\x)^2); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.5, ytick={0,1}, ylabel={$|H(\omega)|$},
+                xmin=-3.5, xmax=4, xtick={-3,...,3}, xlabel={$\omega$},
+                domain=-3.1:3.9,samples=200,
+                width=9cm, height=3.5cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}}
+    \end{center}
+    \begin{center}
+        \resizebox{0.6\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= -rad(atan(\x)); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-2, ymax=2, ytick={0}, ylabel={$\phase{H(\omega)}$},
+                xmin=-3.5, xmax=4, xtick={-3,...,3}, xlabel={$\omega$},
+                extra y ticks={-pi/2,pi/2}, extra y tick labels={$-\pi/2$, $\pi/2$},
+                domain=-3.1:3.9,samples=200,
+                width=9cm, height=4.5cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}}
+    \end{center}
+\end{solution}
+
+\pagebreak
+\begin{example}
+    Given the frequency spectrum of an LTI system plotted below, find the impulse response $h(t)$. \\ \\
+    \resizebox{0.75\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > -1, \x < 1) * abs(\x); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.5, ytick={0,1}, ylabel={$|H(\omega)|$},
+                xmin=-3.5, xmax=4, xtick={-3,...,3}, xlabel={$\omega$},
+                domain=-3.1:3.9,samples=200,
+                width=9cm, height=3.5cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}} \\ \\
+    \resizebox{0.75\textwidth}{!}{
+            \begin{tikzpicture}
+                [declare function={
+                    func(\x)= -3 * \x; }]
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=-3.5, ymax=3.5, ytick={-3,0,3}, ylabel={$\phase{H(\omega)}$},
+                    xmin=-3.5, xmax=4, xtick={-3,...,3}, xlabel={$\omega$},
+                    domain=-3.1:3.9,samples=200,
+                    width=9cm, height=4.5cm]
+                \addplot [blue,thick]{func(x)};
+                \end{axis}
+            \end{tikzpicture}}
+\end{example}
+\begin{solution}
+    The phase is given by $\phase{H(\omega)}=-3\omega$. The frequency response is then 
+    \begin{align*}
+        H(\omega) = |H(\omega)|\exp(j\phase{H(\omega)}) = |H(\omega)|e^{-j3\omega}.
+    \end{align*}
+    Let $G(\omega)=|H(\omega)|$. Then by the time shift property, 
+    \begin{align*}
+        H(\omega) = G(\omega)e^{-j3\omega} \iff h(t) = g(t-3).
+    \end{align*}
+    Solving for $g(t)$ first,
+    \begin{align*}
+        g(t) = \mathcal{F}^{-1}[G(\omega)] &= \frac{1}{2\pi}\int_{-\infty}^{+\infty} G(\omega)e^{j\omega t} \,d\omega \\
+        &= \frac{1}{2\pi}\left[\int_{-1}^{0} -\omega e^{j\omega t} \,d\omega + \int_{0}^{1} \omega e^{j\omega t} \,d\omega\right] \\
+        &= \frac{1}{2\pi}\left[\frac{e^{-jt}+jte^{-jt}-1}{t^2} + \frac{e^{+jt}-jte^{+jt}-1}{t^2}\right] \\ 
+        &= \frac{1}{\pi}\left[\frac{\cos(t)-1}{t^2} + \frac{\sin(t)}{t}\right]
+    \end{align*}
+    Then applying the time shift property,
+    \begin{align*}
+        h(t) = g(t-3) = \frac{1}{\pi}\left[\frac{\cos(t-3)-1}{(t-3)^2} + \frac{\sin(t-3)}{t-3}\right].
+    \end{align*}
+\end{solution}
+
+\section{Bode Plots}
+Rather than plotting the frequency spectrum with linear units, an alternative graph of the frequency response to consider is the \emph{Bode plot}, which is comprised 
+of the \emph{Bode magnitude plot} and the \emph{Bode phase plot}. The Bode plot logarithmically scales the $\omega$-axis and additionally converts the magnitude 
+values to decibels. As a result, Bode plots are plotted on semilog templates and are inherently one-sided.
+\\ \\ 
+Additionally, Bode plots are convenient for providing straight-line approximations to the magnitude and phase responses. While the Bode plot does not truely give the same response as the 
+frequency response, LTI systems can be modeled such that the asymptotic approximations are close enough to where the errors are minimal. 
+\\ \\
+Figure \ref{semilog} depicts a semilog template, where Bode plots can be drawn on. The main feature to examine is the logarithmically scaled $\omega$-axis. Each prominent solid vertical line that 
+takes on powers of 10 as its angular frequency $\omega$ is referred to as a \emph{cycle}. While never depicted on Bode plots, the unseen angular frequency $\omega=0$ is called the $origin$. 
+\\ \\
+Any solid light tick marks after particular cycle represent multiples of that cycle -- at least up until 
+the next cycle. Generally, a \emph{decade} (or \emph{dec} for shorthand) is the horizontal spacing between one cycle and the next; this spacing however can also be shifted to start at any angular frequency.
+\\ \\
+Usually we choose an appropriate small power of 10 and appropriate large power of 10 for the minimum and maximum 
+when labeling the $\omega$-axis such that any and all behaviors due to the poles and zeros of the system are within scope. 
+\begin{figure}[!hbt]
+    \centering
+    \caption{Characteristics of a Semilog Template}
+    \label{semilog}
+    \resizebox{\textwidth}{!}{\begin{tikzpicture}
+        \tikzset{
+            semilog lines/.style={black},
+            semilog lines 2/.style={gray!50},
+            semilog half lines/.style={white, dotted},
+            semilog label x/.style={below,font=\small},
+            semilog label y/.style={above,font=\small} }
+        \begin{scope}[xscale=10/5,yscale=5/100]
+            \OrdBode{25}
+            \semilog*{-2}{3}{0}{100}
+            \draw[blue!80,line width=1.2,latex-latex] (-1,75) -- (0,75);
+            \node[fill=white] at (-0.5,81){\small Decade};
+            \draw[blue!80,line width=1.2,latex-latex] (-0.5229,50) -- (0.4771,50);
+            \node[fill=white] at (0,56){\small Decade};
+            \node[fill=white, rotate=90] at (0,12.5){\small Cycle};
+            \node[fill=white, rotate=90] at (1,12.5){\small Cycle};
+            \node[fill=white, rotate=90] at (1.3010,12.5){\tiny $\omega = 20$};
+            \node[fill=white, rotate=90] at (1.4771,12.5){\tiny $\omega = 30$};
+            \node[fill=white, rotate=90] at (1.6021,12.5){\tiny $\omega = 40$};
+            \node[fill=white, rotate=90] at (2.3010,12.5){\tiny $\omega = 200$};
+            \node[fill=white, rotate=90] at (2.4771,12.5){\tiny $\omega = 300$};
+            \node[fill=white, rotate=90] at (2.6021,12.5){\tiny $\omega = 400$};
+        \end{scope}
+    \end{tikzpicture}}
+\end{figure}
+\\ \\
+Before delving into producing Bode plots, first we must define the logarithmic unit decibels [dB]. 
+Depending on how the frequency response was obtained, the magnitude response can be converted from unitless to decibels. 
+\\ \\
+Most of the time, we assume that the input and output signals are voltages such that the frequency response is unitless $[V/V]$. 
+Therefore, its magnitude response in decibels is given by 
+\begin{align}
+    |H(\omega)| [dB] = 20\log\left(|H(\omega)| \left[\frac{V}{V}\right]\right) [dB].
+\end{align}
+Table \ref{decibels} lists some examples of decibel values corresponding to a select few magnitudes.
+
+\begin{table}[!hbt]
+    \centering
+    \caption{Examples of Corresponding Decibel Values}
+    \label{decibels}
+    \begin{tabular}{|c|c|}
+        $M$ [V/V] & $M$ [dB] \\
+        \hline
+        $10^N$ & $20N$ [dB] \\
+        $10^3$ & $60$ [dB] \\
+        $100$ & $40$ [dB] \\
+        $10$ & $20$ [dB] \\
+        $4$ & $\approx 12$ [dB] \\
+        $2$ & $\approx 6$ [dB] \\
+        $\sqrt{2}$ & $\approx 3$ [dB] \\
+        $1$ & $0$ [dB] \\
+        $1/\sqrt{2}$ & $\approx -3$ [dB] \\
+        $0.5$ & $\approx -6$ [dB] \\
+        $0.25$ & $\approx -12$ [dB] \\
+        $0.1$ & $-20$ [dB] \\
+        $10^{-N}$ & $-20N$ [dB] \\ 
+    \end{tabular}
+\end{table}
+
+\begin{example}
+    Find an expression for $|H(\omega)| = \dfrac{1}{\sqrt{1+(\omega RC)^2}}$ [V/V] in decibels.
+\end{example}
+\begin{solution}
+    It follows that 
+    \begin{align*}
+        20\log(|H(\omega)|) &= 20\log\left(\frac{1}{\sqrt{1+(\omega RC)^2}}\right) \\
+        &= 20\left[\log(1) - \log\left(\sqrt{1+(\omega RC)^2}\right)\right] \\
+        &= 20\left[\log(1) - \frac{1}{2}\log\left[1+(\omega RC)^2\right]\right] \\
+        &= -10\log\left[1+(\omega RC)^2\right] \text{ [dB]}
+    \end{align*}
+    We can let $\omega_c = 1/(RC)$ such that
+    \begin{align*}
+        |H(\omega)| = -10\log\left[1+\left(\frac{\omega}{\omega_c}\right)^2\right] \text{ [dB]}
+    \end{align*}
+    It follows that 
+    \begin{align*}
+        \text{Low-frequency asymptote: } \left(\frac{\omega}{\omega_c}\right)\rightarrow 0 &\Longrightarrow |H(\omega)|\rightarrow 0 \text{ [dB]} \\
+        \text{High-frequency asymptote: } \left(\frac{\omega}{\omega_c}\right)\rightarrow \infty &\Longrightarrow |H(\omega)|\rightarrow -20\log\left(\frac{\omega}{\omega_c}\right) \text{ [dB]}
+    \end{align*}
+\end{solution}
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+The standard form of a generic frequency response is given by 
+\\ \\ \\
+\begin{align}
+    H(\omega) = \frac{\tikzmark{constant}{K}\cdot\tikzmark[violet]{z_orig}{(j\omega)}\tikzmark[blue]{zero}{\left(1+\frac{j\omega}{\omega_0}\right)}}{\tikzmark[darkgreen]{p_orig}{(j\omega)}\tikzmark[orange]{pole}{\left(1+\frac{j\omega}{\omega_0}\right)}^{\tikzmark[red]{mult}{N}}}.
+\end{align}
+\begin{tikzpicture}[overlay, remember picture,node distance =1.5cm]
+    \node[,text width=2cm] (constantdescr) [above left of=constant ]{\small constant};
+    \draw[,-latex,thick] (constantdescr) to (constant);
+    \node[violet,text width=2cm] (z_origdescr) [above of=z_orig ]{\small zero at origin};
+    \draw[violet,-latex,thick] (z_origdescr) to (z_orig);
+    \node[blue,text width=2cm] (zerodescr) [above right of=zero ]{\small real zero};
+    \draw[blue,-latex,thick] (zerodescr) to (zero);
+    \node[darkgreen,text width=2cm] (p_origdescr) [below left of=p_orig ]{\small pole at origin};
+    \draw[darkgreen,-latex,thick] (p_origdescr) to (p_orig);
+    \node[orange,text width=2cm] (poledescr) [below of=pole ]{\small real pole};
+    \draw[orange,-latex,thick] (poledescr) to (pole);
+    \node[red,text width=2cm] (multdescr) [below right of=mult ]{\small multiplicity};
+    \draw[red,-latex,thick] (multdescr) to (mult);
+\end{tikzpicture}
+\\ \\
+\end{tcolorbox}
+\noindent The corresponding effects of each term on the Bode plots are outlined in Table \ref{bode}.
+\begin{table}
+    \centering
+    \caption{Straight-Line Approximations of Terms for Bode Plots}
+    \label{bode}
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Term & Bode Magnitude Approximation [dB] & Bode Phase Approximation [deg] \\
+        \hline
+        \shortstack{Constant \\ $H(\omega)=K$} & 
+        \adjustbox{valign=m,right=6.25cm}{\begin{tikzpicture}
+            [declare function={
+                func(\x)= 10; }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-30, ymax=30, ytick={0}, ylabel={$|H(\omega)|$ [dB]},
+                xmin=0, xmax=4, xtick={0}, xlabel={$\omega$},
+                extra x ticks={1,2,3}, extra x tick labels={0.1,1,10},
+                extra y ticks={10}, extra y tick labels={$M$},
+                domain=0:4,samples=50,
+                width=7cm, height=4.5cm]
+            \addplot [blue,thick]{func(x)};
+            \node at (2,-20) {$M=20\log|K|$ [dB]};
+            \end{axis}
+        \end{tikzpicture}} & 
+        \adjustbox{valign=m,right=6.25cm}{\begin{tikzpicture}
+            [declare function={
+                func(\x)= -10; }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-30, ymax=30, ytick={0}, ylabel={$\phase{H(\omega)}$ [deg]},
+                xmin=0, xmax=4, xtick={0}, xlabel={$\omega$},
+                extra x ticks={1,2,3}, extra x tick labels={0.1,1,10},
+                extra y ticks={-10}, extra y tick labels={$\phase{K}$},
+                domain=0:4,samples=50,
+                width=7cm, height=4.5cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}} \\
+        \hline
+        \shortstack{Zero at origin \\ $H(\omega)=j\omega$} & 
+        \adjustbox{valign=m,right=6.25cm}{\begin{tikzpicture}
+            [declare function={
+                func(\x)= 20 * (\x - 2); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-30, ymax=30, ytick={-20,0,20}, ylabel={$|H(\omega)|$ [dB]},
+                xmin=0, xmax=4, xtick={0}, xlabel={$\omega$},
+                extra x ticks={1,2,3}, extra x tick labels={0.1,1,10},
+                domain=1:3.2,samples=50,
+                width=7cm, height=4.5cm]
+            \addplot [blue,thick]{func(x)};
+            \node at (2,-20) {$+20$ [dB/dec]};
+            \end{axis}
+        \end{tikzpicture}} & 
+        \adjustbox{valign=m,right=6.25cm}{\begin{tikzpicture}
+            [declare function={
+                func(\x)= 16; }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-30, ymax=30, ytick={0}, ylabel={$\phase{H(\omega)}$ [deg]},
+                xmin=0, xmax=4, xtick={0}, xlabel={$\omega$},
+                extra x ticks={1,2,3}, extra x tick labels={0.1,1,10},
+                extra y ticks={16}, extra y tick labels={$90^{\circ}$},
+                domain=0:4,samples=50,
+                width=7cm, height=4.5cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}} \\
+        \hline
+        \shortstack{Pole at origin \\ $H(\omega)=\dfrac{1}{j\omega}$} & 
+        \adjustbox{valign=m,right=6.25cm}{\begin{tikzpicture}
+            [declare function={
+                func(\x)= -20 * (\x - 2); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-30, ymax=30, ytick={-20,0,20}, ylabel={$|H(\omega)|$ [dB]},
+                xmin=0, xmax=4, xtick={0}, xlabel={$\omega$},
+                extra x ticks={1,2,3}, extra x tick labels={0.1,1,10},
+                domain=1:3.2,samples=50,
+                width=7cm, height=4.5cm]
+            \addplot [blue,thick]{func(x)};
+            \node at (2,-20) {$-20$ [dB/dec]};
+            \end{axis}
+        \end{tikzpicture}} & 
+        \adjustbox{valign=m,right=6.25cm}{\begin{tikzpicture}
+            [declare function={
+                func(\x)= -16; }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-30, ymax=30, ytick={0}, ylabel={$\phase{H(\omega)}$ [deg]},
+                xmin=0, xmax=4, xtick={0}, xlabel={$\omega$},
+                extra x ticks={1,2,3}, extra x tick labels={0.1,1,10},
+                extra y ticks={-16}, extra y tick labels={$-90^{\circ}$},
+                domain=0:4,samples=50,
+                width=7cm, height=4.5cm]
+            \addplot [blue,thick]{func(x)};
+            \end{axis}
+        \end{tikzpicture}} \\
+        \hline
+        \shortstack{Real zero \\ $H(\omega)=1+\dfrac{j\omega}{\omega_0}$} & 
+        \adjustbox{valign=m,right=6.25cm}{\begin{tikzpicture}
+            [declare function={
+                func(\x)= 20 * (\x - 2) * (\x > 2); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-30, ymax=30, ytick={-20,0,20}, ylabel={$|H(\omega)|$ [dB]},
+                xmin=0, xmax=4, xtick={0}, xlabel={$\omega$},
+                extra x ticks={1,2,3}, extra x tick labels={$0.1\omega_0$,$\omega_0$,$10\omega_0$},
+                domain=0:3.2,samples=50,
+                width=7cm, height=4.5cm]
+            \addplot [blue,thick]{func(x)};
+            \node at (2,-20) {$+20$ [dB/dec]};
+            \end{axis}
+        \end{tikzpicture}} & 
+        \adjustbox{valign=m,right=6.25cm}{\begin{tikzpicture}
+            [declare function={
+                func(\x)= 8 * (\x - 1) * and(\x > 1, \x < 3) + 16 * (\x > 3); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-30, ymax=30, ytick={0}, ylabel={$\phase{H(\omega)}$ [deg]},
+                xmin=0, xmax=4, xtick={0}, xlabel={$\omega$},
+                extra x ticks={1,2,3}, extra x tick labels={$0.1\omega_0$,$\omega_0$,$10\omega_0$},
+                extra y ticks={16}, extra y tick labels={$90^{\circ}$},
+                domain=0:4,samples=50,
+                width=7cm, height=4.5cm]
+            \addplot [blue,thick]{func(x)};
+            \node at (2,-20) {$+45$ [deg/dec]};
+            \end{axis}
+        \end{tikzpicture}} \\
+        \hline
+        \shortstack{Real pole \\ $H(\omega)=\dfrac{1}{1+\frac{j\omega}{\omega_0}}$} & 
+        \adjustbox{valign=m,right=6.25cm}{\begin{tikzpicture}
+            [declare function={
+                func(\x)= -20 * (\x - 2) * (\x > 2); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-30, ymax=30, ytick={-20,0,20}, ylabel={$|H(\omega)|$ [dB]},
+                xmin=0, xmax=4, xtick={0}, xlabel={$\omega$},
+                extra x ticks={1,2,3}, extra x tick labels={$0.1\omega_0$,$\omega_0$,$10\omega_0$},
+                domain=0:3.2,samples=50,
+                width=7cm, height=4.5cm]
+            \addplot [blue,thick]{func(x)};
+            \node at (2,-20) {$-20$ [dB/dec]};
+            \end{axis}
+        \end{tikzpicture}} & 
+        \adjustbox{valign=m,right=6.25cm}{\begin{tikzpicture}
+            [declare function={
+                func(\x)= -8 * (\x - 1) * and(\x > 1, \x < 3) + -16 * (\x > 3); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-30, ymax=30, ytick={0}, ylabel={$\phase{H(\omega)}$ [deg]},
+                xmin=0, xmax=4, xtick={0}, xlabel={$\omega$},
+                extra x ticks={1,2,3}, extra x tick labels={$0.1\omega_0$,$\omega_0$,$10\omega_0$},
+                extra y ticks={-16}, extra y tick labels={$-90^{\circ}$},
+                domain=0:4,samples=50,
+                width=7cm, height=4.5cm]
+            \addplot [blue,thick]{func(x)};
+            \node at (2,-20) {$-45$ [deg/dec]};
+            \end{axis}
+        \end{tikzpicture}} \\
+        \hline
+        Multiplicity, $N$ & \shortstack{Constant: $M\times N$ \\ All zeros/poles: $N\times$(slope)} & \shortstack{Constant/origin: $\phase{H(\omega)}\times N$ \\ Real zeros/poles: $N\times$(slope)} \\
+        \hline
+    \end{tabular}}
+\end{table}
+\\ \\
+\noindent Note that the Bode magnitude plot of a real zero or real pole has a slope of $\pm 20$ [dB/dec] for only $\omega > \omega_0$, and the Bode phase plot of a real zero or real pole has a slope of $\pm 45$ [deg/dec] 
+for only $0.1\omega_0 < \omega < 10\omega_0$. All other types of terms (i.e., constants and origin terms) have everlasting effects on the Bode plots -- at least for the scope of $\omega > 0$.
+\\ \\ 
+Additionally, the multiplicity $N$ (i.e., exponent) of a term scales that term's behavior on the Bode plots by a factor of $N$. For instance, the term $(j\omega)^N$ means it contributes a Bode magnitude slope of $20N$ [dB/dec] and 
+a Bode phase of $90N$ [deg]. On the other hand, the term $\left(1+\frac{j\omega}{\omega_0}\right)^N$ contributes a Bode magnitude slope of $20N$ [dB/dec] for only $\omega>\omega_c$ and a Bode phase slope of $45N$ [deg/dec] for only 
+$0.1\omega_0<\omega<10\omega_0$.
+\\ \\
+Similar to the linear combination of signals, the effects of each individual term of the frequency response can be added. Each term has a corresponding slope change on the Bode plot; these graphical properties 
+are outlined in Table \ref{add_terms}.
+\begin{table}
+    \small
+    \centering
+    \caption{Graphical Properties of Frequency Response Terms on the Bode Plot}
+    \label{add_terms}
+    \resizebox{\textwidth}{!}{\begin{tabular}{ |c|c|c| }
+        \hline
+        & \shortstack{Magnitude Slope Change \\ $\Delta m(\Omega) = m(\Omega^+) - m(\Omega^-)$} & \shortstack{Phase Slope Change \\ $\Delta \phi(\Omega) = \phi(\Omega^+) - \phi(\Omega^-)$} \\[0.1cm]
+        \hline
+        Constant & None ($20\log|K|$ everywhere) & None ( $\phase{K}$ everywhere) \\[0.1cm]
+        Zero at origin & None ($+20$ [dB/dec] everywhere) & None ($+90^{\circ}$ everywhere) \\[0.1cm]
+        Pole at origin & None ($-20$ [dB/dec] everywhere) & None ($-90^{\circ}$ everywhere) \\[0.1cm]
+        Real zero & $\Delta m(\omega_0)=+20$ [dB/dec] & $\Delta \phi(0.1\omega_0) = +45$ [deg/dec], $\Delta \phi(10\omega_0) = -45$ [deg/dec] \\[0.1cm]
+        Real pole & $\Delta m(\omega_0)=-20$ [dB/dec] & $\Delta \phi(0.1\omega_0) = -45$ [deg/dec], $\Delta \phi(10\omega_0) = +45$ [deg/dec] \\
+        \hline
+    \end{tabular}}
+\end{table}
+\\ \\
+The same tips for waveform synthesis and deconstruction can be applied to Bode plots. 
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    Bode plot graphing tips:
+    \begin{itemize}
+        \item Rewrite the frequency response in standard form
+        \item Mark all starting and ending angular frequencies on the $\omega$-axis
+        \item Determine a starting value from any constant and origin terms (applying any multiplicity if necessary)
+        \item From the starting point, make changes at each marked angular frequency, going from left to right along the $\omega$-axis
+    \end{itemize}
+\end{tcolorbox}
+
+\begin{example}
+    Sketch the Bode plots for the frequency response
+    \begin{align*}
+        H(\omega) = \frac{48j(20+4j\omega)(1000+2j\omega)}{(4+20j\omega)^2(400+2j\omega)}.
+    \end{align*}
+\end{example}
+\begin{solution}
+    Putting $H(\omega)$ in standard form, 
+    \begin{align*}
+        H(\omega) &= \frac{48j\left[20\left(1+\frac{j\omega}{5}\right)\right]\left[1000\left(1+\frac{j\omega}{500}\right)\right]}{\left[4^2\left(1+\frac{j\omega}{0.2}\right)^2\right]\left[400\left(1+\frac{j\omega}{200}\right)\right]} \\
+        &= \frac{150j\left(1+\frac{j\omega}{5}\right)\left(1+\frac{j\omega}{500}\right)}{\left(1+\frac{j\omega}{0.2}\right)^2\left(1+\frac{j\omega}{200}\right)}
+    \end{align*}
+    Focusing on just the Bode magnitude plot first, we make a note of all slope changes due to each term at each frequency.
+    \begin{align*}
+        150j &\Longrightarrow 20\log|K| = 43.5 \text{ [dB] } \\
+        \left(1+\frac{j\omega}{5}\right) &\Longrightarrow \Delta m = 20 \text{ [dB/dec] at } \omega_0 = 5 \\
+        \left(1+\frac{j\omega}{500}\right) &\Longrightarrow \Delta m = 20 \text{ [dB/dec] at } \omega_0 = 500 \\
+        \frac{1}{\left(1+\frac{j\omega}{0.2}\right)^2} &\Longrightarrow \Delta m = -40 \text{ [dB/dec] at } \omega_0 = 0.2 \\
+        \frac{1}{1+\frac{j\omega}{200}} &\Longrightarrow \Delta m = -20 \text{ [dB/dec] at } \omega_0 = 200
+    \end{align*}
+    Collecting the magnitude changes with respect to angular frequency:
+    \begin{align*}
+        \omega = 0 &\Longrightarrow \text{start at 43.5 [dB]} \\ 
+        \omega = 0.2 &\Longrightarrow \Delta m = -40 \\
+        \omega = 5 &\Longrightarrow \Delta m = 20 \\
+        \omega = 200 &\Longrightarrow \Delta m = -20 \\
+        \omega = 500 &\Longrightarrow \Delta m = 20
+    \end{align*}
+    Using the collection of magnitude changes, plot the Bode magnitude plot.
+    \\ \\ \\
+    \resizebox{\textwidth}{!}{\begin{tikzpicture}
+        \tikzset{
+            semilog lines/.style={black},
+            semilog lines 2/.style={gray!50},
+            semilog half lines/.style={white, dotted},
+            semilog label x/.style={below,font=\small},
+            semilog label y/.style={above,font=\small} }
+        \begin{scope}[xscale=10/6,yscale=5/200]
+            \OrdBode{50}
+            \semilog*{-2}{4}{-100}{100}
+            \node at (1,-130){Angular Frequency, $\omega$ [rad/s]};
+            \node[rotate=90] at (-2.7,0){Magnitude, $|H(\omega)|$ [dB]};
+            \draw[blue, -] (-2,43.5) -- (-0.6990,43.5) -- (0.6990,-12.4176) -- (2.3010,-44.4588) -- (2.6990,-60.3764) -- (4,-86.3970);
+            \foreach \Point in {(-0.6990,43.5), (0.6990,-12.4176), (2.3010,-44.4588), (2.6990,-60.3764)}{
+                \node at \Point {\scriptsize \textbullet};
+            }
+        \end{scope}
+    \end{tikzpicture}}
+    \\ \\ \\
+    Similarly for the Bode phase plot, we make a note of all slope changes.
+    \begin{align*}
+        150j &\Longrightarrow \phase{K} = 90^{\circ} \\
+        \left(1+\frac{j\omega}{5}\right) &\Longrightarrow \Delta m = +45 \text{ [deg/dec] at } 0.1\omega_0 = 0.5, \Delta m = -45 \text{ [deg/dec] at } 10\omega_0 = 50 \\
+        \left(1+\frac{j\omega}{500}\right) &\Longrightarrow \Delta m = +45 \text{ [deg/dec] at } 0.1\omega_0 = 50, \Delta m = -45 \text{ [deg/dec] at } 10\omega_0 = 5000 \\
+        \frac{1}{\left(1+\frac{j\omega}{0.2}\right)^2} &\Longrightarrow \Delta m = -90 \text{ [deg/dec] at } 0.1\omega_0 = 0.02, \Delta m = +90 \text{ [deg/dec] at } 10\omega_0 = 2 \\
+        \frac{1}{1+\frac{j\omega}{200}} &\Longrightarrow \Delta m = -45 \text{ [deg/dec] at } 0.1\omega_0 = 20, \Delta m = +45 \text{ [deg/dec] at } 10\omega_0 = 2000
+    \end{align*}
+    Collecting the phase changes with respect to angular frequency:
+    \begin{align*}
+        \omega = 0 &\Longrightarrow \text{start at } 90^{\circ} \\ 
+        \omega = 0.02 &\Longrightarrow \Delta m = -90 \\
+        \omega = 0.5 &\Longrightarrow \Delta m = +45 \\
+        \omega = 2 &\Longrightarrow \Delta m = +90 \\
+        \omega = 20 &\Longrightarrow \Delta = -45 \\
+        \omega = 50 &\Longrightarrow \Delta m = -45 + 45 = 0 \\
+        \omega = 2000 &\Longrightarrow \Delta m = +45 \\
+        \omega = 5000 &\Longrightarrow \Delta m = -45
+    \end{align*}
+    Using the collection of phase changes, plot the Bode phase plot.
+    \\ \\ \\
+    \resizebox{\textwidth}{!}{\begin{tikzpicture}
+        \tikzset{
+            semilog lines/.style={black},
+            semilog lines 2/.style={gray!50},
+            semilog half lines/.style={white, dotted},
+            semilog label x/.style={below,font=\small},
+            semilog label y/.style={above,font=\small} }
+        \begin{scope}[xscale=10/6,yscale=5/180]
+            \OrdBode{45}
+            \semilog*{-2}{4}{-90}{90}
+            \node at (1,-120){Angular Frequency, $\omega$ [rad/s]};
+            \node[rotate=90] at (-2.7,0){Phase, $\phase{H(\omega)}$ [deg]};
+            \draw[blue, -] (-2,90) -- (-1.6990,90) -- (-0.3010,-35.8146) -- (0.3010,-62.9073) -- (1.3010,-17.9073) -- (1.6990,-17.9073) -- (3.3010,-17.9073) -- (3.6990,0) -- (4,0);
+            \foreach \Point in {(-1.6990,90), (-0.3010,-35.8146), (0.3010,-62.9073), (1.3010,-17.9073), (1.6990,-17.9073), (3.3010,-17.9073), (3.6990,0)}{
+                \node at \Point {\scriptsize \textbullet};
+            }
+        \end{scope}
+    \end{tikzpicture}}
+\end{solution}
+\end{document}

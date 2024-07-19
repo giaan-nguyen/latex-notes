@@ -1,0 +1,1771 @@
+\documentclass{report}
+\input{../../preamble.tex}
+
+\begin{document}
+\setcounter{chapter}{6}
+\chapter{Continuous-Time Applications}
+
+\section{Introduction to Operational Amplifiers}
+Electronic components are called \emph{active components} since active components can actively control the behavior of 
+the circuit, whether that is voltage/power gain (such as operational amplifiers and transistors) or current flow (such as diodes and transistors again). 
+Active components introduce nonlinear operating characteristics to electronic components. 
+\\ \\ 
+On the other hand, electric components such as resistors, inductors, and capacitors are called \emph{passive components} and have no control 
+over voltage or current; the behavior of a passive component is predetermined by its impedance. \emph{Passive circuits} contain strictly passive components, 
+whereas \emph{active circuits} contain at least one active component.
+\\ \\ 
+As prefaced, \emph{operational amplifiers} (or \emph{op-amps} for short) are active components with versatile functionality that can be used in circuits for various purposes such as gain, filtering, and hysteresis. 
+As seen in Figure \ref{opamp}, an op-amp consists of two input terminals -- an \emph{inverting input terminal} (or negative terminal) with voltage $v_n$ and a \emph{noninverting input terminal} (or positive terminal) 
+with voltage $v_p$ -- and an output terminal with voltage $v_o$. However, in order for op-amps to work, two \emph{DC power supply voltages} (also called voltage rails) must be connected, labeled $V_{CC}$ and $-V_{EE}$. 
+\begin{figure}[!hbt]
+    \centering
+    \caption{Op-Amp Terminals}
+    \label{opamp}
+    \begin{circuitikz}
+        %Circuit
+        \draw (0,0) node[op amp] (opamp) {};
+        \draw (opamp.+) to[short,-o] +(-0.8,0) node[left] {$v_p$};
+        \draw (opamp.-) to[short,-o] +(-0.8,0) node[left] {$v_n$};
+        \draw (opamp.out) to[short,-o] +(0.8,0) node[shift={(0.4,0)}] {$v_o$};
+        \draw[-latex] (opamp.up) -- +(0,1) node[above] (vv) {$V_{CC}$};
+        \draw[-latex] (opamp.down) -- +(0,-1) node[below] (v) {$-V_{EE}$};    
+        %Nodes
+        \node[shift={(-4,0)}] ($opamp.+!0.5!opamp.-$) {Input Terminals};
+        \node[shift={(+3.8,0)}] (opamp.out) {Output};
+        \node[shift={(+2,0)}] at (vv) {Supply Voltage};
+        \node[shift={(+2,0)}] at (v) {Supply Voltage};
+    \end{circuitikz}
+\end{figure}
+
+In fact, real op-amps have the constraint that $-V_{EE} \leq v_o \leq V_{CC}$. Note that the power supplies do not necessarily have to be equal in magnitude. 
+While not depicted, all labeled voltages in Figure \ref{opamp} are with respect to an implicit ground node. The lack of a ground node depiction is for 
+simplistic circuit diagram purposes.
+
+\subsection{Ideal Op-Amps}
+Ideal op-amps are op-amp models that generate desired responses without component limitations such as voltage saturation. As such, ideal op-amps can be drawn just like in Figure \ref{ideal_opamp}.
+\begin{figure}[!hbt]
+    \centering
+    \caption{Ideal Op-Amp}
+    \label{ideal_opamp}
+    \resizebox{0.5\textwidth}{!}{\begin{circuitikz}
+        %Circuit
+        \draw (0,0) node[op amp] (opamp) {};
+        \draw (opamp.+) to[short,l_=\textcolor{cyan}{\scriptsize $i_p=0$},-o] +(-1,0) node[left] {$v_p$};
+        \draw (opamp.-) to[short,l_=\textcolor{cyan}{\scriptsize $i_n=0$},-o] +(-1,0) node[left] {$v_n$};
+        \draw[cyan,-latex] (-2,0.6) to (-1.25,0.6);
+        \draw[cyan,-latex] (-2,-0.4) to (-1.25,-0.4);
+        \draw (opamp.out) to[short,-o] +(0.8,0) node[shift={(0.4,0)}] {$v_o$};   
+    \end{circuitikz}}
+\end{figure}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+The characteristics of an \emph{ideal op-amp} are introduced:
+\begin{itemize}
+    \item Infinite input impedance 
+    \item Zero output impedance
+    \item Zero common-mode gain (or equivalently, infinite common-mode rejection)
+    \item Infinite open-loop gain
+    \item Infinite bandwidth
+\end{itemize}
+\end{tcolorbox}
+A more detailed explanation of the ideal op-amp characteristics are as follows:
+\begin{itemize}
+    \item An ideal op-amp has infinite input impedance such that the currents ``drawn'' into both input terminals are zero, i.e., $i_p=i_n=0$.
+    \item An ideal op-amp has zero output impedance such that the output $v_o=A(v_p-v_n)$ without an op-amp output impedance load to drop the output voltage.
+    \item An ideal op-amp has zero common-mode gain such that if $v_p-v_n=0$ is the difference signal, then $v_o=0$.
+    \item An ideal op-amp has infinite open loop gain such that $A = \dfrac{v_o}{v_p - v_n}$ can be very large and ideally infinite.
+    \item An ideal op-amp has infinite bandwidth such that it can operate over any angular frequencies $\omega\in[0,\infty)$.
+\end{itemize}
+Notice that voltage rails are not drawn nor discussed. Ideal op-amps assume that $|V_{CC}|$ and $|-V_{EE}|$ are large enough such that the output voltage will always be well within 
+range of $-V_{EE} \leq v_o \leq V_{CC}$ without saturation.
+\\ \\ 
+What do ideal op-amps offer then? When ideal op-amps are used in active circuits, the internal device characteristics of the op-amp do not affect the circuit, and only the external loads 
+connected to the ideal op-amp matter. 
+\\ \\
+In other words, the ideal op-amp can be thought of as a black box with some transfer function $H(s)$ or frequency response $H(\omega)$ with respect to some input voltage(s) 
+connected to the ideal op-amp and the output voltage of the op-amp. If the output terminal is externally connected to the noninverting input terminal, the system is said to have \emph{positive feedback}; similarly, 
+if the output terminal is externally connected to the inverting input terminal, then the circuit has \emph{negative feedback}. As with systems, once feedback is introduced, the circuit has some closed-loop gain.
+\\ \\ 
+When necessary, op-amp circuits can be transformed into the $s$-domain or $\omega$-domain for analysis. From then, the transfer function or frequency response can be solved by using the ideal op-amp characteristics.
+
+\begin{example}
+    Find the $s$-domain output of the following circuit. Assume ideal op-amps. \\ \\
+    \resizebox{0.9\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+        \draw (6,0.7) node[op amp] (opamp) {};
+        \draw (0,1.2) node[left] {$v_1(t)$} to [R={$R$},o-] (2.5,1.2);
+        \draw (0,0) node[left] {$v_2(t)$} to [C={$C$},o-] (2.5,0);
+        \draw (0,-1.2) node[left] {$v_3(t)$} to [L={$L$},o-] (2.5,-1.2);
+        \draw (opamp.-) to [short] (2.5,1.2) to [short] (2.5,-1.2);
+        \draw (opamp.+) to [short] (3.9,0.21) to (3.9,-1.2) node[ground] {};
+        \draw (3.9,1.2) to [short] (3.9,2.5) to [R={$R_f$}] (8,2.5) to [short] (8,0.7);
+        \draw (opamp.out) to [short,-o] (9.5,0.7) node[right] {$v_o(t)$};
+    \end{circuitikz}}
+\end{example}
+\begin{solution}
+    The circuit is already depicted as if the node voltage method (NVM) will be used. We will use this fact when calculating currents. First, convert to the $s$-domain.
+    \begin{center}
+    \resizebox{0.7\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+        \draw (6,0.7) node[op amp] (opamp) {};
+        \draw (0,1.2) node[left] {$V_1(s)$} to [R={$R$},o-] (2.5,1.2);
+        \draw (0,0) node[left] {$V_2(s)$} to [C={$1/sC$},o-] (2.5,0);
+        \draw (0,-1.2) node[left] {$V_3(s)$} to [L={$sL$},o-] (2.5,-1.2);
+        \draw (2.5,-1.2) to [short] (2.5,1.2) to [short,f={\scriptsize $I_A(s)$},-*] (3.9,1.2) node[below left] {\scriptsize $V_n$} to [short,f={\scriptsize $I_n=0$}] (opamp.-);
+        \draw (3.9,-1.2) node[ground] {} to [short,-*] (3.9,0.21) node[left] {\scriptsize $V_p$} to [short,f={\scriptsize $I_p=0$}] (opamp.+);
+        \draw (3.9,1.2) to [short] (3.9,2.5) to [R={$R_f$},f={\scriptsize $I_B(s)$}] (8,2.5) to [short] (8,0.7);
+        \draw (opamp.out) to [short,-o] (9.5,0.7) node[right] {$V_o(s)$};
+    \end{circuitikz}}
+    \end{center}
+    Using Kirchhoff's current law (KCL) and NVM, it follows that 
+    \begin{align*}
+        I_A(s) &= \frac{V_1(s)-V_n}{R} + \frac{V_2(s)-V_n}{1/sC} + \frac{V_3(s)-V_n}{sL} \\
+        I_B(s) &= \frac{V_n-V_o(s)}{R_f}
+    \end{align*}
+    Using ideal op-amp characteristics, it follows that $I_n=I_p=0$ and $V_n=V_p$. Since $V_p=0$, then $V_n=0$ as well. It also follows that by KCL, $I_A(s)=I_B(s)$. Therefore, 
+    the new equation with criteria $V_n=V_p=0$ and $I_A(s)=I_B(s)$ is:
+    \begin{align*}
+        \frac{V_1(s)}{R} + \frac{V_2(s)}{1/sC} + \frac{V_3(s)}{sL} = \frac{-V_o(s)}{R_f}
+    \end{align*}
+    Therefore, the $s$-domain output is given by 
+    \begin{align*}
+        V_o(s) = -R_f\left[\frac{V_1(s)}{R} + \frac{V_2(s)}{1/sC} + \frac{V_3(s)}{sL}\right].
+    \end{align*}
+\end{solution}
+
+\begin{example}
+    Find the transfer function of the following circuit. Then plot the Bode magnitude plot, assuming measurements of unity. Assume ideal op-amps. \\ \\
+    \resizebox{0.9\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+        \draw (6,0.7) node[op amp] (opamp) {};
+        \draw (-0.5,1.2) node[ground] {} to [C={$C_{in}$}] (2.5,1.2);
+        \draw (opamp.-) to [short] (2.5,1.2);
+        \draw (opamp.+) to [short] (3.9,0.21) to [R={$R_2$}] (3.9,-1.5) node[ground] {};
+        \draw (1.5,0.21) node[left] {$v_{in}(t)$} to [R={$R_1$},o-] (3.9,0.21);
+        \draw (3.9,1.2) to [short] (3.9,2.5) to [R={$R_f$}] (8,2.5) to [short] (8,0.7);
+        \draw (3.9,2.5) to [short] (3.9,3.7) to [C={$C_f$}] (8,3.7) to [short] (8,2.5);
+        \draw (opamp.out) to [short,-o] (9.5,0.7) node[right] {$v_o(t)$};
+    \end{circuitikz}}
+\end{example}
+\begin{solution}
+    First, convert to the $s$-domain.
+    \begin{center}
+    \resizebox{0.7\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+        \draw (6,0.7) node[op amp] (opamp) {};
+        \draw (-0.5,1.2) node[ground] {} to [C={$1/sC_{in}$}] (2.5,1.2);
+        \draw (opamp.-) to [short] (2.5,1.2);
+        \draw (opamp.+) to [short] (3.9,0.21) to [R={$R_2$}] (3.9,-1.5) node[ground] {};
+        \draw (1.5,0.21) node[left] {$V_{in}(s)$} to [R={$R_1$},o-*] (3.9,0.21) node[above] {\scriptsize $V_p$};
+        \draw (3.9,1.2) node[below] {\scriptsize $V_n$} to [short,*-] (3.9,2.5) to [R={$R_f$}] (8,2.5) to [short] (8,0.7);
+        \draw (3.9,2.5) to [short] (3.9,3.7) to [C={$1/sC_f$}] (8,3.7) to [short] (8,2.5);
+        \draw (opamp.out) to [short,-o] (9.5,0.7) node[right] {$V_o(s)$};
+    \end{circuitikz}}
+    \end{center}
+    Using the voltage divider rule and ideal op-amp characteristics, it follows that 
+    \begin{align*}
+        V_n = V_p = V_{in}(s)\left[\frac{R_2}{R_1+R_2}\right]
+    \end{align*}
+    Additionally, the equivalent impedance in the negative feedback loop is given by
+    \begin{align*}
+        Z_{eq} = R_f\, ||\, (1/sC_f) = \frac{R_f/sC_f}{R_f+1/sC_f} = \frac{R_f}{1+sR_fC_f}
+    \end{align*}
+    Then from Kirchhoff's current law (KCL), it follows that 
+    \begin{align*}
+        \frac{0-V_n}{1/sC_{in}} &= \frac{V_n-V_o}{Z_{eq}} \\
+        \Longrightarrow V_o = V_n\left[1+\frac{Z_{eq}}{1/sC_{in}}\right] &= V_{in}(s)\left[\frac{R_2}{R_1+R_2}\right]\left[1+\frac{sR_fC_{in}}{1+sR_fC_f}\right]
+    \end{align*}
+    The transfer function is then 
+    \begin{align*}
+        H(s) = \frac{V_o(s)}{V_{in}(s)} = \left[\frac{R_2}{R_1+R_2}\right]\left[1+\frac{sR_fC_{in}}{1+sR_fC_f}\right] = \left[\frac{R_2}{R_1+R_2}\right]\left[\frac{1+sR_f(C_{in}+C_f)}{1+sR_fC_f}\right]
+    \end{align*}
+    Finally, letting $s=j\omega$ and assuming measurements of unity, we get the frequency response 
+    \begin{align*}
+        H(\omega) = \frac{1}{2}\left[\frac{1+2j\omega}{1+j\omega}\right] = \frac{0.5\left(1+\frac{j\omega}{0.5}\right)}{1+j\omega}.
+    \end{align*}
+    Since we only care about the Bode magnitude plot, the changes are as follows:
+    \begin{align*}
+        0.5 &\Longrightarrow 20\log|K| = -6\text{ [dB]} \\
+        \left(1+\frac{j\omega}{0.5}\right) &\Longrightarrow \Delta m = 20 \text{ [dB/dec] at } \omega_0 = 0.5 \\
+        \frac{1}{1+j\omega} &\Longrightarrow \Delta m = -20 \text{ [dB/dec] at } \omega_0 = 1
+    \end{align*}
+    \resizebox{0.9\textwidth}{!}{\begin{tikzpicture}
+        \tikzset{
+            semilog lines/.style={black},
+            semilog lines 2/.style={gray!50},
+            semilog half lines/.style={white, dotted},
+            semilog label x/.style={below,font=\small},
+            semilog label y/.style={above,font=\small} }
+        \begin{scope}[xscale=10/6,yscale=5/200]
+            \OrdBode{50}
+            \semilog*{-2}{4}{-100}{100}
+            \node at (1,-130){Angular Frequency, $\omega$ [rad/s]};
+            \node[rotate=90] at (-2.7,0){Magnitude, $|H(\omega)|$ [dB]};
+            \draw[blue, -] (-2,-6) -- (-0.3010,-6) -- (0,0.0206) -- (4,-79.9793);
+            \foreach \Point in {(-0.3010,-6), (0,0.0206)}{
+                \node at \Point {\scriptsize \textbullet};
+            }
+        \end{scope}
+    \end{tikzpicture}}
+\end{solution}
+
+\section{Introduction to Analog Filters}
+\emph{Filters} are special types of LTI systems that modify the frequency spectrum of an input signal to produce a desired output signal. Filters are most commonly used to remove unwanted components or features such as noise from a signal. 
+Depending on which set of frequencies to retain or remove, there are four types of filters:
+\begin{itemize}
+    \item lowpass filter (LPF)
+    \item highpass filter (HPF)
+    \item bandpass filter (BPF)
+    \item bandreject filter (BRF)
+\end{itemize}
+Filters are best characterized by their frequency responses, with the \emph{order} of the filter determined by $\deg[D(\omega)]$ for $H(\omega)=\dfrac{N(\omega)}{D(\omega)}$.
+
+\subsection{Ideal Filters}
+Before going in depth, the notion of an \emph{ideal filter} needs introducing. Also called a \emph{brickwall filter} due to the rectangular shape of its magnitude response, the ideal filter perfectly removes a set of unwanted frequencies (called the \emph{stopband}) 
+while retaining the remaining frequency content (called the \emph{passband}) without loss of information. The \emph{cutoff frequency} $\omega=\omega_c$ of an ideal filter is the frequency that sharply separates the passband from the stopband.
+\\ \\
+The passband and stopband regions of each type of filter are defined in Table \ref{filter_type}.
+\begin{table}[!hbt]
+    \centering
+    \caption{Types of Filters for $\omega_c>0$}
+    \label{filter_type}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Filter & Passband & Stopband \\
+        \hline
+        Lowpass filter (LPF) & $|\omega|<\omega_c$ & $|\omega|>\omega_c$ \\
+        Highpass filter (HPF) & $|\omega|>\omega_c$ & $|\omega|<\omega_c$ \\
+        Bandpass filter (BPF) & $|\omega|\in(\omega_{c_1},\omega_{c_2})$ & $|\omega|\notin(\omega_{c_1},\omega_{c_2})$ \\
+        Bandreject filter (BRF) & $|\omega|\notin(\omega_{c_1},\omega_{c_2})$ & $|\omega|\in(\omega_{c_1},\omega_{c_2})$ \\
+        \hline
+    \end{tabular}
+\end{table}
+\\
+Note that the passband and stopband regions are swapped between the lowpass filter and the highpass filter; the same is true between the bandpass filter and the bandreject filter. 
+Assuming the same cutoff frequencies, it follows that 
+\begin{align}
+    H_{LP}(\omega) &= 
+    \begin{cases}
+        1, & |\omega| < \omega_c \\
+        0, & otherwise
+    \end{cases} \\
+    H_{HP}(\omega) &= 1 - H_{LP}(\omega) \\ 
+    H_{BP}(\omega) &= H_{HP,\omega_{c_1}}(s)\times H_{LP,\omega_{c_2}}(s) = H_{LP,\omega_{c_2}}(\omega) - H_{LP,\omega_{c_1}}(\omega) \\
+    H_{BR}(\omega) &= 1 - H_{BP}(\omega)
+\end{align}
+While frequency responses are two-sided, generally only the \emph{one-sided filter response} is of interest, which is essentially just limiting the range of the frequency response to $\omega\geq 0$, 
+without altering the magnitude values. Alternatively, the Bode plots can be used as approximate graphs due to their one-sided nature. The ideal filter response of the four filter types are seen in Figure \ref{filter_resp}.
+\begin{figure}[!hbt]
+    \centering
+    \caption{Ideal Filter Responses for $A=\max[|H(\omega)|]$}
+    \label{filter_resp}
+    \resizebox{0.3\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x >= 0, \x < 1) * (1); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.5, ytick={0}, ylabel={$H(\omega)$},
+                xmin=0, xmax=2, xtick={0}, xlabel={$\omega$},
+                extra x ticks={0,1}, extra x tick labels={0,$\omega_c$}, 
+                extra y ticks={1}, extra y tick labels={$A$},
+                domain=0:1.9,samples=200,
+                width=5cm, height=5cm]
+            \addplot [blue,thick]{func(x)};
+            \draw [red,latex-latex] (0,0.3) -- (1,0.3) node[midway,above] {\footnotesize Passband};
+            \draw [darkgreen] (1,1.15) node {\small Lowpass filter};
+            \end{axis}
+        \end{tikzpicture}}
+    \resizebox{0.3\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= (\x >= 1) * (1); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.5, ytick={0}, ylabel={$H(\omega)$},
+                xmin=0, xmax=2, xtick={0}, xlabel={$\omega$},
+                extra x ticks={0,1}, extra x tick labels={0,$\omega_c$}, 
+                extra y ticks={1}, extra y tick labels={$A$},
+                domain=0:1.9,samples=200,
+                width=5cm, height=5cm]
+            \addplot [blue,thick]{func(x)};
+            \draw [red,latex-latex] (1,0.3) -- (2,0.3) node[midway,above] {\footnotesize Passband};
+            \draw [darkgreen] (1,1.15) node {\small Highpass filter};
+            \end{axis}
+        \end{tikzpicture}} \\
+    \resizebox{0.3\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x >= 0.6, \x < 1.4) * (1); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.5, ytick={0}, ylabel={$H(\omega)$},
+                xmin=0, xmax=2, xtick={0}, xlabel={$\omega$},
+                extra x ticks={0,0.6,1.4}, extra x tick labels={0,$\omega_{c_1}$,$\omega_{c_2}$}, 
+                extra y ticks={1}, extra y tick labels={$A$},
+                domain=0:1.9,samples=200,
+                width=5cm, height=5cm]
+            \addplot [blue,thick]{func(x)};
+            \draw [red,latex-latex] (0.6,0.3) -- (1.4,0.3) node[midway,above] {\footnotesize Passband};
+            \draw [darkgreen] (1,1.15) node {\small Bandpass filter};
+            \end{axis}
+        \end{tikzpicture}}
+    \resizebox{0.3\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x >= 0, \x < 0.6) * (1) + (\x >= 1.4) * (1); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.5, ytick={0}, ylabel={$H(\omega)$},
+                xmin=0, xmax=2, xtick={0}, xlabel={$\omega$},
+                extra x ticks={0,0.6,1.4}, extra x tick labels={0,$\omega_{c_1}$,$\omega_{c_2}$}, 
+                extra y ticks={1}, extra y tick labels={$A$},
+                domain=0:1.9,samples=200,
+                width=5cm, height=5cm]
+            \addplot [blue,thick]{func(x)};
+            \draw [red,latex-latex] (0.6,0.3) -- (1.4,0.3) node[midway,above] {\footnotesize Stopband};
+            \draw [darkgreen] (1,1.15) node {\small Bandreject filter};
+            \end{axis}
+        \end{tikzpicture}}
+\end{figure}
+\\ \\
+However, by taking the inverse Fourier transforms of the ideal filter responses, the impulse responses of the ideal filters are 
+\begin{align}
+    h_{LP}(t) &= \frac{\sin(\omega_c t)}{\pi t} \\
+    h_{HP}(t) &= \delta(t) - h_{LP}(t) \\ 
+    h_{BP}(t) &= \frac{\sin(\omega_{c_2} t)}{\pi t} - \frac{\sin(\omega_{c_1} t)}{\pi t} \\
+    h_{BR}(t) &= \delta(t) - h_{BP}(t)
+\end{align}
+Modified versions of the sinc function in the time domain, these filters are not physically realizable since the impulse responses are noncausal and everlasting.
+
+\subsection{Passive vs Active Filters}
+While ideal filters cannot be physically implemented, the frequency response can be approximately emulated such that the errors are minimal. This can be done physically or digitally. 
+As with LTI systems, filters can either be analog (implemented via circuits) or digital (implemented via computers). This section will only cover analog filters.
+\\ \\ 
+As with circuits, there are two types of analog filters: passive and active. \emph{Passive filters} contain only passive circuit components such as resistors, capacitors, and inductors, whereas \emph{active filters} contain at least 
+one active component such as the op-amp. Passive filters tend to be designed for high frequencies, whereas active filters tend to be designed for low frequencies. These differences are outlined in Table \ref{filter_comp}.
+\begin{table}[!hbt]
+    \centering
+    \caption{Comparison of Passive and Active Filters}
+    \label{filter_comp}
+    \resizebox{\textwidth}{!}{\begin{tabular}{|p{0.5\textwidth}|p{0.5\textwidth}|}
+        \hline
+        Passive Filters & Active Filters \\
+        \hline
+        \begin{itemize}
+            \item Uses only resistors, capacitors, inductors
+            \item No external power source needed
+            \item Adaptable to large signals (if an inductor is present; good for power systems)
+            \item Adept for high-frequency signals (if an inductor is present)
+            \item Limited to gain of 1 or less
+            \item Loading effect observed in multi-stage filters (each added stage draws more current away from the previous stages, changing the behavior of the previous stages)
+        \end{itemize} & 
+        \begin{itemize}
+            \item Omits inductors and uses op-amps
+            \item Requires DC power supply for op-amps
+            \item Response limited by DC power supply for op-amps (good for electronics circuits)
+            \item Limited frequency range (favors low-frequency signals)
+            \item Capable of signal gain greater than 1
+            \item Performance independence between cascaded stages (as long as there exists voltage buffers between stages)
+        \end{itemize} \\
+        \hline
+    \end{tabular}}
+\end{table}
+\\ \\ \\
+Note that inductors are generally avoided in low-frequency circuits as they are bulky in size/weight, costly, and possess greater nonideal behavior than other components; as a result, inductors are usually reserved for high-frequency passive circuits such as 
+electric power transmission systems. 
+\\ \\
+\emph{Multi-stage filters} describe $N^{th}$ order filters (for $N\geq 2$) in which individual filters are cascaded (i.e., the output of a filter is fed into the input node of the next filter). 
+\begin{itemize}
+    \item While multi-stage passive filters do have a loading effect, this can be minimized by making sure the impedance of each successive stage is 10 times greater than the impedance of its previous stage, such that the loading effect becomes less than 10\%, and the overall frequency response function could be approximated as if there were performance independence between the cascaded stages.
+    \item Of course, with active filters, there is no loading effect, as long as voltage buffers with gain 1 (like the ones shown in Figure \ref{buffer}) are placed between stages.
+\end{itemize}
+\begin{figure}[!hbt]
+    \centering
+    \caption{Voltage Buffer with Unity Gain}
+    \label{buffer}
+    \resizebox{0.35\textwidth}{!}{\begin{circuitikz}
+        \node[op amp, noinv input up] at (0,0) (opamp) {};
+		\draw (opamp.out) to[short,-o] ++(1.5,0) node[right] {$v_o$};
+		\draw (1.66,0) to[short,*-] ++(0,-2) -- ++(-3.5,0) -- ++(0,1.5) -- (opamp.-);
+		\draw (opamp.+) to[short,-o] ++(-2,0) node[left] {$v_{in}$};
+    \end{circuitikz}}
+\end{figure}
+
+\noindent Lastly, recall that the power equation for a component or system is given by 
+\begin{align}
+    P = \frac{V^2}{Z_{eq}}.
+\end{align}
+Since the frequency response assumes that input and output signals are voltage signals, when designing real filters, for 
+\begin{align}
+    A = \max[|H(\omega)|],
+\end{align}
+the objective is to find an appropriate cutoff frequency $\omega_c$, which is when the power dissipated is half. This occurs 
+when the voltage is $(1/\sqrt{2})\times V$. Therefore, for analog filter design, the cutoff frequency $\omega_c$ is the frequency at which 
+\begin{align}
+    |H(\omega_c)| = \frac{A}{\sqrt{2}} = 0.707A.
+\end{align}
+Because of this, the cutoff frequency $\omega_c$ is also called the \emph{half-power frequency} in the context of filter design. It is also called the \emph{3-dB frequency} 
+since it is the point where the magnitude response drops 3 [dB] below the ideal passband level $A$ [V/V]. Note that there exists some slope (also called \emph{roll-off rate}) after the 
+cutoff frequency ($\omega>\omega_c$) in the filter magnitude response. The steeper the slope, the closer the response is to ideal.
+\begin{figure}[!hbt]
+    \centering
+    \caption{Example of a Real Lowpass Filter Magnitude Response}
+    \label{lpf_ex}
+    \resizebox{0.3\textwidth}{!}{
+    \begin{tikzpicture}
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=1.25, ytick={0}, ylabel={$|H(\omega)|$},
+            xmin=0, xmax=2.5, xtick={0}, xlabel={$\omega$},
+            extra x ticks={0,1}, extra x tick labels={0,$\omega_c$}, 
+            extra y ticks={1,0.707}, extra y tick labels={$A$,$\frac{A}{\sqrt{2}}$},
+            domain=0:2.4,samples=200,
+            width=5cm, height=5cm]
+        \addplot [blue,thick]{1/sqrt(1+x^4)};
+        \draw [dashed] (0,0.707) -- (1,0.707); 
+        \draw [dashed] (1,0) -- (1,0.707); 
+        \draw [red,latex-latex] (0,0.3) -- (1,0.3) node[midway,above] {\footnotesize Passband};
+        \draw [-latex] (1.5,0.7) node[above] {\footnotesize Slope} -- (1.5,0.5);
+        \end{axis}
+    \end{tikzpicture}}
+\end{figure}
+\\ \\
+It is convenient then that the Bode approximations already account for cutoff frequencies when used on filters.
+\begin{example}
+    Find the cutoff frequency of the transfer function $H(\omega)=\dfrac{1}{1+j\omega RC}$.
+\end{example}
+\begin{solution}
+    Note that the frequency response is passive. The cutoff frequency happens when the magnitude response is attenuated by a factor of $1/\sqrt{2}$.
+    \begin{align*}
+        |H(\omega)|=\left|\frac{1}{1+j\omega RC}\right| = \frac{1}{\sqrt{1+(\omega RC)^2}} &= \frac{1}{\sqrt{2}} \\
+        \Longrightarrow 1+(\omega RC)^2 &= 2 \\ 
+        \Longrightarrow \omega &= \frac{1}{RC} \triangleq \omega_c
+    \end{align*}
+    Interestingly, when rewriting $H(\omega)$ in Bode standard form, it follows that 
+    \begin{align*}
+        H(\omega) = \frac{1}{1+j\omega RC} = \frac{1}{1+\frac{j\omega}{1/RC}} = \frac{1}{1+\frac{j\omega}{\omega_c}}
+    \end{align*}
+\end{solution}
+
+\begin{example}
+    Describe the following filter to the fullest extent. \\ \\
+    \resizebox{0.65\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+        \draw 
+            (0,3) to [open, v^>={\Large $v_{in}(t)$}] (0,0)
+            to [short, o-o] (10,0)
+            (0,3) to [R, voltage=straight, l^={\Large $R$}, o-] (4,3)
+            to [C, l_={\Large $C$}] (4,0)
+            (4,3) to [R, voltage=straight, l^={\Large $10R$}] (8,3)
+            to [C, l_={\Large $C/10$}] (8,0)
+            (8,3) to [short, -o] (10,3) 
+            to [open, v^>={\Large $v_o(t)$}] (10,0);
+    \end{circuitikz}}
+\end{example}
+\begin{solution}
+    From observation, the circuit is a two-stage passive filter. Converting to the $s$-domain, we get
+    \begin{center}
+        \resizebox{0.5\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+            \draw 
+                (0,3) to [open, v^>={\Large $V_{in}(s)$}] (0,0)
+                to [short, o-o] (10,0)
+                (0,3) to [R, voltage=straight, l^={\Large $R$}, o-] (4,3)
+                to [C, l_={\Large $1/sC$}] (4,0)
+                (4,3) to [R, voltage=straight, l^={\Large $10R$}] (8,3)
+                to [C, l_={\Large $10/sC$}] (8,0)
+                (8,3) to [short, -o] (10,3) 
+                to [open, v^>={\Large $V_o(s)$}] (10,0);
+        \end{circuitikz}}
+    \end{center}
+    Since the second stage has an impedance of ten times that of the first stage, we can approximate the overall transfer function by multiplying the transfer functions of the two individual stages.
+    \begin{align*}
+        H_1(s) &= \frac{1/sC}{R+1/sC} = \frac{1}{1+sRC} \\
+        H_2(s) &= \frac{10/sC}{10R+10/sC} = \frac{1}{1+sRC} \\
+        \Longrightarrow H(s) &\approx H_1(s)H_2(s) = \frac{1}{(1+sRC)^2}
+    \end{align*}
+    The frequency response is given by
+    \begin{align*}
+        H(\omega) = \frac{1}{(1+j\omega RC)^2} = \frac{1}{(1+\frac{j\omega}{1/RC})^2} = \frac{1}{(1+\frac{j\omega}{\omega_c})^2},
+    \end{align*}
+    for cutoff frequency $\omega_c=1/RC$. Since there is a real pole at $\omega_c$ with multiplicity 2, the roll-off rate is then $-40$ [dB/dec].
+    \\ \\ 
+    Overall the filter:
+    \begin{itemize}
+        \item is a two-stage, second-order passive lowpass filter,
+        \item has cutoff frequency $\omega_c=1/RC$,
+        \item and has roll-off rate $-40$ [dB/dec].
+    \end{itemize}
+\end{solution}
+
+\begin{example}
+    Describe the following filter to the fullest extent. Assume ideal op-amps. \\ \\
+    \resizebox{0.9\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+        \draw (6,0.7) node[op amp] (opamp) {};
+        \draw (-0.5,1.2) node[left] {$v_{in}(t)$} to [R={$R_1$},o-] (2,1.2) to [C={$C_1$}] (2.5,1.2);
+        \draw (opamp.-) to [short] (2.5,1.2);
+        \draw (opamp.+) to [short] (3.9,0.21) to [short] (3.9,-1) node[ground] {};
+        \draw (3.9,1.2) to [short] (3.9,2.5) to [R={$R_2$}] (8,2.5) to [short] (8,0.7);
+        \draw (3.9,2.5) to [short] (3.9,3.7) to [C={$C_2$}] (8,3.7) to [short] (8,2.5);
+        \draw (opamp.out) to [short,-o] (9.5,0.7) node[right] {$v_o(t)$};
+    \end{circuitikz}}
+\end{example}
+\begin{solution}
+    From observation, the circuit is a single-stage active filter. Converting to the $s$-domain, we get 
+    \begin{center}
+        \resizebox{0.7\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+            \draw (6,0.7) node[op amp] (opamp) {};
+            \draw (-0.5,1.2) node[left] {$V_{in}(s)$} to [R={$R_1$},o-] (2,1.2) to [C={$1/sC_1$}] (2.5,1.2);
+            \draw (opamp.-) to [short] (2.5,1.2);
+            \draw (opamp.+) to [short] (3.9,0.21) to [short] (3.9,-1) node[ground] {};
+            \draw (3.9,1.2) to [short] (3.9,2.5) to [R={$R_2$}] (8,2.5) to [short] (8,0.7);
+            \draw (3.9,2.5) to [short] (3.9,3.7) to [C={$1/sC_2$}] (8,3.7) to [short] (8,2.5);
+            \draw (opamp.out) to [short,-o] (9.5,0.7) node[right] {$V_o(s)$};
+        \end{circuitikz}}
+    \end{center}
+    The equivalent impedance in the negative feedback loop is given by 
+    \begin{align*}
+        Z_{eq} = R_2\, || \, (1/sC_2) = \frac{R_2}{1+sR_2C_2}.
+    \end{align*}
+    Then it follows that 
+    \begin{align*}
+        \frac{V_{in}(s)}{R_1+1/sC_1} = \frac{-V_o(s)}{Z_{eq}}
+    \end{align*}
+    such that the transfer function is 
+    \begin{align*}
+        H(s) = \frac{V_o(s)}{V_{in}(s)} = -\frac{Z_{eq}}{R_1+1/sC_1} = -\frac{sR_2C_1}{(1+sR_1C_1)(1+sR_2C_2)}.
+    \end{align*}
+    The frequency response is then 
+    \begin{align*}
+        H(\omega) = -\frac{j\omega R_2C_1}{\left(1+\frac{j\omega}{1/R_1C_1}\right)\left(1+\frac{j\omega}{1/R_2C_2}\right)} = -\frac{j\omega R_2C_1}{\left(1+\frac{j\omega}{\omega_{c_1}}\right)\left(1+\frac{j\omega}{\omega_{c_2}}\right)},
+    \end{align*}
+    for $\omega_{c_1}=1/R_1C_1$ and $\omega_{c_2}=1/R_2C_2$. Assume $\omega_{c_1} < \omega_{c_2}$. Then the asymptotic magnitude changes are as follows:
+    \begin{align*}
+        j\omega &\Longrightarrow \Delta m = +20 \text{ [dB/dec] at } \omega = 0 \\
+        \frac{1}{1+\frac{j\omega}{\omega_{c_1}}} &\Longrightarrow \Delta m = -20 \text{ [dB/dec] at } \omega = \omega_{c_1} \\
+        \frac{1}{1+\frac{j\omega}{\omega_{c_2}}} &\Longrightarrow \Delta m = -20 \text{ [dB/dec] at } \omega = \omega_{c_2}
+    \end{align*}
+    Even without sketching the Bode magnitude plot, we can see that the filter is a bandpass filter. 
+    \\ \\
+    Overall the filter:
+    \begin{itemize}
+        \item is a single-stage, second-order active bandpass filter,
+        \item has a low cutoff frequency $\omega_{c_1}=1/R_1C_1$,
+        \item has a high cutoff frequency $\omega_{c_2}=1/R_2C_2$,
+        \item and has respective roll-off rates of $\pm 20$ [dB/dec].
+    \end{itemize}
+\end{solution}
+
+\section{Butterworth Filters}
+\emph{Butterworth filters} are LTI systems designed to have maximally flat magnitude responses that closely approximates the ideal filter responses. 
+Initially designed to approximate the ideal lowpass filter, the Butterworth filter has since been extended to other filter types by modifying the Butterworth 
+lowpass filter to achieve such means.
+\\ \\ 
+As with any filter, Butterworth filters can be designed physically or digitally. Real analog Butterworth filters can be designed using either the 
+order-$N$ passive Cauer LC filter or the order-$2N$ active Sallen--Key filter; neither methods will be discussed here. Instead, a theoretical design approach of the Butterworth 
+filters will be explored.
+\begin{figure}[!hbt]
+    \centering
+    \caption{Second-Order Passive Cauer Lowpass Filter}
+    \begin{circuitikz}[american voltages,raised voltages]
+        \draw 
+            (0,3) to [open, v^>={$v_{in}(t)$}] (0,0)
+            to [short, o-o] (10,0)
+            (0,3) to [L={$L_1$}, o-] (3,3)
+            to [C={$C_1$}] (3,0)
+            (3,3) to [L={$L_2$}] (6,3)
+            to [C={$C_2$}] (6,0)
+            (6,3) to [short, -o] (10,3) 
+            to [open, v^>={$v_o(t)$}] (10,0);
+        \draw (8,3) to [R={$R_{load}$}] (8,0);
+    \end{circuitikz}
+\end{figure}
+\begin{figure}[!hbt]
+    \centering
+    \caption{Second-Order Active Sallen--Key Lowpass Filter}
+    \begin{circuitikz}
+        \draw
+            (5,0.5) node [op amp] (opamp) {}
+            (0,0) node [left] {$v_{in}(t)$} to [R, l=$R_1$, o-*] (2,0)
+            to [R, l=$R_2$, *-*] (opamp.+)
+            to [C, l_=$C_2$, *-] ($(opamp.+)+(0,-2)$) node [ground] {}
+            (opamp.out) |- (3.5,2) to [C, l_=$C_1$, *-] (2,2) to [short] (2,0)
+            (opamp.-) -| (3.5,2)
+            (opamp.out) to [short, *-o] (7,0.5) node [right] {$v_{o}(t)$};
+    \end{circuitikz}
+\end{figure}
+
+\noindent For a desired cutoff frequency $\omega_c$ and filter order $N$, the \emph{magnitude-squared response} of the Butterworth lowpass filter is given by 
+\begin{align}
+    |H_{LP}(\omega)|^2 = \frac{A^2}{1+\left(\frac{j\omega}{j\omega_c}\right)^{2N}}
+\end{align}
+where $A=\max[|H_{LP}(\omega)|]$. Interestingly, as the filter order $N$ increases, the roll-off (slope) in the magnitude response 
+becomes steeper and closer to the ideal sharp transition, as seen in Figure \ref{butt_resp}.
+\begin{figure}[!hbt]
+    \centering
+    \caption{$N^{th}$ Order Butterworth Lowpass Filter Magnitude Response}
+    \label{butt_resp}
+    \begin{tikzpicture}
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=1.5, ytick={0}, ylabel={$|H(\omega)|$},
+            xmin=0, xmax=2, xtick={0}, xlabel={$\omega$},
+            extra x ticks={0,1}, extra x tick labels={0,$\omega_c$}, 
+            extra y ticks={0.707,1}, extra y tick labels={$\frac{A}{\sqrt{2}}$,$A$},
+            domain=0:1.9,samples=200,
+            width=7cm, height=7cm]
+        \addplot [red,thick]{sqrt(1/(1+x^4))};
+        \addplot [orange,thick]{sqrt(1/(1+x^8))};
+        \addplot [darkgreen,thick]{sqrt(1/(1+x^14))};
+        \addplot [blue,thick]{sqrt(1/(1+x^20))};
+        \addlegendentry{$N=2$}
+        \addlegendentry{$N=4$}
+        \addlegendentry{$N=7$}
+        \addlegendentry{$N=10$}
+        \draw [dashed] (0,0.707) -- (1,0.707); 
+        \draw [dashed] (1,0) -- (1,0.707); 
+        \end{axis}
+    \end{tikzpicture}
+\end{figure}
+\\ \\ \\
+Assume $A=1$ such that the \emph{passive magnitude-squared response} of the Butterworth lowpass filter is 
+\begin{align}
+    |H_{LP}(\omega)|^2 = \frac{1}{1+\left(\frac{j\omega}{j\omega_c}\right)^{2N}}
+\end{align}
+The passive magnitude-squared response can be converted to the $s$-domain such that 
+the $s$-domain passive magnitude-squared response is
+\begin{align}
+    |H_{LP}(s)|^2 = H_{LP}(s)H_{LP}^*(s) = \frac{1}{1+\left(\frac{s}{j\omega_c}\right)^{2N}}
+\end{align}
+and the passive lowpass transfer function can be more succinctly defined as 
+\begin{align}
+    H_{LP}(s) &= \prod_{k=1}^{N} \frac{\omega_c}{s-\omega_c \exp(j\theta_k)} = \prod_{k=1}^{N} \frac{1}{s_c-\exp(j\theta_k)} , \, \text{ for } s_c=\frac{s}{\omega_c} \\
+    \theta_k &= \left[\frac{2k+N-1}{2N}\right]\pi, \, \text{ for } k=1,...,N.
+\end{align}
+For filter order $N$, the squared transfer function $|H_{LP}(s)|^2$ produces $2N$ poles that can be equidistantly plotted along the unit circle on the $s$-plane; 
+from there, only the $N$ poles from the open left half-plane (OLHP) are selected as poles of $H_{LP}(s)$, which are given by $\exp(j\theta_k)$ for $k=1,...,N$. 
+This is to ensure that the LTI system characterized by the filter is BIBO stable. 
+\\ \\
+An example of the pole placement for filter order $N=6$ can be found in 
+Figure \ref{butt6}, where all crosses represent the poles of $|H_{LP}(s)|^2$, and the red crosses represent the selected poles for $H_{LP}(s)$.
+\begin{figure}[!hbt]
+    \caption{Pole placement of a 6th order Butterworth lowpass filter on the $s$-plane.}
+    \label{butt6}
+    \centering
+    \begin{tikzpicture}[scale=1.2]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-1.5, ymax=1.5, ymajorticks=false, ylabel={\footnotesize $\Im(s)$},
+            xmin=-1.5, xmax=1.5, xtick={-1,0,1}, xlabel={\footnotesize $\Re(s)$}, x tick label style={xshift={0.75em}},
+            domain=-1:1,samples=200,
+            width=6cm, height=6cm]
+            \addplot [cyan, thick]{sqrt(1-x^2)};
+            \addplot [cyan, thick]{-sqrt(1-x^2)};
+            \begin{scope}[on background layer={color=orange!10}]
+                \draw[fill=orange!10] (-1.5,1.5) -- (0,1.5) -- (0,-1.5) -- (-1.5,-1.5);
+            \end{scope}
+            \draw (-1,-1) node{\footnotesize \shortstack{left \\ half-plane}};
+            \draw (1,-1) node{\footnotesize $s$-plane};
+            \draw (0.2588,0.9659) node[cross=4pt,darkgreen, very thick] {};
+            \draw (-0.2588,0.9659) node[cross=4pt,red, very thick] {};
+            \draw (-0.7071,0.7071) node[cross=4pt,red, very thick] {};
+            \draw (-0.9659,0.2588) node[cross=4pt,red, very thick] {};
+            \draw (-0.9659,-0.2588) node[cross=4pt,red, very thick] {};
+            \draw (-0.7071,-0.7071) node[cross=4pt,red, very thick] {};
+            \draw (-0.2588,-0.9659) node[cross=4pt,red, very thick] {};
+            \draw (0.2588,-0.9659) node[cross=4pt,darkgreen, very thick] {};
+            \draw (0.7071,-0.7071) node[cross=4pt,darkgreen, very thick] {};
+            \draw (0.9659,-0.2588) node[cross=4pt,darkgreen, very thick] {};
+            \draw (0.9659,0.2588) node[cross=4pt,darkgreen, very thick] {};
+            \draw (0.7071,0.7071) node[cross=4pt,darkgreen, very thick] {};
+        \end{axis}
+    \end{tikzpicture}
+\end{figure}
+\\ \\
+As every Butterworth filter relates back to the Butterworth lowpass filter, the passive lowpass transfer function can be written as 
+\begin{align}
+    H_{LP}(s) = \frac{1}{B_N(s_c)},
+\end{align}
+where 
+\begin{align}
+    B_N(s_c) = 1 + \sum_{k=1}^{N} a_k [s_c]^k
+\end{align}
+is the $N^{th}$ order \emph{(normalized) Butterworth polynomial} with respect to $s_c$. The \emph{Butterworth coefficients} $a_k$ for the first 
+few values of $N$ are outlined in Table \ref{butt_coeffs}.
+\begin{table}[!hbt]
+    \centering
+    \caption{Rounded Butterworth coefficients for $B_N(s_c)$ with $s_c=s/\omega_c$ (lowpass only)}
+    \label{butt_coeffs}
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+        \hline
+        $N$ & $a_1$ & $a_2$ & $a_3$ & $a_4$ & $a_5$ & $a_6$ & $a_7$ & $a_8$ & $a_9$ & $a_{10}$ \\
+        \hline
+        1 & 1 & & & & & & & & & \\
+        \hline
+        2 & 1.41 & 1 & & & & & & & & \\
+        \hline
+        3 & 2 & 2 & 1 & & & & & & & \\
+        \hline
+        4 & 2.61 & 3.41 & 2.61 & 1 & & & & & & \\
+        \hline
+        5 & 3.24 & 5.24 & 5.24 & 3.24 & 1 & & & & & \\
+        \hline
+        6 & 3.87 & 7.46 & 9.14 & 7.46 & 3.87 & 1 & & & & \\
+        \hline
+        7 & 4.49 & 10.10 & 14.59 & 14.59 & 10.10 & 4.49 & 1 & & & \\
+        \hline
+        8 & 5.13 & 13.14 & 21.85 & 25.69 & 21.85 & 13.14 & 5.13 & 1 & & \\
+        \hline
+        9 & 5.76 & 16.58 & 31.16 & 41.99 & 41.99 & 31.16 & 16.58 & 5.76 & 1 & \\
+        \hline
+        10 & 6.39 & 20.43 & 42.80 & 64.88 & 74.23 & 64.88 & 42.80 & 20.43 & 6.39 & 1 \\
+        \hline
+    \end{tabular}
+\end{table}
+\\
+\noindent While only the passive lowpass transfer function was considered, the active transfer function $H_a(s)$ of some filter type can be derived from 
+the passive transfer function $H_p(s)$ of the same filter type: 
+\begin{align}
+    H_{a}(s) = A\cdot H_{p}(s)
+\end{align} 
+
+\begin{example}
+    Find the transfer function of a third-order Butterworth lowpass filter with cutoff frequency $\omega_c = 10^3$ [rad/s] and a DC gain of 10.
+\end{example}
+\begin{solution}
+    First, find the passive transfer function. Using the Butterworth polynomial in $s_c = s/\omega_c$, it follows that
+    \begin{align*}
+        H_{LP}(s) = \frac{1}{B_3(s_c)} = \frac{1}{s_c^3+2s_c^2+2s_c+1}.
+    \end{align*}
+    The passive transfer function simplifies to
+    \begin{align*}
+        H_{LP}(s) = \frac{1}{\left(\frac{s}{\omega_c}\right)^3+2\left(\frac{s}{\omega_c}\right)^2+2\left(\frac{s}{\omega_c}\right)+1} &= \frac{\omega_c^3}{s^3+2\omega_c s^2+2\omega_c^2s+\omega_c^3} \\ 
+        &= \frac{10^9}{s^3+(2\times 10^3)s^2+(2\times 10^6)s+10^9}
+    \end{align*}
+    Lastly, we find the active transfer function $H(s)$. Since the DC gain is 10 and the filter is lowpass, it follows that $A=10$ and 
+    \begin{align*}
+        H(s) = A\cdot H_{LP}(s) &= 10 \times \frac{10^9}{s^3+(2\times 10^3)s^2+(2\times 10^6)s+10^9} \\ 
+        &= \frac{10^{10}}{s^3+(2\times 10^3)s^2+(2\times 10^6)s+10^9}
+    \end{align*}
+\end{solution}
+
+\noindent The passive transfer function of the Butterworth highpass filter $H_{HP}(s)$ can be derived from 
+the passive transfer function of the Butterworth lowpass filter $H_{LP}(s)$ and is given by 
+\begin{align}
+    H_{HP}(s) = H_{LP}(s)\bigg|_{s_c\leftarrow (1/s_c)}\, \text{ for } s_c = \frac{s}{\omega_c}
+\end{align}
+
+\begin{example}
+    Find the transfer function of a third-order Butterworth highpass filter with cutoff frequency $\omega_c = 10^3$ [rad/s] and a high frequency gain of 10.
+\end{example}
+\begin{solution}
+    From an earlier example, the passive lowpass transfer function is 
+    \begin{align*}
+        H_{LP}(s) = \frac{1}{s_c^3+2s_c^2+2s_c+1}
+    \end{align*}
+    Then the passive highpass transfer function is 
+    \begin{align*}
+        H_{HP}(s) = H_{LP}(s)\bigg|_{s_c\leftarrow (1/s_c)} &= \frac{1}{\left(\frac{1}{s_c}\right)^3+2\left(\frac{1}{s_c}\right)^2+2\left(\frac{1}{s_c}\right)+1} \\
+        &= \frac{s_c^3}{1 + 2s_c + 2s_c^2 + s_c^3} \\ 
+        &= \frac{\left(\frac{s}{\omega_c}\right)^3}{1 + 2\left(\frac{s}{\omega_c}\right) + 2\left(\frac{s}{\omega_c}\right)^2 + \left(\frac{s}{\omega_c}\right)^3} \\
+        &= \frac{s^3}{s^3 + 2\omega_c s^2 + 2\omega_c^2 s + \omega_c^3} \\ 
+        &= \frac{s^3}{s^3+(2\times 10^3)s^2+(2\times 10^6)s+10^9}
+    \end{align*}
+    Lastly, we find the active transfer function $H(s)$. Since the high frequency gain is 10 and the filter is highpass, it follows that $A=10$ and 
+    \begin{align*}
+        H(s) = A\cdot H_{HP}(s) &= 10 \times \frac{s^3}{s^3+(2\times 10^3)s^2+(2\times 10^6)s+10^9} \\
+        &= \frac{10s^3}{s^3+(2\times 10^3)s^2+(2\times 10^6)s+10^9}
+    \end{align*}
+\end{solution}
+
+\noindent The Butterworth bandpass filter can also be derived from the lowpass and highpass filters such that for $\omega_{c_1} < \omega_{c_2}$,
+\begin{align}
+    H_{BP}(s) = H_{HP,\omega_{c_1}}(s)\times H_{LP,\omega_{c_2}}(s)
+\end{align} 
+Alternatively, the passive transfer function of the Butterworth bandpass filter can be derived solely from the passive lowpass filter such that
+\begin{align}
+    H_{BP}(s) &= H_{LP}(s)\bigg|_{s_c\leftarrow s_c'} \\
+    &\text{ for } s_c' = \frac{1}{\omega_{c_2}-\omega_{c_1}}\left[\frac{s^2+\omega_{c_1}\omega_{c_2}}{s}\right]
+\end{align}
+Similarly, the passive transfer function of the Butterworth bandreject filter can be derived from the passive lowpass filter such that 
+\begin{align}
+    H_{BR}(s) &= H_{LP}(s)\bigg|_{s_c\leftarrow (1/s_c')} \\
+    &\text{ for } \frac{1}{s_c'} = (\omega_{c_2}-\omega_{c_1})\left[\frac{s}{s^2+\omega_{c_1}\omega_{c_2}}\right]
+\end{align}
+Note that both the bandpass and bandreject filters can only have even filter orders.
+
+\begin{example}
+    Find the transfer function of a second-order Butterworth bandpass filter with passband $\omega\in(10,40)$ [rad/s], assuming a maximum gain of unity.
+\end{example}
+\begin{solution}
+    Since it is a bandpass filter with order 2, let $N=1$ for the passive lowpass transfer function:
+    \begin{align*}
+        H_{LP}(s) = \frac{1}{s_c+1}
+    \end{align*}
+    Then it follows that 
+    \begin{align*}
+        s_c' = \frac{1}{\omega_{c_2}-\omega_{c_1}}\left[\frac{s^2+\omega_{c_1}\omega_{c_2}}{s}\right] = \frac{1}{40-10}\left[\frac{s^2+10\times 40}{s}\right] = \frac{s^2+400}{30s},
+    \end{align*}
+    and the passive bandpass transfer function is
+    \begin{align*}
+        H_{BP}(s) = H_{LP}(s)\bigg|_{s_c\leftarrow s_c'} &= \frac{1}{\left(\frac{s^2+400}{30s}\right)+1} = \frac{30s}{s^2+30s+400}. 
+    \end{align*}
+\end{solution}
+\begin{example}
+    Find the transfer function of a second-order Butterworth bandreject filter with stopband $\omega\in(10,40)$ [rad/s], assuming a maximum gain of unity.
+\end{example}
+\begin{solution}
+    Since it is a bandreject filter with order 2, let $N=1$ for the passive lowpass transfer function:
+    \begin{align*}
+        H_{LP}(s) = \frac{1}{s_c+1}
+    \end{align*}
+    Then it follows that 
+    \begin{align*}
+        \frac{1}{s_c'} = (\omega_{c_2}-\omega_{c_1})\left[\frac{s}{s^2+\omega_{c_1}\omega_{c_2}}\right] = \frac{30s}{s^2+400},
+    \end{align*}
+    and the passive bandreject transfer function is
+    \begin{align*}
+        H_{BR}(s) = H_{LP}(s)\bigg|_{s_c\leftarrow 1/s_c'} &= \frac{1}{\left(\frac{30s}{s^2+400}\right)+1} = \frac{s^2+400}{s^2+30s+400}. 
+    \end{align*}
+\end{solution}
+
+\section{Introduction to Communications Systems}
+In the broadest sense, \emph{communication} is the exchange of information. Before modern times, messages were carried by foot (postmen, runners), carrier pigeons, light (Morse code), and fires (smoke signals). 
+In the present day, most parts of the world now use \emph{(electrical) communications systems} (also called \emph{telecommunications}) instead, which can transmit signals over longer distances at the speed of light.
+\\ \\
+The block diagram of a typical communications system is shown in Figure \ref{comms}. Here, both the message signal and the output signal are electrical signals. 
+\begin{figure}[!hbt]
+    \caption{Communications system.}
+    \label{comms}
+    \centering
+    \resizebox{\textwidth}{!}{
+        \begin{tikzpicture}
+            \node [] (msg) at (-8,0){\shortstack{Message \\ Signal}};
+            \node [] (est) at (+8,0){\shortstack{Estimate of \\ Message Signal}};
+            \node [] at (-2.25,0.7){\shortstack{Transmitted \\ Signal}};
+            \node [] at (+2.25,0.7){\shortstack{Received \\ Signal}};
+            \node [draw,
+                fill=blue!30, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (tx) at (-4.5,0){\shortstack{Transmitter \\ (Tx)}};
+            \node [draw,
+                fill=yellow!50, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (ch) at (0,0){Channel};
+            \node [draw,
+                fill=red!30, 
+                minimum width=2cm, 
+                minimum height=1.2cm
+            ] (rx) at (4.5,0){\shortstack{Receiver \\ (Rx)}};
+            \draw [-latex, line width=1.5pt] (msg) -- (tx);
+            \draw [-latex, line width=1.5pt] (tx) -- (ch);
+            \draw [-latex, line width=1.5pt] (ch) -- (rx);
+            \draw [-latex, line width=1.5pt] (rx) -- (est);
+        \end{tikzpicture}}
+\end{figure}
+The \emph{source} originates a message (i.e., a human voice, TV picture, e-mail message, etc.). If the message is not an electrical signal, it must first be converted into 
+one via an \emph{input inducer} (i.e., a microphone, camera, computer keyboard, etc.); once converted, this electrical signal is called a \emph{message signal}. 
+\\ \\
+The message signal is inputted into a \emph{transmitter}, which modifies the message signal for efficient transmission. It may be comprised of a combination of systems such as an A/D converter, an encoder, 
+and a modulator. The modified signal then gets transmitted through a \emph{(communications) channel} (also called \emph{transmission medium}); examples include copper wires, coaxial cables, optical fiber, 
+and a radio link. In the channel, unwanted distortion and noise is introduced to the transmitted signal.
+\\ \\ 
+The received signal with distortion and noise is then inputted into a \emph{receiver}, which reprocesses the received signal by reversing the transmitter operations (i.e., D/A converter, decoder, demodulator) 
+and removes the unwanted distortion and noise (as best as possible) from the received signal.
+\\ \\
+The receiver output signal is then fed into an \emph{output transducer}, which converts the electrical signal back to a message (i.e., the same form as the message at the source). The message is then finally 
+delivered to the \emph{destination}.
+
+\subsection{Classification of Communications Systems}
+
+\subsubsection{Analog vs Digital Communications}
+Communications systems can be classified by the type of signals that are being transmitted and received. In \emph{analog communications systems}, analog signals 
+are used for information transmission. In \emph{digital communications systems} (also called \emph{data communications systems}), digital signals are used for 
+information transmission.
+
+\subsubsection{Baseband vs Passband Communications}
+Along the same line of signal-based classification, communications systems can also be classified by how the message signals are modified before transmission. If the 
+signal is transmitted with \emph{modulation}, then the signal is called a \emph{passband signal} (or simply a \emph{modulated signal}), 
+and the communications system is classified as a \emph{passband communications system} (also called a \emph{carrier communications system}). Otherwise, if the message signal is 
+not modulated, then the signal is called a \emph{baseband signal}, and the communications system is classified as a \emph{baseband communications system}. Typically, baseband transmission 
+is more suitable for short distance communication, whereas passband transmission is required for long distance communication. 
+\\ \\
+Additionally, passband signals can be further classified as either \emph{narrowband}, \emph{broadband} (also called \emph{wideband}), or 
+\emph{ultra-wideband} (UWB), depending on the limited bandwidth allowed that a passband signal can take up in the frequency domain. The passband communications system that 
+transmits a particular type of passband signal can also then take on the very same descriptor (i.e., broadband communications systems transmit broadband signals). However, 
+in a special type of communications systems called \emph{spread spectrum communications systems}, a narrowband signal can be spread over a broadband frequency band.
+
+\subsubsection{Wired vs Wireless Communications}
+Communications systems can be classified by the type of transmission medium used for the communications channel. \emph{Guided transmission media} (also called \emph{wired} or \emph{bounded}) 
+are physical (and tangible) links over which signals are sent from transmitter to receiver; communications systems with guided transmission media are called \emph{wired communications systems} (also called 
+\emph{wireline communications systems}). Wired communications systems can further be classified by the type of guided media used, such as fiber-optic communications systems or cable networks. 
+\\ \\
+In contrast, \emph{unguided transmission media} (also called \emph{wireless} or \emph{unbounded}) describes free space (i.e., over-the-air) over which signals are being transmitted and received; 
+communications systems with unguided transmission media are called \emph{wireless communications systems}. Wireless communications systems can further be classified by the type of electromagnetic wave that 
+is carrying the message signal, such as RF communications systems (radio waves), microwave links, and optical wireless communications (visible, infrared, or ultraviolet waves). In addition, wireless 
+communications can also be described by the number of antennas on the transmitter and receiver ends (SISO, SIMO, MISO, MIMO).
+
+\begin{figure}
+    \centering
+    \caption{Electromagnetic spectrum with linear frequencies [Hz]}
+    \resizebox{0.95\textwidth}{!}{%
+        \includestandalone[mode=buildnew, width=\textwidth]{em}
+    }
+\end{figure}
+
+\subsubsection{Short-Range vs Long-Range Communications}
+As implied in the name, \emph{short-range communications systems} can only carry a message signal over short distances, whereas \emph{long-range communications systems} can carry a message signal over 
+long distances. Examples of short-range communications systems include Wi-Fi, Bluetooth, and RFID. Examples of long-range communications systems include 4G/5G cellular networks and low-power wide area networks.
+
+\subsubsection{Simplex vs Duplex Communications}
+Communications systems can be classified by the directionality of the exchange of information over a channel, whether that is unidirectional or bidirectional. In a \emph{simplex communications system} with two parties, 
+only one party can be a transmitter while the other is strictly a receiver such that the flow of information is unidirectional from transmitter to receiver. Examples include TV broadcasting systems or PC-to-keyboard connections.
+\\ \\
+In a \emph{half-duplex communications system} with two parties, either party can take on the role of transmitter or receiver at any time, as long as signal transmission happens one at a time. That is, 
+the communication is technically bidirectional but only one direction can be provided at a time (not simultaneously). This is usually set up to conserve bandwidth, though collisions can occur if both parties 
+attempt to transmit at the same time. Examples include walkie-talkies, USB data transfers, and Internet access.
+\\ \\
+In a \emph{full-duplex communications system} with two parties, both parties can take on the role of either transmitter or receiver at any time and can transmit and receive at any time; that is, communication 
+is bidirectional and can be simultaneous. Examples include phone networks, video conferencing, and live chats.
+
+\begin{figure}
+    \centering
+    \caption{Simplex vs Half-Duplex vs Full-Duplex Communications Systems}
+    \resizebox{0.7\textwidth}{!}{\begin{tikzpicture}
+        \node [draw,
+            fill=blue!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (tx) at (0,2){\shortstack{Transmitter \\ (Tx)}};
+        \node [draw,
+            fill=red!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (rx) at (10,2){\shortstack{Receiver \\ (Rx)}};
+        \draw[-{Latex[length=3mm]}] (tx) to node [above] {Direction of data} (rx);
+        \node [draw,
+            top color=blue!30, 
+            bottom color=red!30,
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (trhalf1) at (0,0){\shortstack{Tx / Rx}};
+        \node [draw,
+            top color=red!30, 
+            bottom color=blue!30,
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (trhalf2) at (10,0){\shortstack{Tx / Rx}};
+        \draw[-{Latex[length=3mm]}] (1,0.25) to node [above] {Direction of data at $t_1$} (9,0.25);
+        \draw[{Latex[length=3mm]}-] (1,-0.25) to node [below] {Direction of data at $t_2$} (9,-0.25);
+        \node [draw,
+            fill=violet!50,
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (trfull1) at (0,-2){\shortstack{Tx / Rx}};
+        \node [draw,
+            fill=violet!50,
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (trfull2) at (10,-2){\shortstack{Tx / Rx}};
+        \draw[{Latex[length=3mm]}-{Latex[length=3mm]}] (trfull1) to node [above] {Direction of data at all $t$} (trfull2);
+    \end{tikzpicture}}    
+\end{figure}
+
+\newpage
+\subsection{Signal Transmission Through LTI Systems}
+For \emph{distortionless transmission} through a system, the exact input signal shape must be reproduced at the output. That is, 
+\begin{align}
+    y(t) = K\cdot x(t-t_0),
+\end{align} 
+for $K$ is the \emph{gain constant} and $t_0$ is the \emph{time delay}. The frequency response function is given by 
+\begin{align}
+    H(\omega) = \frac{Y(\omega)}{X(\omega)} = Ke^{-j\omega t_0}.
+\end{align}
+Distortionless transmission can only happen if the amplitude $|H(\omega)|=K$ is constant over the entire frequency range and if the phase $\phase{H(\omega)} = -t_0 \omega$ 
+is linear with frequency.
+\\ \\
+When $|H(\omega)|$ is not constant, the frequency components of the input signal are transmitted with different amounts of gain or attenuation, resulting in a different waveform due to \emph{amplitude distortion}. 
+When $\phase{H(\omega)}$ is not linear, the frequency components of the input signal pass through the system at different delays, resulting in a different waveform due to \emph{phase distortion}. 
+
+\subsection{Fourier Transform Using Linear Frequency}
+Since the field of telecommunications frequently uses linear frequency $f$ [Hz] and since it follows that $\omega=2\pi f$, it is only appropriate to rewrite the Fourier transform using linear frequency.
+\begin{align}
+    X(f) = \mathcal{F}[x(t)] = \int_{-\infty}^{+\infty} x(t) e^{-j2\pi ft} \,dt.
+\end{align}
+The inverse Fourier transform is given by
+\begin{align}
+    x(t) = \mathcal{F}^{-1}[X(f)] = \int_{-\infty}^{+\infty} X(f) e^{+j2\pi ft} \,df.
+\end{align}
+Using the scaling property of delta functions
+\begin{align}
+    \delta(\omega) = \delta(2\pi f) = \frac{1}{2\pi}\delta(f)
+\end{align}
+and the convolution with delta function
+\begin{align}
+    X(\omega) * \delta(\omega) &= X(\omega) \\
+    \Longrightarrow X(2\pi f) * \delta(2\pi f) &= X(f) * \frac{1}{2\pi} \delta(f) = \frac{1}{2\pi} X(f),
+\end{align}
+the revised Fourier transform tables are provided in Tables \ref{linear_fourier_prop} and \ref{linear_fourier_pairs}.
+\\ \\
+\begin{table}[!hbt]
+    \centering
+    \caption{Properties of the Fourier Transform Using Linear Frequency}
+    \label{linear_fourier_prop}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Property & $x(t)$ & $X(f)=\mathcal{F}[x(t)]$ \\[0.15cm]
+        \hline
+        & & \\
+        Superposition & $K_1x_1(t)+K_2x_2(t)$ & $K_1X_1(f)+K_2X_2(f)$ \\[0.5cm]
+        Time scaling & $x(at)$ & $\dfrac{1}{|a|}X\left(\dfrac{f}{a}\right)$ \\[0.5cm]
+        Time shift & $x(t-t_0)$ & $e^{-j2\pi ft_0}X(f)$ \\[0.5cm]
+        Frequency shift & $e^{+j2\pi f_0 t}x(t)$ & $X(f-f_0)$ \\[0.5cm]
+        Time $n$th derivative & $x^{(n)}(t)=\dfrac{d^nx(t)}{dt^n}$ & $(j2\pi f)^nX(f)$ \\[0.5cm]
+        Time integral & $\displaystyle\int_{-\infty}^{t} x(\tau) \,d\tau$ & $\dfrac{X(f)}{j2\pi f} + \dfrac{1}{2}\delta(f)\displaystyle\int_{-\infty}^{+\infty}x(t) \,dt$ \\[0.5cm]
+        Frequency derivative & $t^n x(t)$ & $\left(\dfrac{j}{2\pi}\right)^n \dfrac{d^n X(f)}{df^n}$\\[0.5cm]
+        Convolution & $x_1(t)*x_2(t)$ & $X_1(f)X_2(f)$ \\[0.5cm]
+        Multiplication & $x_1(t)x_2(t)$ & $X_1(f)*X_2(f)$ \\[0.5cm]
+        Modulation & $x(t)\cos(2\pi f_0 t)$ & $\dfrac{1}{2}[X(f-f_0) + X(f+f_0)]$ \\[0.5cm]
+        Duality & $X(t)$ & $x(-f)$ \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+\begin{table}[!hbt]
+    \centering
+    \caption{Fourier Transform Pairs Using Linear Frequency}
+    \label{linear_fourier_pairs}
+    \begin{tabular}{|c|c|}
+        \hline
+        $x(t)$ & $X(f)=\mathcal{F}[x(t)]$ \\[0.15cm]
+        \hline
+        & \\[0.1cm]
+        $\delta(t)$ & $1$ \\[0.5cm]
+        $\delta(t-t_0)$ & $e^{-j2\pi ft_0}$ \\[0.5cm]
+        $1$ & $\delta(f)$ \\[0.5cm]
+        $u(t)$ & $\dfrac{1}{2}\delta(f) + \dfrac{1}{j2\pi f}$ \\[0.5cm]
+        $\operatorname{sgn}(t)$ & $\dfrac{1}{j\pi f}$ \\[0.5cm]
+        $\operatorname{rect}\left(\dfrac{t}{\tau}\right)$ & $\tau\operatorname{Sa}(\pi\tau f) = \tau\operatorname{sinc}(\tau f)$ \\[0.5cm]
+        $\operatorname{tri}\left(\dfrac{t}{\tau}\right)$ & $\tau\operatorname{Sa}^2(\pi\tau f) = \tau\operatorname{sinc}^2(\tau f)$ \\[0.5cm]
+        $e^{j2\pi f_0 t}$ & $\delta(f-f_0)$ \\[0.5cm]
+        $\cos(2\pi f_0 t)$ & $\dfrac{1}{2}[\delta(f-f_0) + \delta(f+f_0)]$ \\[0.5cm]
+        $\sin(2\pi f_0 t)$ & $\dfrac{1}{2j}[\delta(f-f_0) - \delta(f+f_0)]$ \\[0.5cm]
+        $e^{-at}u(t)$ & $\dfrac{1}{a+j2\pi f}$ \\[0.5cm]
+        $te^{-at}u(t)$ & $\dfrac{1}{(a+j2\pi f)^2}$ \\[0.5cm]
+        $\dfrac{1}{\pi t}$ & $-j \operatorname{sgn}(f)$ \\[0.5cm]
+        $\operatorname{Sa}(\pi\tau f) = \operatorname{sinc}(\tau f)$ & $\dfrac{1}{\tau}\operatorname{rect}\left(\dfrac{f}{\tau}\right)$ \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+\newpage
+\noindent Additionally, Parseval's theorem can be rewritten with linear frequency such that the total energy of a physically realizable signal $x(t)$ is 
+\begin{align}
+    E_x = \int_{-\infty}^{+\infty} |x(t)|^2 \,dt = \int_{-\infty}^{+\infty} |X(f)|^2 \,df,
+\end{align}
+with the 1-sided and 2-sided energy spectral densities defined as 
+\begin{align*}
+    ESD_1 &= 2\,|X(f)|^2 \\
+    ESD_2 &= |X(f)|^2
+\end{align*} 
+
+\subsection{Hilbert Transform}
+The \emph{Hilbert transform} of a signal $x(t)$ is defined as 
+\begin{align}
+    \hat{x}(t) = \mathcal{H}[x(t)] = x(t) * \frac{1}{\pi t}.
+\end{align}
+The \emph{inverse Hilbert transform} is defined as 
+\begin{align}
+    x(t) = \mathcal{H}^{-1}[\hat{x}(t)] = -\mathcal{H}[\hat{x}(t)] = -\hat{x}(t) * \frac{1}{\pi t}.
+\end{align}
+It follows that if the Fourier transform exists for some signal, then the signal must also have an existing Hilbert transform. 
+Essentially, the Hilbert transform is the system response to an LTI system with impulse response 
+\begin{align}
+    h_Q(t) = \frac{1}{\pi t}
+\end{align}
+and frequency response
+\begin{align}
+    H_Q(f) = -j \operatorname{sgn}(f).
+\end{align}
+From the frequency response, an \emph{allpass filter} response is observed:
+\begin{align}
+    |H_Q(f)| &= 1 \\
+    \phase{H_Q(f)} &= 
+    \begin{cases}
+        -\pi/2, & f>0 \\
+        +\pi/2, & f<0
+    \end{cases}
+\end{align}
+The Hilbert transform can then be seen as the system response to an ideal phase shifter which shifts positive-frequency components by $-\pi/2$ and 
+negative-frequency components by $+\pi/2$, called the \emph{quadrature filter}. The ideal quadrature filter is characterized by impulse response $h_Q(t)=1/\pi t$.
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x(t)$};
+        \node [] (output) at (+3,0){$\hat{x}(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$h_Q(t)=\dfrac{1}{\pi t}$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node at (0,0) [double arrow, draw=black, top color=red, bottom color=blue,
+            minimum width = 15pt, double arrow head extend=5pt,
+            minimum height=12mm,
+            rotate=90] {};
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$X(f)$};
+        \node [] (output) at (+3,0){$\Hat{X}(f)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$H_Q(f)=-j\operatorname{sgn}(f)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+\begin{table}[!hbt]
+    \centering
+    \caption{Hilbert Transform Pairs}
+    \label{hilbert_pairs}
+    \begin{tabular}{|c|c|}
+        \hline
+        $x(t)$ & $\hat{x}(t)=\mathcal{H}[x(t)]$ \\[0.15cm]
+        \hline
+        & \\[0.01cm]
+        $\delta(t)$ & $\dfrac{1}{\pi t}$ \\[0.5cm]
+        $u(t-T)$ & $\dfrac{1}{\pi}\ln|t-T|$ \\[0.5cm]
+        $u(t-T_1) - u(t-T_2)$ & $\dfrac{1}{\pi}\ln\left|\dfrac{t-T_1}{t-T_2}\right|$ \\[0.5cm]
+        $e^{+j2\pi f_0 t}, \,f_0 > 0$ & $-je^{+j2\pi f_0 t}$ \\[0.5cm]
+        $e^{-j2\pi f_0 t}, \,f_0 > 0$ & $je^{-j2\pi f_0 t}$ \\[0.5cm]
+        $\cos(2\pi f_0 t), \,f_0 > 0$ & $\sin(2\pi f_0 t)$ \\[0.5cm]
+        $\sin(2\pi f_0 t), \,f_0 > 0$ & $-\cos(2\pi f_0 t)$ \\[0.5cm]
+        $\operatorname{sinc}(t)$ & $\dfrac{\pi t}{2}\operatorname{sinc}^2\left(\dfrac{t}{2}\right)$ \\[0.5cm]
+        $\dfrac{1}{1+t^2}$ & $\dfrac{t}{1+t^2}$ \\[0.5cm]
+        $\dfrac{a}{a+t^2}, \,\Re(a)>0$ & $\dfrac{t}{a^2+t^2}$ \\[0.5cm]
+        $\dfrac{\sin(2\pi f_0 t)}{t}, \,f_0>0$ & $\dfrac{1-\cos(2\pi f_0 t)}{t}$ \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+Since the impulse response of the quadrature filter is noncausal, the filter is not physically realizable.
+\\ \\
+However, the Hilbert transform can still be used to create \emph{analytic signals} from real signals. An analytic signal 
+is a complex-valued signal with no negative frequency components and is often used in SSB modulation which will be explored later. 
+The \emph{analytic representation} of a real signal $x(t)$ is 
+\begin{align}
+    z(t) = x(t) + j\hat{x}(t) = x(t) + j\mathcal{H}[x(t)],
+\end{align}
+where $x(t)=\Re(z(t))$ is the \emph{in-phase component} and $\hat{x}(t)=\Im(z(t))$ is the \emph{quadrature component}; from the nomenclature, 
+analytic signals are also called \emph{I/Q signals}.
+
+\begin{example}
+    Suppose $x(t)=\sin(3t)$. Find the corresponding analytic signal, $z(t)$.
+\end{example}
+\begin{solution}
+    Using the Hilbert transform chart, it follows that  
+    \begin{align*}
+        z(t) = x(t) + j\mathcal{H}[x(t)] &= \sin(3t) + j\mathcal{H}[\sin(3t)] \\
+        &= \sin(3t) - j\cos(3t) \\
+        &= -j[\cos(3t) + j\sin(3t)] \\
+        &= -je^{j3t} \\
+        &= e^{-j\pi/2}e^{j3t} \\
+        &= \exp[j(3t-\pi/2)].
+    \end{align*}
+\end{solution}
+
+\section{Introduction to Modulation}
+\emph{Modulation} is the process of imposing a low-frequency message signal onto a very high-frequency \emph{carrier wave} to create a passband signal to be transmitted. In doing so, the shape of the carrier wave 
+is modified so that information from the message signal is somehow encoded. The reasons for modulation are as follows:
+\begin{itemize}
+    \item \underline{Practical antenna length}: for efficient signal transmission, a minimum antenna length of $\lambda/4$ is needed. Since low-frequency message signals have long wavelengths $\lambda$, the required antenna length 
+    would have to be on the order of kilometers. By modulating with a high-frequency carrier wave (with short wavelengths), the minimum antenna length is at a reasonable length.
+    \item \underline{Frequency-division multiplexing}: multiple message signals with similar frequency ranges can only be sent over the same channel if the corresponding carrier wave for each message signal are unique in frequency such that 
+    the message signals can be distinguished by the carrier wave frequency (i.e., allocating different parts of the frequency spectrum to each message signal).
+    \item \underline{Longer range}: while a message alone does not travel far (i.e., human speech), modulating the message signal with a carrier wave allows for longer communications range. While some waves travel further than others, 
+    a wave regardless can still carry a message over a longer distance than the physical limitations of the source.
+\end{itemize}
+\begin{sidewaysfigure}
+    \caption{Types of Modulation for Passband Communications Systems}
+    \label{modulation}
+    \centering
+    \resizebox{0.95\textwidth}{!}{%
+        \includestandalone[mode=buildnew, width=\textwidth]{mod}
+    }
+\end{sidewaysfigure}
+\begin{example}
+    For frequency-division multiplexing, \emph{guard bands} separate the spectra of adjacent signals to avoid interference. Suppose a set of passband signals is designed to occupy 3.5 [kHz] widebands across an 
+    available transmission bandwidth of 10 [MHz]. If a guard band of 0.5 [kHz] is allowed, determine the number of signals that can be transmitted at a time via multiplexing.
+\end{example}
+\begin{solution}
+    It follows that 
+    \begin{align*}
+        n = \frac{10\text{ [MHz]}}{(3.5 + 0.5)\text{ [kHz]}} = 2500 \text{ signals}
+    \end{align*}
+\end{solution}
+In passband communications systems, the transmitter includes a \emph{modulator} which performs the modulation, and the receiver includes a \emph{demodulator} which undoes the modulation (called \emph{demodulation}).
+\\ \\ 
+Broadly speaking, \emph{analog modulation} is the modulation of analog message signals, whereas \emph{digital modulation} is the modulation of 
+digital (or digitized) message signals; for both definitions, the classification of the carrier wave does not matter. The flowchart in Figure \ref{modulation} 
+shows the different types of modulation.
+\\ \\
+The rest of this section will briefly cover an analog modulation technique called amplitude modulation, as both the message signal and the carrier wave are analog in nature.
+
+\pagebreak
+\section{Amplitude Modulation}
+\emph{Amplitude modulation} (AM) is an analog modulation technique used in passband communications systems, where the amplitude of the carrier wave varies proportionally with the amplitude 
+of the message signal. There are four types of amplitude modulation schemes:
+\begin{itemize}
+    \item Double-sideband suppressed carrier (DSB-SC)
+    \item Double-sideband large carrier (DSB-LC)
+    \item Single-sideband (SSB, or SSB-SC)
+    \item Vestigial sideband (VSB)
+\end{itemize}
+Since DSB-LC is the most common AM scheme, sometimes DSB-LC is synonomous with the umbrella term AM. For the context of this section, DSB-LC is a specific type of AM. This section will only briefly cover DSB-SC, DSB-LC, and SSB with noiseless channels.
+\\ \\
+Before going in depth, a new block diagram element is introduced in Figure \ref{multiplier}: the \emph{multiplier}. While multipliers are actual circuits that can be built, for the rest of the text, multipliers will be 
+analyzed as conceptual building blocks for time-domain block diagrams.
+\begin{figure}[!hbt]
+    \centering
+    \caption{Time-domain multiplier}
+    \label{multiplier}
+    \begin{tikzpicture}
+        \node [] (in1) at (-3,0){$x_1(t)$};
+        \node [] (in2) at (0,-2){$x_2(t)$};
+        \node [] (out) at (+3,0){$x_1(t)x_2(t)$};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            inner sep=0pt,
+            fill=red!30
+        ] (mult) at (0,0){\huge $\times$};
+        \draw[-latex] (in1) to (mult);
+        \draw[-latex] (in2) to (mult);
+        \draw[-latex] (mult) to (out);
+    \end{tikzpicture}
+\end{figure}
+
+\subsection{Double-Sideband Suppressed Carrier (DSB-SC)}
+\subsubsection{DSB-SC Modulation}
+The \emph{double-sideband suppressed carrier} (DSB-SC) modulation scheme is the result of directly interpreting the modulation property of the Fourier transform. Given that a message signal $m(t)$ is 
+modulated with a carrier wave $\cos(2\pi f_c t)$, it follows that the modulated (passband) signal $y_m(t)$ is
+\begin{align}
+    y_m(t) &= m(t)\cos(2\pi f_c t) \\ 
+    &\Big\Updownarrow \nonumber \\
+    Y_m(f) &= \frac{1}{2}[M(f+f_c) + M(f-f_c)]
+\end{align}
+As seen in Figure \ref{dsb-sc_spec}, the passband signal spectrum $Y_m(f)$ contains copies of the baseband spectrum $M(f)$ centered at $\pm f_c$. Furthermore, the modulated signal spectrum can be split into two portions: 
+the outer portion described by $|f|>f_c$ is called the \emph{upper sideband} (USB), whereas the inner portion $|f|<f_c$ is called the \emph{lower sideband} (LSB). It then follows that if the message signal 
+$m(t)$ has a bandwidth $B$, then the passband signal $y_m(t)$ has a bandwidth $2B$.
+\\ \\
+Additionally, note that $Y_m(f)$ does not explicitly contain the Fourier transform of a sinusoid. This means that DSB-SC does not introduce a sinusoid at $f_c$, hence the term \emph{suppressed carrier}.
+\begin{figure}[!hbt]
+    \centering
+    \caption{Sample spectra of baseband and DSB-SC passband signals}
+    \label{dsb-sc_spec}
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= 2*(1-abs(\x)) * and(\x > -1, \x < 1); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-1.5, ymax=2.5, ytick={0}, ylabel={$M(f)$},
+            xmin=-4, xmax=4, xtick={0}, xlabel={$f$},
+            extra y ticks={2}, extra y tick labels={$M_0$},
+            extra x ticks={-1,1}, extra x tick labels={$-B$, $B$},
+            domain=-1:1,samples=100,
+            width=9cm, height=4.5cm]
+        \addplot [blue,thick]{func(x)};
+        \end{axis}
+    \end{tikzpicture}
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (1-abs(\x)) * and(\x > -1, \x < 1); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-1.5, ymax=2.5, ytick={0}, ylabel={$Y_m(f)$},
+            xmin=-4, xmax=4, xtick={0}, xlabel={$f$},
+            extra y ticks={1}, extra y tick labels={$\frac{M_0}{2}$},
+            extra x ticks={-2.5,2.5}, extra x tick labels={$-f_c$, $f_c$},
+            domain=-4:4,samples=150,
+            width=9cm, height=4.5cm]
+        \addplot [blue,thick]{func(x+2.5) + func(x-2.5)};
+        \draw[latex-latex] (1.5,-1) to node[below] {$2B$} (3.5,-1); 
+        \draw[dashed] (2.5,0) to (2.5,1);
+        \draw[dashed] (-2.5,0) to (-2.5,1);
+        \node[text=red] at (1.5,1) {LSB};
+        \node[text=red] at (-1.5,1) {LSB};
+        \node[text=darkgreen] at (3.5,1) {USB};
+        \node[text=darkgreen] at (-3.5,1) {USB};
+        \end{axis}
+    \end{tikzpicture}    
+\end{figure}
+
+\subsubsection{DSB-SC Demodulation}
+Interestingly, the same carrier wave can be used to demodulate the passband signal $y_m(t)$ to get $y_d(t)$. It follows that 
+\begin{align}
+    y_d(t) &= y_m(t)\cos(2\pi f_c t) = m(t)\cos^2(2\pi f_c t) = \frac{m(t)}{2} + \frac{m(t)\cos(2\pi\cdot 2f_c t)}{2} \\
+    &\Big\Updownarrow \nonumber \\
+    Y_d(f) &= \frac{1}{2}M(f) + \frac{1}{4}[M(f+2f_c) + M(f-2f_c)]
+\end{align}
+Therefore, a lowpass filter (LPF) can be applied to get the output $\frac{1}{2}m(t)$, with the condition that 
+\begin{align}
+    2f_c - B > B \Longrightarrow f_c > B
+\end{align}
+\begin{figure}[!hbt]
+    \centering
+    \caption{Ideal lowpass filtering of a demodulated DSB-SC signal}
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (1-abs(\x)) * and(\x > -1, \x < 1); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-1.5, ymax=2.5, ytick={0}, ylabel={$Y_m(f)$},
+            xmin=-6, xmax=6, xtick={0}, xlabel={$f$},
+            extra y ticks={2}, extra y tick labels={$\frac{M_0}{2}$},
+            extra x ticks={-4,-1,1,4}, extra x tick labels={$-2f_c$, $-B$, $B$, $2f_c$},
+            domain=-6:6,samples=150,
+            width=9cm, height=4.5cm]
+        \addplot [blue,thick]{func(x+4) + func(x-4) + 2*func(x)};
+        \draw[red,dashed] (-2,0) to (-2,2) to (2,2) to (2,0);
+        \end{axis}
+    \end{tikzpicture}
+\end{figure}
+\begin{figure}[!hbt]
+    \centering
+    \caption{DSB-SC block diagram}
+    \resizebox{\textwidth}{!}{\begin{tikzpicture}
+        \node [] (txin1) at (-3,0){\shortstack{$m(t)$ \\ (Baseband signal)}};
+        \node [] (txin2) at (0,-2){\shortstack{$\cos(2\pi f_c t)$ \\ (Modulator)}};
+        \node [] (txout) at (+3,0){\shortstack{$m(t)\cos(2\pi f_c t)$ \\ (DSB-SC signal)}};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            inner sep=0pt,
+            fill=red!30
+        ] (txmult) at (0,0){\huge $\times$};
+        \draw[-latex] (txin1) to (txmult);
+        \draw[-latex] (txin2) to (txmult);
+        \draw[-latex] (txmult) to (txout);
+        \node [] (rxin1) at (6,0){};
+        \node [] (rxin2) at (9,-2){\shortstack{$\cos(2\pi f_c t)$ \\ (Demodulator)}};
+        \node [] (rxout) at (13,0){$\dfrac{1}{2}\,m(t)$};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            inner sep=0pt,
+            fill=red!30
+        ] (rxmult) at (9,0){\huge $\times$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=1cm, 
+            minimum height=1cm
+        ] (lpf) at (11,0){LPF};
+        \draw[-latex,dashed] (txout) to node[above] {(Channel)} (rxmult);
+        \draw[-latex] (rxin2) to (rxmult);
+        \draw[-latex] (rxmult) to (lpf);
+        \draw[-latex] (lpf) to (rxout);
+        \draw [decorate,decoration={brace,amplitude=5pt,mirror,raise=4ex}]
+            (-3,-2) -- (3,-2) node[midway,yshift=-3em]{Transmitter};
+        \draw [decorate,decoration={brace,amplitude=5pt,mirror,raise=4ex}]
+            (6,-2) -- (13,-2) node[midway,yshift=-3em]{Receiver};
+    \end{tikzpicture}}
+\end{figure}
+
+However, for DSB-SC to function properly, both the modulating carrier wave and the demodulating carrier wave must be in sync. This is not simple to achieve over a large distance.
+
+\subsection{Double-Sideband Large Carrier (DSB-LC)}
+\subsubsection{DSB-LC Modulation}
+The \emph{double-sideband large carrier} (DSB-LC) is an alternative modulation scheme to DSB-SC that removes the need to use a carrier wave 
+at the receiver side. DSB-LC uses a DC bias such that the carrier wave $\cos(2\pi f_c t)$ does indeed get transmitted and appears in the passband spectrum. 
+It follows that 
+\begin{align}
+    y_m(t) &= [A+m(t)]\cos(2\pi f_c t) \\ 
+    &\Big\Updownarrow \nonumber \\
+    Y_m(f) &= \frac{A}{2}[\delta(f+f_c) + \delta(f-f_c)]+\frac{1}{2}[M(f+f_c) + M(f-f_c)]
+\end{align}
+\begin{figure}[!hbt]
+    \centering
+    \caption{Sample spectra of baseband and DSB-LC passband signals}
+    \label{dsb-lc_spec}
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= 2*(1-abs(\x)) * and(\x > -1, \x < 1); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-1.5, ymax=2.5, ytick={0}, ylabel={$M(f)$},
+            xmin=-4, xmax=4, xtick={0}, xlabel={$f$},
+            extra y ticks={2}, extra y tick labels={$M_0$},
+            extra x ticks={-1,1}, extra x tick labels={$-B$, $B$},
+            domain=-1:1,samples=100,
+            width=9cm, height=4.5cm]
+        \addplot [blue,thick]{func(x)};
+        \end{axis}
+    \end{tikzpicture}
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= (1-abs(\x)) * and(\x > -1, \x < 1); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-1.5, ymax=2.5, ytick={0}, ylabel={$Y_m(f)$},
+            xmin=-4, xmax=4, xtick={0}, xlabel={$f$},
+            extra y ticks={1}, extra y tick labels={$\frac{M_0}{2}$},
+            extra x ticks={-2.5,2.5}, extra x tick labels={$-f_c$, $f_c$},
+            domain=-4:4,samples=150,
+            width=9cm, height=4.5cm]
+        \addplot [blue,thick]{func(x+2.5) + func(x-2.5)};
+        \draw [blue,thick] (-2.5,1) -- (-2.5,1.5);
+        \addplot [blue,only marks,mark=triangle*,mark options={scale=1.5}] (-2.5,1.5);
+        \draw [blue,thick] (2.5,1) -- (2.5,1.5);
+        \addplot [blue,only marks,mark=triangle*,mark options={scale=1.5}] (2.5,1.5);
+        \draw[latex-latex] (1.5,-1) to node[below] {$2B$} (3.5,-1); 
+        \draw[dashed] (2.5,0) to (2.5,1);
+        \draw[dashed] (-2.5,0) to (-2.5,1);
+        \node[text=red] at (1.5,1) {LSB};
+        \node[text=red] at (-1.5,1) {LSB};
+        \node[text=darkgreen] at (3.5,1) {USB};
+        \node[text=darkgreen] at (-3.5,1) {USB};
+        \end{axis}
+    \end{tikzpicture}    
+\end{figure}
+\subsubsection{DSB-LC Demodulation}
+An envelope detector is a circuit that can be used as a demodulator for DSB-LC instead of using a carrier oscillator, given the conditions that 
+\begin{align}
+    A + m(t) &\geq 0, \text{ for all } t \\
+    f_c &\gg B
+\end{align}
+\begin{figure}[!hbt]
+    \centering
+    \caption{Envelope detector}
+    \resizebox{0.5\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
+        \draw 
+            (0,3) to [open, v^>={$y_{m}(t)$}] (0,0)
+            to [short, o-o] (8,0)
+            (0,3) to [D={Diode}, o-] (3,3) to [short, -o] (8,3) 
+            to [open, v^>={$y_d(t)$}] (8,0)
+            (3,3) to [C={$C$}] (3,0)
+            (6,3) to [R={$R$}] (6,0);
+    \end{circuitikz}}
+\end{figure}
+
+An additional design parameter for the envelope detector is that 
+\begin{align}
+    2\pi B < \frac{1}{RC} \ll 2\pi f_c
+\end{align}
+\\ \\
+A huge drawback of DSB-LC however is the power efficiency since the DC bias does not contain any 
+useful information. From
+\begin{align}
+    y_m(t) = \underbrace{A\cos(2\pi f_c t)}_{\text{carrier}} + \underbrace{m(t)\cos(2\pi f_c t)}_{\text{sidebands}}
+\end{align}
+the carrier power $P_c$ is wasteful, and the sideband power $P_s$ is the only useful power. The power efficiency is then defined as 
+\begin{align}
+    \eta = \frac{\text{useful power}}{\text{total power}} = \frac{P_s}{P_c + P_s} = \frac{P_{av}[m(t)]/2}{A^2/2 + P_{av}[m(t)]/2} = \frac{P_{av}[m(t)]}{A^2 + P_{av}[m(t)]},
+\end{align}
+where $P_{av}[m(t)]$ is the average power of the message signal $m(t)$.
+
+\begin{figure}[!hbt]
+    \centering
+    \caption{DSB-LC block diagram}
+    \resizebox{\textwidth}{!}{\begin{tikzpicture}
+        \node [] (txin1) at (-5,0){\shortstack{$m(t)$ \\ (Baseband signal)}};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            fill=orange!30
+        ] (sum) at (-2,0){\large +};
+        \node [] (txbias) at (-2,-2){\shortstack{$A$ \\ (DC bias)}};
+        \node [] (txin2) at (0,-2){\shortstack{$\cos(2\pi f_c t)$ \\ (Modulator)}};
+        \node [] (txout) at (+3.5,0){\shortstack{$[A+m(t)]\cos(2\pi f_c t)$ \\ (DSB-LC signal)}};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            inner sep=0pt,
+            fill=red!30
+        ] (txmult) at (0,0){\huge $\times$};
+        \draw[-latex] (txin1) to (sum);
+        \draw[-latex] (txbias) to (sum);
+        \draw[-latex] (sum) to (txmult);
+        \draw[-latex] (txin2) to (txmult);
+        \draw[-latex] (txmult) to (txout);
+        \node [] (rxin1) at (6,0){};
+        \node [] (rxin2) at (9,-1){(Demodulator)};
+        \node [] (rxout) at (12,0){$A+m(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=1cm, 
+            minimum height=1cm
+        ] (env) at (9,0){\shortstack{Envelope \\ detector}};
+        \draw[-latex,dashed] (txout) to node[above] {(Channel)} (env);
+        \draw[-latex] (env) to (rxout);
+        \draw [decorate,decoration={brace,amplitude=5pt,mirror,raise=4ex}]
+            (-5,-2) -- (3,-2) node[midway,yshift=-3em]{Transmitter};
+        \draw [decorate,decoration={brace,amplitude=5pt,mirror,raise=4ex}]
+            (6,-2) -- (12,-2) node[midway,yshift=-3em]{Receiver};
+    \end{tikzpicture}}
+\end{figure}
+
+\begin{example}
+    Suppose a tone $m(t)=\cos(2\pi ft)$ with frequency $f=440$ [Hz] is transmitted over a channel using DSB-LC. Determine the optimal power efficiency.
+\end{example}
+\begin{solution}
+    First, since
+    \begin{align*}
+        A + m(t) \geq 0,
+    \end{align*}
+    the optimal DC bias is then 
+    \begin{align*}
+        A = -\min[m(t)] = -(-1) = 1.
+    \end{align*}
+    Additionally, since the tone is sinusoidal, the average power of $m(t)$ is 
+    \begin{align*}
+        P_{av}[m(t)] = \frac{1}{2}.
+    \end{align*}
+    Therefore, the optimal power efficiency is 
+    \begin{align*}
+        \eta = \frac{P_s}{P_c + P_s} = \frac{P_{av}[m(t)]}{A^2 + P_{av}[m(t)]} = \frac{1/2}{1/2 + 1/2} = 0.5 \Longrightarrow 50\%
+    \end{align*}
+\end{solution}
+
+\subsection{Single-Sideband (SSB)}
+\subsubsection{SSB Modulation}
+The pitfall of both DSB-SC and DSB-LC is that both schemes occupy twice the signal bandwidth when modulated and are inefficient in their usage of 
+the frequency spectrum. \emph{Single-sideband} (SSB, or SSB-SC) modulation offers an alternative solution to the bandwidth issue by removing the lower sidebands. 
+\\ \\
+SSB modulation makes use of $h_Q(t)$, previously introduced as the quadrature filter (also called the Hilbert transformer or the $90^{\circ}$--phase shifter).
+As seen in Figure \ref{ssb_block}, the system at the transmitter end outputs the signal 
+\begin{align}
+    y_m(t) = m(t)\cos(2\pi f_c t) - \hat{m}(t)\sin(2\pi f_c t),
+\end{align}
+where $\hat{m}(t)$ is the Hilbert transform of $m(t)$. The frequency response is given by 
+\begin{align}
+    Y_m(f) = 
+    \begin{cases}
+        M(f+f_c), & f<-f_c \\
+        0, & |f|<f_c \\ 
+        M(f-f_c), & f>f_c
+    \end{cases}
+\end{align}
+
+\begin{figure}[!hbt]
+    \centering
+    \caption{SSB block diagram}
+    \label{ssb_block}
+    \resizebox{\textwidth}{!}{\begin{tikzpicture}
+        \node [] (txin1) at (-6,0){\shortstack{$m(t)$ \\ (Baseband signal)}};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            inner sep=0pt,
+            fill=red!30
+        ] (txmult1) at (-3,3){\huge $\times$};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            inner sep=0pt,
+            fill=red!30
+        ] (txmult2) at (-3,-4){\huge $\times$};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            inner sep=0pt,
+        ] (osc) at (-3,0){\tikz \draw[scale=0.11,domain=-3.141:3.141,smooth,blue,thick,variable=\t] plot (\t,{-2*sin(\t r)});};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=1cm, 
+            minimum height=1cm
+        ] (hq1) at (-6,-4){$h_Q(t)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=1cm, 
+            minimum height=1cm
+        ] (hq2) at (-3,-2){$h_Q(t)$};
+        \node [] at (-5,-3){\shortstack{Hilbert \\ transformer}};
+        \node [] (txin2) at (-2,1){\shortstack{$\cos(2\pi f_c t)$ \\ (Modulator)}};
+        \node [] (txout) at (+4,0){\shortstack{$m(t)\cos(2\pi f_c t)-\hat{m}(t)\sin(2\pi f_c t)$ \\ (SSB signal)}};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            fill=orange!30
+        ] (sum) at (0,0){\large +};
+        \node [] at (-0.5,-0.5){\Huge -};
+        \draw[-latex] (txin1) to (hq1);
+        \draw[-latex] (hq1) to (txmult2);
+        \draw[-latex] (txmult2) -| (sum);
+        \draw[-latex] (txin1) |- (txmult1);
+        \draw[-latex] (osc) to (txmult1);
+        \draw[-latex] (osc) to (hq2);
+        \draw[-latex] (hq2) to (txmult2);
+        \draw[-latex] (txmult1) -| (sum);
+        \draw[-latex] (sum) to (txout);
+
+        \node [] (rxin1) at (6,0){};
+        \node [] (rxin2) at (9,-2){\shortstack{$\cos(2\pi f_c t)$ \\ (Demodulator)}};
+        \node [] (rxout) at (13,0){$\dfrac{1}{2}\,m(t)$};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            inner sep=0pt,
+            fill=red!30
+        ] (rxmult) at (9,0){\huge $\times$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=1cm, 
+            minimum height=1cm
+        ] (lpf) at (11,0){LPF};
+        \draw[-latex,dashed] (txout) to node[above] {(Channel)} (rxmult);
+        \draw[-latex] (rxin2) to (rxmult);
+        \draw[-latex] (rxmult) to (lpf);
+        \draw[-latex] (lpf) to (rxout);
+        \draw [decorate,decoration={brace,amplitude=5pt,mirror,raise=4ex}]
+            (-6,-4.5) -- (3,-4.5) node[midway,yshift=-3em]{Transmitter};
+        \draw [decorate,decoration={brace,amplitude=5pt,mirror,raise=4ex}]
+            (6,-2) -- (13,-2) node[midway,yshift=-3em]{Receiver};
+    \end{tikzpicture}}
+\end{figure}
+\begin{figure}[!hbt]
+    \centering
+    \caption{Sample spectra of baseband and SSB passband signals}
+    \label{ssb_spec}
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= 2*(1-abs(\x)) * and(\x > -1, \x < 1); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-1.5, ymax=2.5, ytick={0}, ylabel={$M(f)$},
+            xmin=-4, xmax=4, xtick={0}, xlabel={$f$},
+            extra y ticks={2}, extra y tick labels={$M_0$},
+            extra x ticks={-1,1}, extra x tick labels={$-B$, $B$},
+            domain=-1:1,samples=100,
+            width=9cm, height=4.5cm]
+        \addplot [blue,thick]{func(x)};
+        \end{axis}
+    \end{tikzpicture}
+    \begin{tikzpicture}
+        [declare function={
+            func(\x)= 2*(1-abs(\x)) * and(\x > -1, \x < 0); }]
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=-1.5, ymax=2.5, ytick={0}, ylabel={$Y_m(f)$},
+            xmin=-4, xmax=4, xtick={0}, xlabel={$f$},
+            extra y ticks={2}, extra y tick labels={$M_0$},
+            extra x ticks={-2.5,2.5}, extra x tick labels={$-f_c$, $f_c$},
+            domain=-4:4,samples=150,
+            width=9cm, height=4.5cm]
+        \addplot [blue,thick]{func(x+2.5) + func(-(x-2.5))};
+        \draw[latex-latex] (2.5,-1) to node[below] {$B$} (3.5,-1); 
+        \end{axis}
+    \end{tikzpicture}    
+\end{figure}
+
+\subsubsection{SSB Demodulation}
+SSB demodulation is the same as DSB-SC demodulation, using the same carrier oscillator as the transmitter and lowpass filtering afterwards. 
+It follows that 
+\begin{align}
+    y_d(t) = y_m(t)\cos(2\pi f_c t) &= m(t)\cos^2(2\pi f_c t) - \hat{m}(t)\cos(2\pi f_c t)\sin(2\pi f_c t) \\
+    &= \frac{m(t)}{2} + \frac{m(t)\cos(2\pi\cdot 2f_c t)}{2} - \frac{\hat{m}(t)\sin(2\pi\cdot 2f_c t)}{2}
+\end{align}
+Assuming $f_c > B$, the signal $y_d(t)$ can be inputted through a lowpass filter such that the output at the receiver end is $\frac{1}{2}m(t)$.
+
+\subsection{Quadrature Amplitude Modulation}
+Interestingly, the same transmitter block diagram for SSB modulation can similarly be applied to the analog version of \emph{quadrature amplitude modulation} (QAM), which is 
+reserved for I/Q signals (also called analytic signals). 
+\\ \\
+When isolating the real and imaginary parts to get the in-phase component $m_I(t)$ and the quadrature component $m_Q(t)$, 
+the components can be reconstructed at the receiver end by applying the same transmitter circuit on the receiver end, then lowpass filtering each component.
+
+\begin{figure}[!hbt]
+    \centering
+    \caption{Analog QAM block diagram}
+    \resizebox{\textwidth}{!}{\begin{tikzpicture}
+        \node [] (txin1I) at (-6,3){\shortstack{$m_I(t)$ \\ (In-phase component)}};
+        \node [] (txin1Q) at (-6,-4){\shortstack{$m_Q(t)$ \\ (Quadrature component)}};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            inner sep=0pt,
+            fill=red!30
+        ] (txmult1) at (-3,3){\huge $\times$};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            inner sep=0pt,
+            fill=red!30
+        ] (txmult2) at (-3,-4){\huge $\times$};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            inner sep=0pt,
+        ] (osc1) at (-3,0){\tikz \draw[scale=0.11,domain=-3.141:3.141,smooth,blue,thick,variable=\t] plot (\t,{-2*sin(\t r)});};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=1cm, 
+            minimum height=1cm
+        ] (hq1) at (-3,-2){$h_Q(t)$};
+        \node [] at (-2,-3){\shortstack{Hilbert \\ transformer}};
+        \node [] (txin2) at (-2,1){\shortstack{$\cos(2\pi f_c t)$ \\ (Modulator)}};
+        \node [] (txout) at (+4,0){\shortstack{$m_I(t)\cos(2\pi f_c t)+m_Q(t)\sin(2\pi f_c t)$ \\ (QAM signal)}};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            fill=orange!30
+        ] (sum) at (0,0){\large +};
+        \draw[-latex] (txin1Q) to (txmult2);
+        \draw[-latex] (txmult2) -| (sum);
+        \draw[-latex] (txin1I) to (txmult1);
+        \draw[-latex] (osc1) to (txmult1);
+        \draw[-latex] (osc1) to (hq1);
+        \draw[-latex] (hq1) to (txmult2);
+        \draw[-latex] (txmult1) -| (sum);
+        \draw[-latex] (sum) to (txout);
+
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            inner sep=0pt,
+            fill=red!30
+        ] (rxmult1) at (11,3){\huge $\times$};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            inner sep=0pt,
+            fill=red!30
+        ] (rxmult2) at (11,-4){\huge $\times$};
+        \node[draw,
+            circle,
+            minimum size=0.6cm,
+            inner sep=0pt,
+        ] (osc2) at (11,0){\tikz \draw[scale=0.11,domain=-3.141:3.141,smooth,blue,thick,variable=\t] plot (\t,{-2*sin(\t r)});};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=1cm, 
+            minimum height=1cm
+        ] (hq2) at (11,-2){$h_Q(t)$};
+        \node [] (rxin2) at (12.2,1){\shortstack{$\cos(2\pi f_c t)$ \\ (Demodulator)}};
+        \draw[-latex] (9,0) |- (rxmult2);
+        \draw[-latex] (9,0) |- (rxmult1);
+        \draw[-latex] (osc2) to (rxmult1);
+        \draw[-latex] (osc2) to (hq2);
+        \draw[-latex] (hq2) to (rxmult2);
+
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=1cm, 
+            minimum height=1cm
+        ] (lpf1) at (14,3){LPF};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=1cm, 
+            minimum height=1cm
+        ] (lpf2) at (14,-4){LPF};
+        \node[] (rxout1I) at (16,3) {$\frac{1}{2}m_I(t)$};
+        \node[] (rxout1Q) at (16,-4) {$\frac{1}{2}m_Q(t)$};
+        \draw[-latex,dashed] (txout) to node[above] {(Channel)} (9,0);
+        \draw[-latex] (lpf1) to (rxout1I);
+        \draw[-latex] (lpf2) to (rxout1Q);
+        \draw[-latex] (rxmult1) to (lpf1);
+        \draw[-latex] (rxmult2) to (lpf2);
+        \draw [decorate,decoration={brace,amplitude=5pt,mirror,raise=4ex}]
+            (-6,-4.5) -- (3,-4.5) node[midway,yshift=-3em]{Transmitter};
+        \draw [decorate,decoration={brace,amplitude=5pt,mirror,raise=4ex}]
+            (6,-4.5) -- (16,-4.5) node[midway,yshift=-3em]{Receiver};
+    \end{tikzpicture}}
+\end{figure}
+
+\end{document}
