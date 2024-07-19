@@ -1,0 +1,143 @@
+% PACKAGES
+\usepackage{adjustbox}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bodegraph}
+\usepackage{bbm}
+\usepackage{circledsteps}
+\usepackage{circuitikz}
+\usepackage{enumerate}
+\usepackage{mathtools}
+\usepackage{nicematrix}
+\usepackage{pgfplots}
+\usepackage{polynom}
+\usepackage{qtree}
+\usepackage{rotating}
+\usepackage[subpreambles=true]{standalone}
+\usepackage{steinmetz}
+\usepackage{subcaption}
+\usepackage{tabularray}
+\usepackage{tcolorbox}
+\usepackage{tikz}
+\usepackage{xcolor}
+
+\usetikzlibrary{shapes.arrows}
+\usetikzlibrary{shapes.misc}
+\usetikzlibrary{backgrounds}
+\tikzset{cross/.style={cross out, draw=black, minimum size=2*(#1-\pgflinewidth), inner sep=0pt, outer sep=0pt},
+%default radius will be 1pt. 
+cross/.default={1pt}}
+
+\renewcommand{\Re}{\operatorname{Re}}
+\renewcommand{\Im}{\operatorname{Im}}
+
+\usepackage{pifont}
+\newcommand{\cmark}{\text{\ding{51}}}
+\newcommand{\xmark}{\text{\ding{55}}}
+
+\newcommand{\circconv}[1]{\text{ \small\Circled{#1} }}
+
+\newcommand{\tikzmark}[3][]{\tikz[remember picture,baseline] \node [anchor=base,#1](#2) {$#3$};}
+
+\pgfplotsset{compat=1.18}
+\pgfplotsset{
+    dirac/.style={
+        mark=triangle*,
+        mark options={scale=1.5},
+        ycomb,
+        scatter,
+        visualization depends on={y/abs(y)-1 \as \sign},
+        scatter/@pre marker code/.code={\scope[rotate=90*\sign,yshift=-2pt]}
+    }
+}
+
+\usepackage[letterpaper, portrait, margin=1.25in]{geometry}
+\usepackage[font=bf]{caption}
+\hbadness = 10000
+\hfuzz=2pt
+
+\newtheorem{theorem}{Theorem}[chapter]
+
+\tikzset{every tree node/.style={anchor=north,align=center}}
+\usetikzlibrary{decorations.markings}
+\usetikzlibrary{arrows}
+\definecolor{darkgreen}{rgb}{0.133,0.545,0.133}
+\tikzstyle{n}= [circle, fill=blue, minimum size=4pt,inner sep=0pt, outer sep=0pt]
+
+\patchcmd{\thebibliography}{\chapter*}{\section*}{}{}
+\setcounter{secnumdepth}{5}
+
+%%%%%%%%%%% EXAMPLE ENVIRONMENT %%%%%%%%%%
+\usepackage{calc}
+\usepackage{tabto}
+\usepackage[framemethod=tikz]{mdframed} % for colored backgrounds
+\newcommand{\halmos}{} % makes a box at the end
+
+\newlength{\framedinnerleftmargin}
+\newlength{\framedinnertopmargin}
+\newlength{\framedreversedinnerleftmargin}
+\setlength{\framedinnerleftmargin}{\widthof{Theoreme 10.10.10}+2em}
+\setlength{\framedreversedinnerleftmargin}{\widthof{Theoreme 10.10.10}+1em}
+\setlength{\framedinnertopmargin}{1em}
+ 
+% first argument: label in upper left corner,
+% second argument: background color
+\newenvironment{boxedtext}[2]{\begin{mdframed}[%
+hidealllines=true,%
+backgroundcolor=#2,%
+innertopmargin=\framedinnertopmargin,%
+innerleftmargin=\framedinnerleftmargin,%
+innerrightmargin=1em%
+]%
+\tabto{-\framedreversedinnerleftmargin}\textbf{#1}\tabto*{0em}%
+}% begin code
+{\hskip 0pt\\\hspace*{\fill}\halmos{}\end{mdframed}\vspace{1em}} % end code
+ 
+\newenvironment{summary}[0]{\begin{center}\begin{minipage}[c]{\summarywidth}\begin{spacing}{0.9}\footnotesize} % begin code
+{\end{spacing}\end{minipage}\end{center}} % end code
+
+\newcounter{example}
+ 
+% optional! if you want it to start at zero
+% with every new chapter/section/etc.
+\numberwithin{example}{section}
+ 
+\newenvironment{example}[0]
+{\refstepcounter{example}\vspace{1em plus 1em}\begin{boxedtext}{Example \theexample.}{blue!7}}%\setlength{\parskip}{0em}}
+{\end{boxedtext}\vspace{-1em plus 1em}}
+ 
+\newenvironment{example*}[0]
+{\vspace{1em plus 1em}\begin{boxedtext}{Example.}{blue!7}}
+{\end{boxedtext}\vspace{-1em plus 1em}}
+
+\newmdenv[
+  topline=false,
+  bottomline=false,
+  rightline=false,
+  skipabove=\topsep,
+  skipbelow=\topsep,
+  linecolor=purple,
+  frametitle={\noindent\textcolor{purple}{\textbf{SOLUTION }}},
+  endinnercode={$\hfill\textcolor{purple}{\blacksquare}$}
+]{solution}
+
+%%%%%%%%%%%%%% COLOR BOXED %%%%%%%%%%%%%%%
+% Syntax: \colorboxed[<color model>]{<color specification>}{<math formula>}
+\newcommand*{\colorboxed}{}
+\def\colorboxed#1#{%
+  \colorboxedAux{#1}%
+}
+\newcommand*{\colorboxedAux}[3]{%
+  % #1: optional argument for color model
+  % #2: color specification
+  % #3: formula
+  \begingroup
+    \colorlet{cb@saved}{.}%
+    \color#1{#2}%
+    \boxed{%
+      \color{cb@saved}%
+      #3%
+    }%
+  \endgroup
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
