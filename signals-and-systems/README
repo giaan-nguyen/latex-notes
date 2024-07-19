@@ -1,0 +1,10 @@
+Personal notes on Signals and Systems
+
+This covers only continuous-time (CT), continuous-valued signals and systems. Chapters are as follows:
+1. Signals
+2. Systems
+3. Convolution
+4. Laplace Transform
+5. Fourier Series
+6. Fourier Transform
+7. Continuous-Time Applications
