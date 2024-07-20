@@ -3,6 +3,7 @@
 
 \begin{document}
 \setcounter{chapter}{3}
+\setcounter{page}{44}
 \chapter{Laplace Transform}
 Previously, we have seen that LTI systems can be characterized by their impulse responses $h(t)$, and the outputs of those systems can be computed 
 by taking the convolution of the input signal and the impulse response. 
@@ -56,13 +57,14 @@ As signals and systems in the physical world are causal, we are particularly int
 \end{center}
 
 \section{Unilateral Laplace Transform}
-The \emph{unilateral Laplace transform} of a signal $x(t)$ is defined as  
-\begin{align}
-    X(s) = \mathcal{L}[x(t)] = \int_{0^-}^{\infty} x(t) e^{-st} \,dt,
-\end{align}
-where $s=\sigma + j\omega$ is the \emph{complex frequency}. 
-\\ \\ 
-The Laplace transform essentially is an operator that maps a signal defined in the \emph{time domain} to another signal 
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    The \emph{unilateral Laplace transform} of a signal $x(t)$ is defined as  
+    \begin{align}
+        X(s) = \mathcal{L}[x(t)] = \int_{0^-}^{\infty} x(t) e^{-st} \,dt,
+    \end{align}
+    where $s=\sigma + j\omega$ is the \emph{complex frequency}. 
+\end{tcolorbox}
+\noindent The Laplace transform essentially is an operator that maps a signal defined in the \emph{time domain} to another signal 
 defined in the \emph{$s$-domain}. $x(t)$ and $X(s)$ constitute a \emph{Laplace transform pair}. This relationship can be written as 
 \begin{align}
     x(t) \iff X(s).
@@ -76,7 +78,7 @@ though direct computation of the inverse integral is often more cumbersome than 
 Additionally, for signal $x(t)$ to be transformable, the unilateral Laplace integral must be absolutely integrable such that 
 \begin{align}
     \int_{0^-}^{\infty} |x(t) e^{-st}| \,dt &= \int_{0^-}^{\infty} |x(t)||e^{-(\sigma+j\omega)t}| \,dt \nonumber \\
-    &= \int_{0^-}^{\infty} |x(t)| |e^{-\sigma t}| |e^{-j\omega t}| \,dt < \infty. \\
+    &= \int_{0^-}^{\infty} |x(t)| |e^{-\sigma t}| |e^{-j\omega t}| \,dt < \infty. 
 \end{align}
 From above, $|e^{-j\omega t}|<1$ and $\sigma$ is real. Therefore, the integrable condition simplifies to 
 \begin{align}
@@ -94,7 +96,7 @@ unilateral Laplace transform.
 Table \ref{laplace_prop} lists the properties of the unilateral Laplace transform.
 \begin{table}[hbt!]
     \centering
-    \caption{Properties of the Unilateral Laplace Transform}
+    \caption{Properties of the unilateral Laplace transform.}
     \label{laplace_prop}
     \begin{tabular}{|c|c|c|}
         \hline
@@ -176,7 +178,7 @@ it is much simpler to reference a table of transform pairs.
 
 \begin{table}[hbt!]
     \centering
-    \caption{Unilateral Laplace Transform Pairs}
+    \caption{Unilateral Laplace transform pairs.}
     \label{laplace_pairs}
     \begin{tabular}{|c|c|}
         \hline
@@ -206,11 +208,13 @@ it is much simpler to reference a table of transform pairs.
 
 \pagebreak [4]
 \section{Bilateral Laplace Transform}
-The \emph{bilateral Laplace transform} of a signal $x(t)$ is defined as  
-\begin{align}
-    X(s) = \mathcal{L}[x(t)] = \int_{-\infty}^{+\infty} x(t) e^{-st} \,dt.
-\end{align}
-Similar to the unilateral Laplace transform, for a signal $x(t)$ to be transformable, the bilateral Laplace integral must be absolutely integrable such that 
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    The \emph{bilateral Laplace transform} of a signal $x(t)$ is defined as  
+    \begin{align}
+        X(s) = \mathcal{L}[x(t)] = \int_{-\infty}^{+\infty} x(t) e^{-st} \,dt.
+    \end{align}
+\end{tcolorbox}
+\noindent Similar to the unilateral Laplace transform, for a signal $x(t)$ to be transformable, the bilateral Laplace integral must be absolutely integrable such that 
 the simplified integrable condition given by 
 \begin{align}
     \int_{-\infty}^{+\infty} |x(t)| e^{-\sigma t} \,dt < \infty
@@ -257,7 +261,6 @@ Consider an $s$-domain function with the form
     X(s) = \frac{N(s)}{D(s)},
 \end{align}
 written as a ratio of a polynomial numerator $N(s)$ to a polynomial denominator $D(s)$. 
-\\ \\
 The roots of the numerator are called the \emph{zeros} of $X(s)$ and are defined by 
 \begin{align}
     N(s) = 0,
@@ -271,13 +274,15 @@ Before even performing partial fraction expansion, first we examine the orders o
     m &= \deg[N(s)], \\ 
     n &= \deg[D(s)].
 \end{align}
-There are three types of rational functions, each with a different task at hand.
-\begin{itemize}
-    \item $m < n$: $X(s)$ is \emph{strictly proper}. It is ready for partial fraction expansion, if needed.
-    \item $m = n$: $X(s)$ is \emph{proper}. Perform long division and express $X(s)$ in terms of the quotient and remainder, then determine if the remainder term needs partial fraction expansion.
-    \item $m > n$: $X(s)$ is \emph{improper}. Perform long division and express $X(s)$ in terms of the quotient and remainder, then determine if the remainder term needs partial fraction expansion.
-\end{itemize}
-A term would need partial fraction expansion if there is not an easily matching Laplace transform pair provided by the table. Usually this occurs when $\deg[D(s)]>2$.
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    There are three types of rational functions, each with a different task at hand.
+    \begin{itemize}
+        \item $m < n$: $X(s)$ is \emph{strictly proper}. It is ready for partial fraction expansion, if needed.
+        \item $m = n$: $X(s)$ is \emph{proper}. Perform long division and express $X(s)$ in terms of the quotient and remainder, then determine if the remainder term needs partial fraction expansion.
+        \item $m > n$: $X(s)$ is \emph{improper}. Perform long division and express $X(s)$ in terms of the quotient and remainder, then determine if the remainder term needs partial fraction expansion.
+    \end{itemize}
+\end{tcolorbox}
+\noindent A term would need partial fraction expansion if there is not an easily matching Laplace transform pair provided by the table. Usually this occurs when $\deg[D(s)]>2$.
 
 \begin{example}
     Determine if 
@@ -323,16 +328,17 @@ Given that a remainder term requires partial fraction expansion, all poles $p_n$
 \newpage
 \noindent There are four different cases for partial fraction expansion. Depending on the poles, one or more cases may apply. Each case requires using a technique called the \emph{residue method}, which evaluates a modified expression 
 at a pole $s=p$ so that factors cancel and expansion coefficients can be calculated. 
-\\ \\
-\textbf{\underline{Case 1: Distinct real poles.}} \\[0.25cm]
-Suppose there are $n$ distinct real poles in $X(s)$. Then $X(s)$ can be expanded as 
-\begin{align}
-    X(s) &= \frac{N(s)}{(s-p_1)(s-p_2)\cdots(s-p_n)}=\frac{A_1}{s-p_1}+\frac{A_2}{s-p_2}+\cdots+\frac{A_n}{s-p_n}.
-\end{align}
-The expansion coefficients for Case 1 is then given by
-\begin{align}
-    A_n = (s-p_n)X(s)\big|_{s=p_n}.
-\end{align}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \textbf{\underline{Case 1: Distinct real poles.}} \\[0.25cm]
+    Suppose there are $n$ distinct real poles in $X(s)$. Then $X(s)$ can be expanded as 
+    \begin{align}
+        X(s) &= \frac{N(s)}{(s-p_1)(s-p_2)\cdots(s-p_n)}=\frac{A_1}{s-p_1}+\frac{A_2}{s-p_2}+\cdots+\frac{A_n}{s-p_n}.
+    \end{align}
+    The expansion coefficients for Case 1 is then given by
+    \begin{align}
+        A_n = (s-p_n)X(s)\big|_{s=p_n}.
+    \end{align}
+\end{tcolorbox}
 \begin{example}
     Use the residue method to expand $X(s) = \dfrac{s^2-4s+3}{s(s+1)(s+3)}$. \\
 \end{example}
@@ -357,21 +363,23 @@ The expansion coefficients for Case 1 is then given by
         &= u(t) - 4e^{-t}u(t) + 4e^{-3t}u(t).
     \end{align*}
 \end{solution}
-\textbf{\underline{Case 2: Repeated real poles.}} \\[0.25cm]
-Suppose there is a repeated pole at $s=p$. Then $X(s)$ can be expanded as 
-\begin{align}
-    X(s) = \frac{N(s)}{(s-p)^m} = \frac{B_1}{s-p} + \frac{B_2}{(s-p)^2} + \cdots + \frac{B_m}{(s-p)^m},
-\end{align}
-with expansion coefficients given by 
-\begin{align}
-    B_m &= (s-p)^mX(s)\big|_{s=p} \\ 
-    B_{m-1} &= \left\{\frac{d}{ds}\left[(s-p)^mX(s)\right]\right\}\bigg|_{s=p} \\ 
-    B_{m-2} &= \left\{\frac{1}{2!}\cdot\frac{d^2}{ds^2}\left[(s-p)^mX(s)\right]\right\}\bigg|_{s=p}, 
-\end{align}
-or more generally, 
-\begin{align}
-    B_n = \left\{\frac{1}{(m-n)!}\cdot\frac{d^{m-n}}{ds^{m-n}}\left[(s-p)^mX(s)\right]\right\}\bigg|_{s=p}, \text{ for } n=1,2,...,m.
-\end{align}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \textbf{\underline{Case 2: Repeated real poles.}} \\[0.25cm]
+    Suppose there is a repeated pole at $s=p$. Then $X(s)$ can be expanded as 
+    \begin{align}
+        X(s) = \frac{N(s)}{(s-p)^m} = \frac{B_1}{s-p} + \frac{B_2}{(s-p)^2} + \cdots + \frac{B_m}{(s-p)^m},
+    \end{align}
+    with expansion coefficients given by 
+    \begin{align}
+        B_m &= (s-p)^mX(s)\big|_{s=p} \\ 
+        B_{m-1} &= \left\{\frac{d}{ds}\left[(s-p)^mX(s)\right]\right\}\bigg|_{s=p} \\ 
+        B_{m-2} &= \left\{\frac{1}{2!}\cdot\frac{d^2}{ds^2}\left[(s-p)^mX(s)\right]\right\}\bigg|_{s=p}, 
+    \end{align}
+    or more generally, 
+    \begin{align}
+        B_n = \left\{\frac{1}{(m-n)!}\cdot\frac{d^{m-n}}{ds^{m-n}}\left[(s-p)^mX(s)\right]\right\}\bigg|_{s=p}, \text{ for } n=1,2,...,m.
+    \end{align}
+\end{tcolorbox}
 \begin{example}
     Use the residue method to expand $X(s) = \dfrac{s^2+3s+3}{(s+2)(s+3)^3}$.\\
 \end{example}
@@ -397,16 +405,18 @@ or more generally,
         &= \left[e^{-2t} - e^{-3t} - \frac{3}{2}\,t^2e^{-3t}\right] u(t).
     \end{align*}
 \end{solution}
-\textbf{\underline{Case 3: Distinct complex poles.}} \\[0.25cm]
-If $X(s)$ has a complex pole at $s=p$, it also follows that its complex conjugate $s=p^*$ is also a pole. Interestingly, the expansion coefficients associated with 
-both complex poles are also complex conjugates of each other. That is, 
-\begin{align}
-    X(s) = \frac{N(s)}{s^2+as+b} = \frac{C}{s-p} + \frac{C^*}{s-p^*},
-\end{align}
-with expansion coefficient 
-\begin{align}
-    C = (s-p)X(s)\big|_{s=p}.
-\end{align}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \textbf{\underline{Case 3: Distinct complex poles.}} \\[0.25cm]
+    If $X(s)$ has a complex pole at $s=p$, it also follows that its complex conjugate $s=p^*$ is also a pole. Interestingly, the expansion coefficients associated with 
+    both complex poles are also complex conjugates of each other. That is, 
+    \begin{align}
+        X(s) = \frac{N(s)}{s^2+as+b} = \frac{C}{s-p} + \frac{C^*}{s-p^*},
+    \end{align}
+    with expansion coefficient 
+    \begin{align}
+        C = (s-p)X(s)\big|_{s=p}.
+    \end{align}
+\end{tcolorbox}
 \begin{example}
     Use the residue method to expand $X(s)=\dfrac{s(s-8)}{(s+2)(s^2+16)}$. \\
 \end{example}
@@ -430,20 +440,22 @@ with expansion coefficient
         x(t) = e^{-2t}u(t) + 2\cos(4t+\pi/2)u(t).
     \end{align*}
 \end{solution}
-\textbf{\underline{Case 4: Repeated complex poles.}} \\[0.25cm]
-Lastly, for repeated complex poles, the expansion is given by 
-\begin{align}
-    X(s) &= \frac{N(s)}{(s^2+as+b)^m} = \frac{N(s)}{(s-p)^m(s-p^*)^m} \nonumber \\
-    &= \left(\frac{D_1}{s-p} + \frac{D_2}{(s-p)^2} + \cdots + \frac{D_m}{(s-p)^m}\right) + \left(\frac{D_1^*}{s-p^*} + \frac{D_2^*}{(s-p^*)^2} + \cdots + \frac{D_m^*}{(s-p^*)^m}\right),
-\end{align}
-with expansion coefficients
-\begin{align}
-    D_n = \left\{\frac{1}{(m-n)!}\cdot \frac{d^{m-n}}{ds^{m-n}}[(s-p)^mX(s)]\right\}\bigg|_{s=p}, \text{ for } n=1,2,...,m.
-\end{align}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \textbf{\underline{Case 4: Repeated complex poles.}} \\[0.25cm]
+    Lastly, for repeated complex poles, the expansion is given by 
+    \begin{align}
+        X(s) &= \frac{N(s)}{(s^2+as+b)^m} = \frac{N(s)}{(s-p)^m(s-p^*)^m} \nonumber \\
+        &= \left(\frac{D_1}{s-p} + \frac{D_2}{(s-p)^2} + \cdots + \frac{D_m}{(s-p)^m}\right) + \left(\frac{D_1^*}{s-p^*} + \frac{D_2^*}{(s-p^*)^2} + \cdots + \frac{D_m^*}{(s-p^*)^m}\right),
+    \end{align}
+    with expansion coefficients
+    \begin{align}
+        D_n = \left\{\frac{1}{(m-n)!}\cdot \frac{d^{m-n}}{ds^{m-n}}[(s-p)^mX(s)]\right\}\bigg|_{s=p}, \text{ for } n=1,2,...,m.
+    \end{align}
+\end{tcolorbox}
 Table \ref{laplace_pairs_short} lists the corresponding Laplace transform pairs for the four partial fraction expansion cases. 
 \begin{table}[hbt!]
     \centering
-    \caption{Unilateral Laplace Transform Pairs Based on Poles}
+    \caption{Unilateral Laplace transform pairs based on poles.}
     \label{laplace_pairs_short}
     \begin{tabular}{|c|c|c|}
         \hline
@@ -459,12 +471,14 @@ Table \ref{laplace_pairs_short} lists the corresponding Laplace transform pairs 
 \end{table}
 
 \section{Transfer Function}
-Given that all initial conditions of the input and output signals of an LTI system are zero, the \emph{transfer function} is the Laplace transform of the impulse response and 
-is defined as 
-\begin{align}
-    H(s) = \frac{Y(s)}{X(s)} = \mathcal{L}[h(t)].
-\end{align}
-In fact, by the convolution property, it follows that 
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    Given that all initial conditions of the input and output signals of an LTI system are zero, the \emph{transfer function} is the Laplace transform of the impulse response and 
+    is defined as 
+    \begin{align}
+        H(s) = \frac{Y(s)}{X(s)} = \mathcal{L}[h(t)].
+    \end{align}
+\end{tcolorbox}
+\noindent In fact, by the convolution property, it follows that 
 \begin{align}
     y(t) = x(t) * h(t) \iff Y(s) = X(s)H(s).
 \end{align}
@@ -499,6 +513,7 @@ Symbolically,
         \draw [-latex, line width=1.5pt] (system) -- (output);
     \end{tikzpicture}
 \end{center}
+\pagebreak
 As the impulse response is the system response to input $x(t)=\delta(t)$, consider the Laplace transform of the impulse signal $\mathcal{L}[\delta(t)]=1$. Then it also follows that 
 \begin{center}
     \begin{tikzpicture}
@@ -530,11 +545,13 @@ As the impulse response is the system response to input $x(t)=\delta(t)$, consid
         \draw [-latex, line width=1.5pt] (system) -- (output);
     \end{tikzpicture}
 \end{center}
-To find the transfer function of an LTI system, there are two approaches:
-\begin{enumerate}
-    \item Find $X(s),Y(s)$. Then calculate $H(s)=Y(s)/X(s)$.
-    \item Find $X(s),Y(s)$. Then substitute $X(s)=1$ and $Y(s)=H(s)$.
-\end{enumerate}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    To find the transfer function of an LTI system, there are two approaches:
+    \begin{enumerate}
+        \item Find $X(s),Y(s)$. Then calculate $H(s)=Y(s)/X(s)$.
+        \item Find $X(s),Y(s)$. Then substitute $X(s)=1$ and $Y(s)=H(s)$.
+    \end{enumerate}
+\end{tcolorbox}
 Typically, the transfer function $H(s)$ is used to analyze the characteristics of the LTI system. Sometimes, when one is interested in  
 representing systems solely for the purpose of finding an output response, the \emph{conditional transfer function} $H_C(s)$ 
 is calculated, where initial conditions are not necessarily zero; this is when the substitution approach works best. However, when including nonzero 
@@ -577,12 +594,13 @@ For the rest of this text, unless explicitly specified, only transfer functions 
 \subsection{System Stability}
 As previously introduced, zeros are the roots of the numerator of a transfer function ($N(s)=0$), and poles are the roots of the denominator of a transfer function ($D(s)=0$). 
 We can visualize both zeros and poles on the \emph{$s$-plane}, which plots $\Im(s)$ versus $\Re(s)$. As seen in Figure \ref{s_plane}, zeros are plotted with circles, and poles are plotted with crosses.
-\\ \\
-The \emph{open left half-plane} (OLHP) refers to the region of the $s$-plane which describes $\Re(s)<0$. 
-\begin{itemize}
-    \item If an LTI system with transfer function $H(s)$ is strictly proper or proper, then the system is BIBO stable if and only if its poles reside in the OLHP.
-    \item If $H(s)$ is improper, then the system is unstable.
-\end{itemize}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    The \emph{open left half-plane} (OLHP) refers to the region of the $s$-plane which describes $\Re(s)<0$. 
+    \begin{itemize}
+        \item If an LTI system with transfer function $H(s)$ is strictly proper or proper, then the system is BIBO stable if and only if its poles reside in the OLHP.
+        \item If $H(s)$ is improper, then the system is unstable.
+    \end{itemize}
+\end{tcolorbox}
 Note that the imaginary axis is not included in the OLHP; a system with poles on the imaginary axis is not stable.
 
 \begin{figure}[!hbt]
@@ -710,13 +728,15 @@ Setting initial conditions to zero such that the system is LTI, the transfer fun
     s^2Y(s) + a_1sY(s) + a_2Y(s) &= b_1sX(s) + b_2X(s) \nonumber \\
     \Longrightarrow H(s) = \frac{Y(s)}{X(s)} &= \frac{b_1s+b_2}{s^2+a_1s+a_2s}.
 \end{align}
-Define the following system attributes
-\begin{itemize}
-    \item Attenuation coefficient [Np/s]: $\alpha = \dfrac{a_1}{2}$
-    \item Undamped natural frequency [rad/s]: $\omega_0 = \sqrt{a_2}$
-    \item Damping coefficient [unitless]: $\xi = \dfrac{\alpha}{\omega_0} = \dfrac{a_1}{2\sqrt{a_2}}$
-\end{itemize}
-such that the solutions to the \emph{characteristic equation}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    Define the following system attributes
+    \begin{itemize}
+        \item Attenuation coefficient [Np/s]: $\alpha = \dfrac{a_1}{2}$
+        \item Undamped natural frequency [rad/s]: $\omega_0 = \sqrt{a_2}$
+        \item Damping coefficient [unitless]: $\xi = \dfrac{\alpha}{\omega_0} = \dfrac{a_1}{2\sqrt{a_2}}$
+    \end{itemize}
+\end{tcolorbox}
+\noindent such that the solutions to the \emph{characteristic equation}
 \begin{align}
     s^2 + a_1s + a_2 &= 0
 \end{align}
@@ -726,15 +746,16 @@ can be written as
 \end{align}
 In fact, the solutions to the characteristic equation are the poles $p_1, p_2$ of the system. Since $\Re(p_k) < 0$ must be true for a system to be BIBO stable, 
 it also holds from above that $a_1>0$ and $a_2>0$ must be true for the system to be BIBO stable.
-\\ \\
-Depending on the damping coefficient $\xi$, there are five possible system responses for an input impulse or step signal:
-\begin{itemize}
-    \item $\xi > 1$: overdamped response
-    \item $\xi = 1$: critically damped response
-    \item $0 < \xi < 1$: underdamped response
-    \item $\xi = 0$: undamped response
-    \item $\xi < 0$: unstable response
-\end{itemize}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    Depending on the damping coefficient $\xi$, there are five possible system responses for an input impulse or step signal:
+    \begin{itemize}
+        \item $\xi > 1$: overdamped response
+        \item $\xi = 1$: critically damped response
+        \item $0 < \xi < 1$: underdamped response
+        \item $\xi = 0$: undamped response
+        \item $\xi < 0$: unstable response
+    \end{itemize}
+\end{tcolorbox}
 \begin{figure}[!hbt]
     \caption{Second-order system response on the $s$-plane.}
     \label{s_plane_second}
@@ -777,7 +798,7 @@ As seen in Figure \ref{damping}, overdamped responses slowly approach steady-sta
     \omega_d = \sqrt{\omega_0^2-\alpha^2} = \omega\sqrt{1-\xi^2}.
 \end{align}
 Critically damped responses represent the quickest non-oscillatory path to steady-state. 
-\begin{figure}
+\begin{figure}[!hbt]
     \caption{Damping responses.}
     \label{damping}
     \centering
@@ -785,7 +806,7 @@ Critically damped responses represent the quickest non-oscillatory path to stead
         \includestandalone[mode=buildnew, width=\textwidth]{damping}
     }
 \end{figure}
-
+\pagebreak
 \begin{example}
     An LTI system is described by the LCCDE 
     \begin{align*}
@@ -847,40 +868,44 @@ characteristic of the system response:
     \item Natural / forced partition
     \item Transient / steady-state partition
 \end{enumerate}
-\textbf{\underline{Type 1: Zero-state / zero-input partition.}} \\[0.25cm]
-As the names imply,
-\begin{itemize}
-    \item the \emph{zero-state response} (ZSR) is the system response when there are no initial conditions, and
-    \item the \emph{zero-input response} (ZIR) is the system response when there is no input signal (but there are initial conditions).
-\end{itemize}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \textbf{\underline{Type 1: Zero-state / zero-input partition.}} \\[0.25cm]
+    As the names imply,
+    \begin{itemize}
+        \item the \emph{zero-state response} (ZSR) is the system response when there are no initial conditions, and
+        \item the \emph{zero-input response} (ZIR) is the system response when there is no input signal (but there are initial conditions).
+    \end{itemize}
+\end{tcolorbox}
 It follows that 
 \begin{align}
     y(t) = y_{ZSR}(t) + y_{ZIR}(t).
 \end{align}
 Any exponentials $e^{-\lambda_k t}$ in the zero-input response $y_{ZIR}(t)$ are referred to as the \emph{characteristic modes} (also called \emph{natural modes}, or simply modes) 
 of the system. The zero-input response is comprised of only natural modes, whereas the zero-state response has a mix of natural modes and ``forced'' modes from the input excitation function $x(t)$.
-\\ \\ \noindent
-\textbf{\underline{Type 2: Natural / forced partition.}} \\[0.25cm]
-On the discussion of natural modes and forced modes,
-\begin{itemize}
-    \item the \emph{natural response} is the part of the system response with only natural modes which describe the natural identity of the system, and
-    \item the \emph{forced response} is the part of the system response with only forced modes which mimic the character of the excitation function $x(t)$.
-\end{itemize}
-It follows that 
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \textbf{\underline{Type 2: Natural / forced partition.}} \\[0.25cm]
+    On the discussion of natural modes and forced modes,
+    \begin{itemize}
+        \item the \emph{natural response} is the part of the system response with only natural modes which describe the natural identity of the system, and
+        \item the \emph{forced response} is the part of the system response with only forced modes which mimic the character of the excitation function $x(t)$.
+    \end{itemize}
+\end{tcolorbox}
+\noindent It follows that 
 \begin{align}
     y(t) = y_{nat}(t) + y_{forc}(t).
 \end{align}
 The natural response is closely related to the zero-input response; since the zero-input response is composed exclusively of modes, we can use it to identify the modes, 
 then collect all terms with those modes to find the natural response. Naturally, the characteristic modes can also be determined by finding the solutions $s$ of the characteristic equation 
 and calculating $e^{-st}$.
-\\ \\ \noindent
-\textbf{\underline{Type 3: Transient / steady-state partition.}} \\[0.25cm]
-The end behavior of the terms of the system response can be analyzed such that
-\begin{itemize}
-    \item the \emph{transient response} is the part of the system response that decays to zero as $t\to\infty$, and
-    \item the \emph{steady-state response} is the part of the system response that remains after the transient response goes to zero.
-\end{itemize}
-It follows that 
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \textbf{\underline{Type 3: Transient / steady-state partition.}} \\[0.25cm]
+    The end behavior of the terms of the system response can be analyzed such that
+    \begin{itemize}
+        \item the \emph{transient response} is the part of the system response that decays to zero as $t\to\infty$, and
+        \item the \emph{steady-state response} is the part of the system response that remains after the transient response goes to zero.
+    \end{itemize}
+\end{tcolorbox}
+\noindent It follows that 
 \begin{align}
     y(t) = y_{tr}(t) + y_{ss}(t).
 \end{align}
@@ -943,8 +968,7 @@ an electric circuit can be transformed to an $s$-domain equivalent and solved us
 as impedances. The equivalent $s$-domain models can be seen in Table \ref{s_circ}.
 \\ \\
 While only Thévenin equivalent models with voltage sources are shown in Table \ref{s_circ}, Norton equivalent models with current sources can be drawn instead, though the relation between the Thévenin equivalents 
-and the steady-state equivalents are easier to visualize. \\ \\
-\newpage
+and the steady-state equivalents are easier to visualize.
 \begin{table}[!hbt]
     \caption{Circuit models for electrical components in the $s$-domain.}
     \label{s_circ}
@@ -1005,7 +1029,8 @@ and the steady-state equivalents are easier to visualize. \\ \\
         \hline
     \end{tabular}
 \end{table}
-Recall that the unit step function $u(t)$ can be treated as an ``on switch'', where the signal being multiplied gets turned on at time $t=0$. 
+\newpage
+\noindent Recall that the unit step function $u(t)$ can be treated as an ``on switch'', where the signal being multiplied gets turned on at time $t=0$. 
 Similarly here, circuit switches can be represented using signals multiplied by $u(t)$, as seen in Figure \ref{switch}. Because of how switches operate, 
 here we see that the initial condition is zero.
 \begin{figure}[!hbt]
@@ -1031,7 +1056,7 @@ here we see that the initial condition is zero.
         \draw (0,0) to [short] (3,0);
     \end{circuitikz}
 \end{figure}
-\newpage
+
 \begin{example}
     Find the output response $v_{out}(t)$ of the following circuit, given that the switch closes at time $t=0$ and $v_1(0^-)= 20\,[V]$. \\
     \resizebox{\textwidth}{!}{\begin{circuitikz}[american voltages,raised voltages]
@@ -1360,17 +1385,18 @@ When an interconnection of LTI systems implement \emph{negative feedback}, it ha
 \emph{Feedback} takes a sample of the output signal and feeds it back to the input signal. A system without feedback is called an \emph{open-loop system}, whereas a system that utilizes 
 feedback to form a \emph{feedback loop} is called a \emph{closed-loop system}.
 \\ \\
-A closed-loop system has \emph{positive feedback} if the strength of the input signal is increased as a result; otherwise, a closed-loop system is said to have \emph{negative feedback} if the strength 
+A closed-loop system has \emph{positive feedback} if the strength of the input signal is increased as a result; the closed-loop system has \emph{negative feedback} if the strength 
 of the input signal is decreased. 
-\\ \\
-An interconnection of LTI systems with feedback loops can be simplified to an equivalent single-transfer-function model.
-\begin{enumerate}
-    \item Condense any systems in parallel or series first.
-    \item Count the number of summation nodes left. The number of equations needed is the number of summation nodes plus one, with the one representing the output.
-    \item Define an intermediary signal $E_n(s)$ after each summation node $n$.
-    \item Starting from the output signal $Y(s)$, write an equation for the output. Then working backwards from $Y(s)$, write equations for each summation node.
-    \item Begin substituting and rearranging equations until a single equation in terms of only $X(s)$ and $Y(s)$ is left.
-\end{enumerate}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    An interconnection of LTI systems with feedback loops can be simplified to an equivalent single-transfer-function model.
+    \begin{enumerate}
+        \item Condense any systems in parallel or series first.
+        \item Count the number of summation nodes left. The number of equations needed is the number of summation nodes plus one, with the one representing the output.
+        \item Define an intermediary signal $E_n(s)$ after each summation node $n$.
+        \item Starting from the output signal $Y(s)$, write an equation for the output. Then working backwards from $Y(s)$, write equations for each summation node.
+        \item Begin substituting and rearranging equations until a single equation in terms of only $X(s)$ and $Y(s)$ is left.
+    \end{enumerate}
+\end{tcolorbox}
 
 \begin{example}
     Find an equivalent transfer function for the following interconnection of LTI systems. \\ \\
