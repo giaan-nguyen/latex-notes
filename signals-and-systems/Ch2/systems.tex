@@ -3,6 +3,7 @@
 
 \begin{document}
 \setcounter{chapter}{1}
+\setcounter{page}{19}
 \chapter{Systems}
 From the previous chapter, we introduce the idea of modifying signals by an affine transformation on the independent variable. 
 In fact, this was the very first introduction to the concept of \emph{systems}. A system essentially transforms an \emph{input signal} 
@@ -18,7 +19,7 @@ Given an input signal $x(t)$ and an output signal $y(t)$, a system can be depict
         fill=yellow!50, 
         minimum width=2cm, 
         minimum height=1.2cm
-    ] (system) at (0,0){$system$};
+    ] (system) at (0,0){System};
     \draw [-latex, line width=1.5pt] (input) -- (system);
     \draw [-latex, line width=1.5pt] (system) -- (output);
 \end{tikzpicture}
@@ -44,7 +45,7 @@ communications systems, and feedback control systems, those of which are depicte
 \end{figure}
 
 \begin{figure}[!hbt]
-    \caption{Signal processing systems.}
+    \caption{Signal processing system.}
     \label{sig_proc_sys}
     \centering
     \resizebox{\textwidth}{!}{
@@ -189,15 +190,18 @@ This chapter will go over different types of systems and why we are particularly
 Systems can be classified by the type of signals that are being inputted and outputted.
 
 \subsection{Multichannel vs Multidimensional}
-A system that deals with multichannel input and output systems is called a \emph{multichannel system}. There are four types of multichannel systems, described by the number 
-of channels in the input and output signals and aptly named so:
-\begin{itemize}
-    \item Single-input single-output (SISO) systems
-    \item Single-input multiple-output (SIMO) systems
-    \item Multiple-input single-output (MISO) systems
-    \item Multiple-input multiple-output (MIMO) systems
-\end{itemize}
-A system that deals with multidimensional input and output signals is called a \emph{multidimensional system}. 
+A system that deals with multichannel input and output systems is called a \emph{multichannel system}. 
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    There are four types of multichannel systems, described by the number 
+    of channels in the input and output signals and aptly named so:
+    \begin{itemize}
+        \item Single-input single-output (SISO) systems
+        \item Single-input multiple-output (SIMO) systems
+        \item Multiple-input single-output (MISO) systems
+        \item Multiple-input multiple-output (MIMO) systems
+    \end{itemize}
+\end{tcolorbox}
+\noindent A system that deals with multidimensional input and output signals is called a \emph{multidimensional system}. 
 \\ \\
 The rest of this text will cover one-dimensional SISO systems.
 
@@ -254,8 +258,7 @@ addends $x_1(t), x_2(t)$, and output signal addends $y_1(t),y_2(t)$:
     \end{tikzpicture}
 \end{center}
 In practice, if the superposition principle is met, then a sum of $N$ input addends will generate a sum of $N$ output addends. \\ \\
-The superposition principle can be broken down into its two properties: additivity and scalability. 
-\\ \\ 
+The superposition principle can be broken down into two properties: additivity and scalability. 
 A system has \emph{additive property} if for $y_1(t)=\Psi[x_1(t)]$ and $y_2(t)=\Psi[x_2(t)]$, the system-generated output from 
 the summed inputs is the sum of the outputs $\Psi[x_1(t)+x_2(t)]=y_1(t)+y_2(t)$. That is:
 \begin{center}
@@ -645,11 +648,13 @@ performing an operation called \emph{convolution} between the input signal and t
         \draw [-latex, line width=1.5pt] (system) -- (output);
     \end{tikzpicture}
 \end{center}
-Convolution is an operation defined by the \emph{convolution integral}
-\begin{align}
-    x(t) * h(t) &= \int_{-\infty}^{+\infty} x(\tau)h(t-\tau) \,d\tau \\
-    &= \int_{-\infty}^{+\infty} x(t-\tau)h(\tau) \,d\tau.
-\end{align}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    Convolution is an operation defined by the \emph{convolution integral}
+    \begin{align}
+        x(t) * h(t) &= \int_{-\infty}^{+\infty} x(\tau)h(t-\tau) \,d\tau \\
+        &= \int_{-\infty}^{+\infty} x(t-\tau)h(\tau) \,d\tau.
+    \end{align}
+\end{tcolorbox}
 All LTI systems characterized by $h(t)$ abide by convolution. Convolution will be explored further in the next chapter.
 \\ \\
 The \emph{step response} $y_{step}(t)$ of a system is the system response to an inputted unit step signal $u(t)$, given zero initial conditions. 
