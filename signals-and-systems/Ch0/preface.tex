@@ -1,5 +1,7 @@
 \documentclass{report}
 \input{../../preamble.tex}
+\pagenumbering{roman}
+\renewcommand\theequation{P-\arabic{equation}}
 
 \begin{document}
 
@@ -189,7 +191,7 @@ While Euler's and De Moivre's formulas also apply to complex functions of time, 
 Often, the polar form of complex functions of time are the only complex equations of interest. 
 
 \section*{Operations as Functions}
-Here, we introduce some functions that do not represent signals, but rather they serve as mathematical operations for analysis. 
+Here, we introduce some functions that do not necessarily represent signals, but rather they serve as mathematical operations for analysis. 
 \\ \\
 The \emph{indicator function}, also called the \emph{characteristic function}, is a Boolean function given by 
 \begin{align}
