@@ -3,8 +3,9 @@
 
 \begin{document}
 \setcounter{chapter}{5}
+\setcounter{page}{97}
 \chapter{Fourier Transform}
-In the previous chapter, we analyzed periodic signals using the Fourier series. However, not all everlasting signals are periodic. While the Fourier transform 
+In the previous chapter, we analyzed periodic signals using the Fourier series. However, not all signals are periodic. While the Fourier transform 
 will not be derived here, the Fourier transform is closely related to the Fourier series, except now letting $T\rightarrow\infty$ to account for nonperiodic waveforms. 
 \\ \\ 
 Generally, the Fourier transform can be applied to any signal. However, for best practices, the following table describes what technique is best used for certain signals. \\ \\
@@ -20,10 +21,12 @@ Generally, the Fourier transform can be applied to any signal. However, for best
 \end{NiceTabular}}
 
 \section{Fourier Transform}
-The \emph{Fourier transform} of a signal $x(t)$ is defined as 
-\begin{align}
-    X(\omega) = \mathcal{F}[x(t)] = \int_{-\infty}^{+\infty} x(t) e^{-j\omega t} \,dt.
-\end{align}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    The \emph{Fourier transform} of a signal $x(t)$ is defined as 
+    \begin{align}
+        X(\omega) = \mathcal{F}[x(t)] = \int_{-\infty}^{+\infty} x(t) e^{-j\omega t} \,dt.
+    \end{align}
+\end{tcolorbox}
 Similar to the Laplace transform, the Fourier transform is essentially an operator that maps a signal defined in the \emph{time domain} to another signal defined 
 in the \emph{frequency domain}. $x(t)$ and $X(\omega)$ constitute a unique \emph{Fourier transform pair}. This relationship can be written as 
 \begin{align}
@@ -38,20 +41,22 @@ Interestingly, the Fourier transform is related to the bilateral Laplace transfo
 \begin{align}
     X(\omega) = X(s)\big|_{s=j\omega}
 \end{align}
-The Dirichlet conditions for the Fourier transform is as follows:
-\begin{enumerate}
-    \item $x(t)$ has a finite number of finite discontinuities in every finite interval of time.
-    \item $x(t)$ has a finite number of maxima and minima in every finite interval of time.
-    \item $x(t)$ is absolutely integrable such that $\displaystyle\int_{-\infty}^{+\infty}|x(t)| \,dt < \infty$.
-\end{enumerate}
-If the Dirichlet conditions are met, then $x(t)$ is physically realizable and has a Fourier transform. However, these are sufficient but not necessary conditions 
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    The Dirichlet conditions for the Fourier transform is as follows:
+    \begin{enumerate}
+        \item $x(t)$ has a finite number of finite discontinuities in every finite interval of time.
+        \item $x(t)$ has a finite number of maxima and minima in every finite interval of time.
+        \item $x(t)$ is absolutely integrable such that $\displaystyle\int_{-\infty}^{+\infty}|x(t)| \,dt < \infty$.
+    \end{enumerate}
+\end{tcolorbox}
+\noindent If the Dirichlet conditions are met, then $x(t)$ is physically realizable and has a Fourier transform. However, these are sufficient but not necessary conditions 
 as some functions like the constant function or the unit step function are not absolutely integrable, yet they have Fourier transforms. 
 (Instead, limit definitions of those functions are evaluated to obtain the Fourier transform.)
 \\ \\
 Table \ref{fourier_prop} lists the properties of the Fourier transform.
 \begin{table}
     \centering
-    \caption{Properties of the Fourier Transform}
+    \caption{Properties of the Fourier transform.}
     \label{fourier_prop}
     \begin{tabular}{|c|c|c|}
         \hline
@@ -138,7 +143,7 @@ it is much simpler to reference a table of transform pairs.
 
 \begin{table}
     \centering
-    \caption{Fourier Transform Pairs}
+    \caption{Fourier transform pairs.}
     \label{fourier_pairs}
     \begin{tabular}{|c|c|}
         \hline
@@ -373,8 +378,7 @@ as impedances. The equivalent $\omega$-domain models can be seen in Table \ref{o
     \end{align*}
     Setting the two equations together and using partial fraction expansion with respect to $j\omega$:
     \begin{align*}
-        I_2 = \frac{V_s}{6000}\cdot\frac{3j\omega}{3+j\omega} = \frac{(5\times10^{-3})j\omega}{(2+j\omega)(3+j\omega)} &= \frac{-10\times10^{-3}}{2+j\omega} + \frac{15\times10^{-3}}{3+j\omega} \\ 
-        &= \left(\frac{-10}{2+j\omega} + \frac{15}{3+j\omega}\right)\times 10^{-3}
+        I_2 = \frac{V_s}{6000}\cdot\frac{3j\omega}{3+j\omega} = \frac{(5\times10^{-3})j\omega}{(2+j\omega)(3+j\omega)} = \left(\frac{-10}{2+j\omega} + \frac{15}{3+j\omega}\right)\times 10^{-3}
     \end{align*}
     The current running through the capacitor is then given by 
     \begin{align*}
@@ -383,12 +387,13 @@ as impedances. The equivalent $\omega$-domain models can be seen in Table \ref{o
 \end{solution}
 
 \section{Frequency Response}
-The \emph{frequency response function} is the Fourier transform of the impulse response and 
-is defined as 
-\begin{align}
-    H(\omega) = \frac{Y(\omega)}{X(\omega)} = \mathcal{F}[h(t)].
-\end{align}
-In fact, by the convolution property, it follows that 
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    The \emph{frequency response function} is the Fourier transform of the impulse response:
+    \begin{align}
+        H(\omega) = \frac{Y(\omega)}{X(\omega)} = \mathcal{F}[h(t)].
+    \end{align}
+\end{tcolorbox}
+\noindent In fact, by the convolution property, it follows that 
 \begin{align}
     y(t) = x(t) * h(t) \iff Y(\omega) = X(\omega)H(\omega).
 \end{align}
@@ -458,11 +463,13 @@ Interestingly, the frequency response is related to the transfer function:
 \begin{align}
     H(\omega) = H(s)\big|_{s=j\omega}
 \end{align}
-As before, there are two approaches to finding the frequency response of an LTI system:
-\begin{enumerate}
-    \item Find $X(\omega),Y(\omega)$. Then calculate $H(\omega)=Y(\omega)/X(\omega)$.
-    \item Find $X(\omega),Y(\omega)$. Then substitute $X(\omega)=1$ and $Y(\omega)=H(\omega)$.
-\end{enumerate}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    As before, there are two approaches to finding the frequency response of an LTI system:
+    \begin{enumerate}
+        \item Find $X(\omega),Y(\omega)$. Then calculate $H(\omega)=Y(\omega)/X(\omega)$.
+        \item Find $X(\omega),Y(\omega)$. Then substitute $X(\omega)=1$ and $Y(\omega)=H(\omega)$.
+    \end{enumerate}
+\end{tcolorbox}
 While the frequency response can be used for determining system stability just like the transfer function, 
 the frequency response has the additional tool of analyzing the gain and phase of an LTI system at particular 
 frequencies of interest, as borrowed from the Fourier series analysis. 
@@ -619,7 +626,7 @@ Usually we choose an appropriate small power of 10 and appropriate large power o
 when labeling the $\omega$-axis such that any and all behaviors due to the poles and zeros of the system are within scope. 
 \begin{figure}[!hbt]
     \centering
-    \caption{Characteristics of a Semilog Template}
+    \caption{Characteristics of a semilog template.}
     \label{semilog}
     \resizebox{\textwidth}{!}{\begin{tikzpicture}
         \tikzset{
@@ -659,7 +666,7 @@ Table \ref{decibels} lists some examples of decibel values corresponding to a se
 
 \begin{table}[!hbt]
     \centering
-    \caption{Examples of Corresponding Decibel Values}
+    \caption{Examples of corresponding decibel values.}
     \label{decibels}
     \begin{tabular}{|c|c|}
         $M$ [V/V] & $M$ [dB] \\
@@ -727,7 +734,7 @@ The standard form of a generic frequency response is given by
 \noindent The corresponding effects of each term on the Bode plots are outlined in Table \ref{bode}.
 \begin{table}
     \centering
-    \caption{Straight-Line Approximations of Terms for Bode Plots}
+    \caption{Straight-line approximations of terms for Bode plots.}
     \label{bode}
     \resizebox{\textwidth}{!}{
     \begin{tabular}{|c|c|c|}
@@ -904,7 +911,7 @@ are outlined in Table \ref{add_terms}.
 \begin{table}
     \small
     \centering
-    \caption{Graphical Properties of Frequency Response Terms on the Bode Plot}
+    \caption{Graphical properties of frequency response terms on the Bode plot.}
     \label{add_terms}
     \resizebox{\textwidth}{!}{\begin{tabular}{ |c|c|c| }
         \hline
