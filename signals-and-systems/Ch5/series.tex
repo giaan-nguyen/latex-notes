@@ -3,6 +3,7 @@
 
 \begin{document}
 \setcounter{chapter}{4}
+\setcounter{page}{74}
 \chapter{Fourier Series}
 Previously, we have seen that causal signals and systems can be analyzed using the unilateral Laplace transform. Once transformed to the $s$-domain, 
 equations can be solved algebraically before transforming back to the time domain.
@@ -18,28 +19,31 @@ This chapter will first explore the analysis of periodic signals with Fourier se
 \section{Phasor Domain}
 Before delving into Fourier series, first we consider periodic signals with only one frequency -- that is, sinusoidal signals. It follows that an input sinusoidal signal into an LTI system will generate 
 an output sinusoidal signal with the same frequency.
-\\ \\
-The relationship between a sinusoid $x(t)$ and a phasor $\underline{X}=|\underline{X}|e^{j\phi}$ with $\phi=\arg(\underline{X})$ can be exploited such that 
-\begin{align}
-    x(t) &= \Re[\,\underline{X}e^{j\omega t}] \\ 
-    &= \Re[|\underline{X}|e^{j\phi}e^{j\omega t}] \nonumber \\
-    &= \Re[|\underline{X}|e^{j(\omega t+\phi)}] \nonumber \\
-    &= |\underline{X}|\cos(\omega t+\phi).
-\end{align}
-The \emph{phasor transform} offers a way to solve signals and systems with only one frequency involved. Because a sinusoid contain only a single frequency, the magnitude and phase of sinusoidal signals can be isolated and analyzed. 
-The phasor transform can be defined as 
-\begin{align}
-    \underline{X} = \mathcal{P}[x(t)],
-\end{align}
-where the inverse phasor transform is defined as 
-\begin{align}
-    x(t) = \mathcal{P}^{-1}[\,\underline{X}\,] = \Re[\,\underline{X}e^{j\omega t}].
-\end{align}
-The table of phasor transform pairs is given in Table \ref{phasor_pairs}.
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    The relationship between a sinusoid $x(t)$ and a phasor $\underline{X}=|\underline{X}|e^{j\phi}$ with $\phi=\arg(\underline{X})$ can be exploited such that 
+    \begin{align}
+        x(t) &= \Re[\,\underline{X}e^{j\omega t}] \\ 
+        &= \Re[|\underline{X}|e^{j\phi}e^{j\omega t}] \nonumber \\
+        &= \Re[|\underline{X}|e^{j(\omega t+\phi)}] \nonumber \\
+        &= |\underline{X}|\cos(\omega t+\phi).
+    \end{align}
+\end{tcolorbox}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    The \emph{phasor transform} offers a way to solve signals and systems with only one frequency involved. Because a sinusoid contain only a single frequency, the magnitude and phase of sinusoidal signals can be isolated and analyzed. 
+    The phasor transform can be defined as 
+    \begin{align}
+        \underline{X} = \mathcal{P}[x(t)],
+    \end{align}
+    where the inverse phasor transform is defined as 
+    \begin{align}
+        x(t) = \mathcal{P}^{-1}[\,\underline{X}\,] = \Re[\,\underline{X}e^{j\omega t}].
+    \end{align}
+\end{tcolorbox}
+\noindent The table of phasor transform pairs is given in Table \ref{phasor_pairs}.
 
 \begin{table}[hbt!]
     \centering
-    \caption{Phasor Transform Pairs}
+    \caption{Phasor transform pairs.}
     \label{phasor_pairs}
     \begin{tabular}{|c|c|}
         \hline
@@ -117,26 +121,28 @@ The table of phasor transform pairs is given in Table \ref{phasor_pairs}.
 \section{Fourier Series}
 While the superposition principle can be applied for an input signal comprised of a few sinusoidal addends, using the phasor transform becomes more tedious when more and more sinusoids with different frequencies are introduced. 
 In fact, the procedure becomes impossible when an infinite number of sinusoids are added. Why is this relevant?
-\\ \\
-According to \emph{Fourier's theorem}, any physically realizable periodic signal can be represented as a sum of sinusoids, whether or not it is a finite sum or an infinite series. While finite sums can be handled using the phasor transform, periodic signals represented by 
-infinite series must be analyzed using a different tool. 
-\\ \\ 
-Here, the \emph{Fourier series} is introduced, where any physically realizable periodic signal with period $T_0$ can be broken down into fundamentals (which are terms with fundamental angular frequency $\omega_0=2\pi/T_0$) and its $n^{th}$ harmonics 
-(which are terms with frequency $n\omega_0$ for each $n$).
-\\ \\
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    According to \emph{Fourier's theorem}, any physically realizable periodic signal can be represented as a sum of sinusoids, whether or not it is a finite sum or an infinite series. While finite sums can be handled using the phasor transform, periodic signals represented by 
+    infinite series must be analyzed using a different tool. 
+    \\ \\ 
+    Here, the \emph{Fourier series} is introduced, where any physically realizable periodic signal with period $T_0$ can be broken down into fundamentals (which are terms with fundamental angular frequency $\omega_0=2\pi/T_0$) and its $n^{th}$ harmonics 
+    (which are terms with frequency $n\omega_0$ for each $n$).
+\end{tcolorbox}
 There are three different representations of the Fourier series: the sine/cosine representation, the amplitude/phase representation, and the exponential representation.
 
 \subsection{Sine / Cosine Representation}
-The sine/cosine representation of a physically realizable periodic signal $x(t)$ is given by 
-\begin{align}
-    x(t) = a_0 + \sum_{n=1}^{\infty}[a_n\cos(n\omega_0 t)+b_n\sin(n\omega_0 t)],
-\end{align}
-where the \emph{Fourier coefficients} are calculated from the following integrals:
-\begin{align}
-    a_0 &= \frac{1}{T_0} \int_{t_0}^{t_0+T_0} x(t) \,dt \\
-    a_n &= \frac{2}{T_0} \int_{t_0}^{t_0+T_0} x(t)\cos(n\omega_0 t) \,dt \\
-    b_n &= \frac{2}{T_0} \int_{t_0}^{t_0+T_0} x(t)\sin(n\omega_0 t) \,dt
-\end{align} 
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    The sine/cosine representation of a physically realizable periodic signal $x(t)$ is given by 
+    \begin{align}
+        x(t) = a_0 + \sum_{n=1}^{\infty}[a_n\cos(n\omega_0 t)+b_n\sin(n\omega_0 t)],
+    \end{align}
+    where the \emph{Fourier coefficients} are calculated from the following integrals:
+    \begin{align}
+        a_0 &= \frac{1}{T_0} \int_{t_0}^{t_0+T_0} x(t) \,dt \\
+        a_n &= \frac{2}{T_0} \int_{t_0}^{t_0+T_0} x(t)\cos(n\omega_0 t) \,dt \\
+        b_n &= \frac{2}{T_0} \int_{t_0}^{t_0+T_0} x(t)\sin(n\omega_0 t) \,dt
+    \end{align} 
+\end{tcolorbox}
 Here, the limits of integration $[t_0, t_0+T_0]$ can be set to $[0,T_0]$, $[-T_0/2,+T_0/2]$, or a reasonable interval $[t_1,t_2]$ such that $t_2-t_1=T_0$. 
 Sometimes, to indicate that the integral is over a period $T_0$, the integral (not including the integrand) may be written as $\int_{T_0} \,dt$.
 \\ \\
@@ -150,7 +156,7 @@ The Fourier series of a select set of waveforms are listed in Table \ref{periodi
     \begin{table}
     \small
     \centering
-    \caption{Select Set of Periodic Waveforms}
+    \caption{Select set of periodic waveforms.}
     \label{periodic_waveforms}
     \resizebox{\textwidth}{!}{%
     \begin{tabular}{ c|c|c }
@@ -310,20 +316,22 @@ The Fourier series of a select set of waveforms are listed in Table \ref{periodi
 \end{center}
 
 \subsection{Amplitude / Phase Representation}
-The amplitude/phase representation of a physically realizable periodic signal $x(t)$ is most closely related to the phasor transform technique and is given by 
-\begin{align}
-    x(t) = c_0 + \sum_{n=1}^{\infty} c_n\cos(n\omega_0 t + \phi_n),
-\end{align}
-where the Fourier coefficients are derived from the relationship $c_n e^{j\phi_n} = a_n - jb_n$ from the sine/cosine representation such that 
-\begin{align}
-    c_0 &= a_0 \\ 
-    c_n &= \sqrt{a_n+b_n} \\ 
-    \phi_n &= -\operatorname{atan2}({b_n,a_n}) =
-    \begin{cases} 
-        -\arctan(b_n/a_n), & a_n>0 \\
-        \pi-\arctan(b_n/a_n), & a_n<0
-    \end{cases}
-\end{align}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    The amplitude/phase representation of a physically realizable periodic signal $x(t)$ is most closely related to the phasor transform technique and is given by 
+    \begin{align}
+        x(t) = c_0 + \sum_{n=1}^{\infty} c_n\cos(n\omega_0 t + \phi_n),
+    \end{align}
+    where the Fourier coefficients are derived from the relationship $c_n e^{j\phi_n} = a_n - jb_n$ from the sine/cosine representation such that 
+    \begin{align}
+        c_0 &= a_0 \\ 
+        c_n &= \sqrt{a_n+b_n} \\ 
+        \phi_n &= -\operatorname{atan2}({b_n,a_n}) =
+        \begin{cases} 
+            -\arctan(b_n/a_n), & a_n>0 \\
+            \pi-\arctan(b_n/a_n), & a_n<0
+        \end{cases}
+    \end{align}
+\end{tcolorbox}
 While the phasor transform isolates an amplitude and phase of a signal for a single frequency, the amplitude/phase representation of the Fourier series isolates 
 the amplitudes $c_n$ and phases $\phi_n$ of a physically realizable periodic signal across an infinite number of harmonic frequencies. 
 \\ \\
@@ -424,19 +432,21 @@ are collectively referred to as the \emph{one-sided Fourier spectrum}.
 \end{solution}
 
 \subsection{Exponential Representation}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
 Since sinusoids are closely related to complex exponentials with $\cos(\theta)=\frac{1}{2}(e^{+j\theta}+e^{-j\theta})$, it follows that the exponential representation of a physically realizable periodic signal $x(t)$ is given by 
-\begin{align}
-    x(t) = \sum_{n=-\infty}^{+\infty} x_n e^{jn\omega_0 t},
-\end{align}
-where the Fourier coefficients are calculated from the integral: 
-\begin{align}
-    x_n = \frac{1}{T_0} \int_{t_0}^{t_0+T_0} x(t) e^{-jn\omega_0 t} \,dt,
-\end{align}
-with conjugate symmetry properties such that for $x_n = |x_n|e^{j\phi_n}$:
-\begin{align}
-    x_{-n} &= x_n^* \\
-    \phi_{-n} &= -\phi_n
-\end{align}
+    \begin{align}
+        x(t) = \sum_{n=-\infty}^{+\infty} x_n e^{jn\omega_0 t},
+    \end{align}
+    where the Fourier coefficients are calculated from the integral: 
+    \begin{align}
+        x_n = \frac{1}{T_0} \int_{t_0}^{t_0+T_0} x(t) e^{-jn\omega_0 t} \,dt,
+    \end{align}
+    with conjugate symmetry properties such that for $x_n = |x_n|e^{j\phi_n}$:
+    \begin{align}
+        x_{-n} &= x_n^* \\
+        \phi_{-n} &= -\phi_n
+    \end{align}
+\end{tcolorbox}
 In fact, $\phi_n$ here is the same value as $\phi_n$ in the amplitude/phase representation. Between the two representations, it also follows that 
 \begin{align}
     x_0 &= c_0 \\
@@ -543,7 +553,7 @@ that will become familiar when comparing to the table of Fourier transform prope
 
 \begin{table}[hbt!]
     \centering
-    \caption{Properties of the Exponential Representation of the Fourier Series}
+    \caption{Properties of the exponential representation of the Fourier series.}
     \label{series_prop}
     \begin{tabular}{|c|c|c|}
         \hline
@@ -638,7 +648,7 @@ the signal $f(t) = x(t) - a_0$ (i.e., without the DC offset) has even or odd sym
 (If so, $x(t)$ is said to have \emph{hidden symmetry}, obscured by DC offset $a_0$.) For reference, see the flowchart in Figure \ref{flowchart}.
 
 \begin{sidewaysfigure}
-    \caption{Flowchart for the Sine/Cosine Representation of the Fourier Series.}
+    \caption{Workflow for the sine/cosine representation of the Fourier series.}
     \label{flowchart}
     \centering
     \resizebox{0.85\textwidth}{!}{%
@@ -928,34 +938,39 @@ While a simple periodic extension can be implemented, one can also apply symmetr
 
 \section{Convergence of the Fourier Series}
 Earlier, it was prefaced that any physically realizable periodic signal follows Fourier's theorem; we assume that there are no periodic infinite discontinuities 
-as those cannot be physically realized. In fact, in order for a periodic signal $x(t)$ with period $T_0$ to follow Fourier's theorem (i.e., be physically realizable), 
-it must satisfy the \emph{Dirichlet conditions}:
-\begin{enumerate}
-    \item $x(t)$ has a finite number of finite discontinuities in each period.
-    \item $x(t)$ has a finite number of maxima and minima in each period.
-    \item $x(t)$ is absolutely integrable over a period such that $\displaystyle\int_{0}^{T_0}|x(t)| \,dt < \infty$.
-\end{enumerate}
-If the Dirichlet conditions are met, then there are two possible functions the Fourier series converges to, depending on the number of jump discontinuities within a period:
-\begin{itemize}
-    \item If the periodic signal $x(t)$ is continuous with no jump discontinuities, then the Fourier series converges to $x(t)$.
-    \item If the periodic signal $x(t)$ has nonzero number of jumps within a period, then the Fourier series converges to $x(t)$ everywhere except at the jumps, where 
-    the points converge to $\dfrac{1}{2}[x(t_i^-)+x(t_i^+)]$ for each jump discontinuity at $t=t_i$.
-\end{itemize}
-In general, for $S_N(t)$ is the $N^{th}$ partial sum of the Fourier series, 
-\begin{align}
-    \lim_{N\rightarrow\infty} S_N(t) = 
-    \begin{cases}
-        x(t), & \text{if $x$ is continuous at $t$} \\
-        \frac{1}{2}[x(t^-)+x(t^+)], & \text{if $x$ has a jump at $t$}
-    \end{cases}
-\end{align}
+as those cannot be physically realized. 
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    In fact, in order for a periodic signal $x(t)$ with period $T_0$ to follow Fourier's theorem (i.e., be physically realizable), 
+    it must satisfy the \emph{Dirichlet conditions}:
+    \begin{enumerate}
+        \item $x(t)$ has a finite number of finite discontinuities in each period.
+        \item $x(t)$ has a finite number of maxima and minima in each period.
+        \item $x(t)$ is absolutely integrable over a period such that $\displaystyle\int_{0}^{T_0}|x(t)| \,dt < \infty$.
+    \end{enumerate}
+\end{tcolorbox}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    If the Dirichlet conditions are met, then there are two possible functions the Fourier series converges to, depending on the number of jump discontinuities within a period:
+    \begin{itemize}
+        \item If the periodic signal $x(t)$ is continuous with no jump discontinuities, then the Fourier series converges to $x(t)$.
+        \item If the periodic signal $x(t)$ has nonzero number of jumps within a period, then the Fourier series converges to $x(t)$ everywhere except at the jumps, where 
+        the points converge to $\dfrac{1}{2}[x(t_i^-)+x(t_i^+)]$ for each jump discontinuity at $t=t_i$.
+    \end{itemize}
+    In general, for $S_N(t)$ is the $N^{th}$ partial sum of the Fourier series, 
+    \begin{align}
+        \lim_{N\rightarrow\infty} S_N(t) = 
+        \begin{cases}
+            x(t), & \text{if $x$ is continuous at $t$} \\
+            \frac{1}{2}[x(t^-)+x(t^+)], & \text{if $x$ has a jump at $t$}
+        \end{cases}
+    \end{align}
+\end{tcolorbox}
 In fact, while periodic signals with jump discontinuities such as the square wave can be represented as a Fourier series, they cannot be reproduced practically in the real world by generating and summing 
 an infinite number of sine waves. 
 \\ \\
 One could get close with a large $N^{th}$ partial sum of the Fourier series. However, regardless of the value of $N$, the \emph{Gibbs phenomenon} will be observed, in which 
 oscillatory overshoots occur about the points of discontinuity, as seen in Figure \ref{gibbs}.
 \begin{figure}[!hbt]
-\caption{Gibbs Phenomenon Observed in the Partial Sum $S_N(t)$ of a Square Wave }
+\caption{Gibbs phenomenon observed in the partial sum $S_N(t)$ of a square wave.}
 \label{gibbs}
 \resizebox{0.33\textwidth}{!}{
     \begin{tikzpicture}
@@ -1017,7 +1032,7 @@ Additionally, we can define the \emph{one-sided power spectral density} (1-sided
     PSD_1 = 
     \begin{cases}
         c_0^2 = |x_0|^2, & n=0 \\
-        \frac{c_n^2}{2} = 2|x_n|^2, & n\geq 0
+        \frac{c_n^2}{2} = 2|x_n|^2, & n>0
     \end{cases}
 \end{align}
 and the \emph{two-sided power spectral density} (2-sided PSD) to be 
