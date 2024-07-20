@@ -1,9 +1,12 @@
 \documentclass{report}
 \usepackage{pdfpages}
+\usepackage{subfiles}
 \input{../preamble.tex}
 
 \begin{document}
 
+\iftrue
+\includepdf[pages=-]{Ch0/preface}
 \includepdf[pages=-]{Ch1/signals}
 \includepdf[pages=-]{Ch2/systems}
 \includepdf[pages=-]{Ch3/conv}
@@ -11,5 +14,6 @@
 \includepdf[pages=-]{Ch5/series}
 \includepdf[pages=-]{Ch6/fourier}
 \includepdf[pages=-]{Ch7/applications}
+\fi
 
 \end{document}
