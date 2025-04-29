@@ -91,12 +91,12 @@ are defined in the following list:
 \end{itemize}
 Recall from \emph{Euler's formula} that $e^{j\theta} = \cos\theta + j\sin\theta$. The sinusoids can be rewritten such that
 \begin{align}
-    \cos\theta = \frac{e^{j\theta}+e^{-j\theta}}{2} \\
-    \sin\theta = \frac{e^{j\theta}-e^{-j\theta}}{j2}.
+    \cos\theta &= \frac{e^{j\theta}+e^{-j\theta}}{2} \\
+    \sin\theta &= \frac{e^{j\theta}-e^{-j\theta}}{j2}.
 \end{align}
 Generalizing Euler's formula, exponentiation of a complex number gives
 \begin{align}
-    e^z = e^{x+jy} = e^x e^{jy} = e^x(\cos\theta +j\sin\theta).
+    e^z = e^{x+jy} = e^x e^{jy} = e^x(\cos y +j\sin y).
 \end{align}
 \emph{De Moivre's formula} defines the $n^{th}$ power of a complex number $z$, for $n$ is a positive integer:
 \begin{align}
@@ -126,7 +126,7 @@ Let $z$ be a complex variable and $z_0=x_0+jy_0$ be a complex number. Then
 \begin{align}
     |z-z_0| = r
 \end{align} 
-graphically represents a circle of radius 2 centered at $(x_0,y_0)$. In the inequality form,
+graphically represents a circle of radius $r$ centered at $(x_0,y_0)$. In the inequality form,
 \begin{align}
     |z-z_0| < r
 \end{align} 
@@ -172,14 +172,14 @@ In polar form,
     |z(t)| &= \sqrt{x^2(t)+y^2(t)} \\
     \theta(t) &= \arg[x(t)+jy(t)].
 \end{align}
-Here, while the Steinmetz phasor notation $\phase{\theta(t)}$ can be used as an equivalent notation for $exp[{j\theta(t)}]$, it can also be used as 
+Here, while the Steinmetz phasor notation $\phase{\theta(t)}$ can be used as an equivalent notation for $\exp[{j\theta(t)}]$, it can sometimes be used as 
 a phase operator, where
 \begin{align}
-    \phase{z(t)} = \theta(t).
+    \phase{z(t)} = \arg[z(t)] = \theta(t).
 \end{align}
-The phase operator can also be extended to complex numbers and variables, with $\phase{z}=\theta$.
+The phase operator can also be extended to complex numbers and variables, with $\phase{z}=\arg(z)=\theta$.
 \\ \\
-Just as before, $x(t),y(t),|z(t)|,$ and $\phase{z(t)}$ are all real-valued functions of time. 
+Just as before, $x(t),y(t),|z(t)|,$ and $\arg[z(t)]$ are all real-valued functions of time. 
 \\ \\
 The complex conjugate function $z^*(t)$ has the following properties:
 \begin{align}
