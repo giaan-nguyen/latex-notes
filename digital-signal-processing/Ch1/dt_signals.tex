@@ -1,0 +1,426 @@
+\documentclass{report}
+\input{../../preamble.tex}
+
+\begin{document}
+ 
+\chapter{Discrete-Time Signals}
+\emph{Digital signal processing} (DSP) usually refers to the analysis and modification of digital signals (which are generated 
+by digitizing real-world analog signals). While digital signals generally refer to discrete-time, discrete-valued signals, 
+technological advances in computing allows us to store data with increasingly greater precision. The most common floating-point formats 
+are single-precision (32-bit) and double-precision (64-bit).
+\\ \\ 
+Because of the large precision of current computer number formats, the term digital signal processing effectively can be  
+applied to \emph{discrete-time signals} (which can have infinite precision). In fact, the modern usage of the term \emph{digital signal processing} tends to be  
+interchangeable with the outdated term \emph{discrete-time signal processing}.
+\\ \\
+In the context of DSP, the distinction between discrete-time signals and digital signals only becomes prevalent when the rounding errors become non-neglibile. 
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    For the remainder of this text, we will only be looking into signals with the following characteristics:
+    \begin{itemize}
+        \item single-channel, one-dimensional
+        \item discrete-time (DT)
+        \item deterministic
+    \end{itemize}
+\end{tcolorbox}
+
+\section{Discrete-Time Signal Representation}
+Since a sampler samples a continuous-time (CT) signal every $T_s$ seconds, the relationship between discrete-time (DT) signals (also called discrete signals) and CT signals is 
+\begin{align}
+    x[n] = x(t=nT_s).
+\end{align}
+Instead of dealing with the points of time $t$ of a CT signal, the indices $n$ are considered for a DT signal. $x[n]$ then is essentially a sequence, which is a special form of a function 
+with an integer domain, where $x[N]$ represents the $N^{th}$ term of the sequence. In discrete time, $n$ can be referred to as ``time,'' with units of number of samples.
+\\ \\
+Other than piecewise notation, DT signals can be written in bracket notation, where the value corresponding to $x[0]$ is underlined, and any values with indices outside of the brackets are implicitly zero. 
+\begin{align}
+    x[n] = \left\{x[-N], ..., x[-1],\underline{x[0]}, x[1], ..., x[M]\right\}
+\end{align}
+
+\begin{example}
+    Given the plot of $x[n]$ below, write an expression for $x[n]$. \\ \\
+    \begin{tikzpicture}
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=4.5, ytick={0,...,4}, ylabel={$x[n]$},
+            xmin=-2.5, xmax=2.5, xtick={-2,...,2}, xlabel={$n$},
+            width=7cm, height=4cm]
+            \addplot+ [
+                ycomb,
+            ] coordinates {(-1,3) (0,2) (2,4)};
+        \end{axis}
+    \end{tikzpicture}
+\end{example}
+\begin{solution}
+    The expressions for $x[n]$ in both bracket notation and piecewise notation are provided:
+    \begin{align*}
+        x[n] = \left\{3,\underline{2},0,4\right\} = 
+        \begin{cases}
+            3, & n=-1 \\
+            2, & n=0 \\
+            4, & n=2 \\
+            0, & otherwise
+        \end{cases}
+    \end{align*}
+\end{solution}
+
+\section{Signal Transformations}
+Similar to the CT case, a DT signal can be modified by apply an \emph{affine transformation on the independent variable} such that $x[n] \mapsto x[an+b]$.
+
+\subsection{Time Shifting}
+A DT signal that is time-shifted by $N$ units can be expressed as 
+\begin{align}
+    y[n] = x[n-N].
+\end{align}
+If $N>0$, then $y[n]$ is said to be delayed by $N$ units relative to $x[n]$. If $N<0$, then $y[n]$ is advanced by $N$ units.
+
+\subsection{Time Scaling}
+A CT signal that is time-scaled by some integer factor $a$ can be expressed as 
+\begin{align}
+    y[n] = x[an].
+\end{align}
+If $|a|>1$, then $y[n]$ is a temporally compressed (or \emph{downsampled}) version of $x[n]$, which keeps every $a^{th}$ sample of $x[n]$. 
+If $|a|<1$, then $y(t)$ is a temporally expanded (or \emph{upsampled}) version of $x[n]$, which stuffs $a-1$ zeros between each sample of $x[n]$.
+
+\subsection{Time Reversal}
+A time reversal is a reflection of some signal over the vertical axis and can be expressed as 
+\begin{align}
+    y[n]=x[-n].
+\end{align}
+
+\subsection{Combined Transformation}
+Let 
+\begin{align}
+    y[n] = x[an-b] = x\left[a\left(n-\frac{b}{a}\right)\right].
+\end{align}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+Since $b/a$ is not guaranteed to be an integer, there is only one surefire approach to transforming the signal $x[n]$ to $y[n]$.
+\begin{enumerate}
+    \itemsep0em
+    \item Shift by $b$ units.
+    \item Time scale by $|a|$. Then reflect if $a<0$.
+\end{enumerate}
+\end{tcolorbox}
+
+\subsection{Amplitude Transformation}
+Some applications may call for vertically scaling the amplitude of a DT signal or vertically shifting the signal. The amplitude transformation 
+\begin{align}
+    y[n] = Ax[n]+B
+\end{align}
+scales the signal $x[n]$ by factor $A$ and then vertically shifts the signal by $B$ units. 
+
+\section{Discrete-Time Sequences}
+\subsection{Discrete-Time Exponential and Sinusoidal Signals}
+\emph{Complex exponential sequences} take on the form  
+\begin{align}
+    x[n] = Ae^{j\Omega n}=A\operatorname{exp}(j\Omega n),
+\end{align}
+with some complex scalar $A = |A|e^{j\theta}$ and \emph{discrete-time angular frequency} $\Omega$. In fact, by sampling the CT complex exponential function every $T_s$ seconds, 
+the DT complex exponential sequence can also be written as 
+\begin{align}
+    x[n] = x(t=nT_s) = A\operatorname{exp}(j\omega_0 (nT_s)) = A\operatorname{exp}(j\Omega n),
+\end{align}
+where $\Omega = \omega_0 T_s$ [rad/samp]. Unlike the CT form, the DT complex exponential sequence may or may not be periodic; in order for the DT sequence to be periodic, 
+$2\pi/\Omega$ must be a rational number. In fact, if the DT signal is periodic, then 
+\begin{align}
+    \frac{2\pi}{\Omega} = \frac{N_0}{k},
+\end{align}
+where $N_0$ is the \emph{discrete-time fundamental period}, and $k$ is the smallest integer such that $N_0$ is an integer. If given the CT complex exponential signal with period $T_0$ and the sampling period $T_s$, 
+the test for periodicity can be done using the following relation:
+\begin{align}
+    \frac{2\pi}{\Omega} = \frac{T_0}{T_s}.
+\end{align}
+If the DT complex exponential sequence is periodic, then $\Omega \triangleq \Omega_0 \in [0,\pi]$ is the \emph{discrete-time fundamental angular frequency}. 
+\\ \\
+The real and imaginary parts of the complex exponential sequence can be isolated to obtain \emph{discrete-time sinusoidal sequences}:
+\begin{align}
+    \Re(Ae^{j\Omega n}) = A \cos(\Omega n) = |A| \cos(\Omega n + \theta) \\
+    \Im(Ae^{j\Omega n}) = A \sin(\Omega n) = |A| \sin(\Omega n + \theta)
+\end{align}
+Similar to the DT complex exponential sequence, the DT sinusoidal sequences are not necessarily periodic and can only be periodic if and only if
+\begin{align}
+    \frac{2\pi}{\Omega} = \frac{T_0}{T_s} = \frac{N_0}{k}
+\end{align}
+yields a rational number.
+
+\subsection{Discrete-Time Counterparts of Singularity Signals}
+Since the concept of continuity does not apply in discrete time, sequences are limited to finite amplitudes, and singularity points do not exist. 
+For this reason, we will collectively refer to the DT counterparts of CT singularity signals as \emph{discretized singularity signals}, which 
+emphasizes the fact that the CT singularity signals are being sampled and quantized to a finite amplitude.
+\\ \\
+The \emph{unit impulse sequence}, also called the \emph{Kronecker delta sequence} or the \emph{unit sample sequence}, is defined as 
+\begin{align}
+    \delta[n-N] = \delta_{n,N} =
+    \begin{cases} 
+        1, & n=N \\
+        0, & otherwise
+    \end{cases}, \\
+    \text{with } \sum_{-\infty}^{+\infty} \delta[n-N] \,dt = 1.
+\end{align}
+Interestingly, when time-scaled by a factor $a$,
+\begin{align}
+    \delta[an] = \delta[n].
+\end{align}
+The impulse sequence also has a \emph{sampling property}, also called \emph{sifting property}:
+\begin{align}
+    \sum_{-\infty}^{+\infty} x[n]\delta[n-N]&= x[N], \\
+    x[n]\delta[n-N] &= x[N]\delta[n-N].
+\end{align} \\
+The cumulative summation of the unit impulse sequence is the \emph{unit step sequence}, also called the \emph{Heaviside step sequence}, and is defined as 
+\begin{align}
+    u[n-N] = 
+    \begin{cases} 
+        0, & n<N \\
+        1, & n\geq N
+    \end{cases}.
+\end{align}
+Similar to the CT case, the unit step sequence can be treated as an ``on switch'', where at time $n=N$, the signal being multiplied gets turned on. 
+\\ \\
+The cumulative summation of the unit step sequence is the \emph{unit ramp sequence}, which is defined as
+\begin{align}
+    r[n-N] = \operatorname{ramp}[n-N] &= (n-N)u[n-N] \\
+    & =
+    \begin{cases} 
+        0, & n<N \\
+        n-N, & n\geq N
+    \end{cases}.
+\end{align}
+Notice that the ramp sequence can be written as a product of the linear sequence and the unit step sequence. Using the ``on switch'' concept, the linear sequence is suppressed 
+for all times before $N$ and is activated at $n=N$.
+\\ \\
+The \emph{rectangular sequence} is defined as 
+\begin{align}
+    u[n-N_1] - u[n-N_2]
+    &=
+    \begin{cases} 
+        1, & N_1 \leq n < N_2 \\
+        0, & otherwise
+    \end{cases}.
+\end{align}
+Unlike the CT case, here the DT rectangular sequence includes $n=N_1$ but excludes $n=N_2$.
+\\ \\
+The \emph{signum sequence} is defined as 
+\begin{align}
+    \operatorname{sgn}[n] &= u[n]-u[-n] \\ 
+    &= \left\{...,-1,-1,\underline{0},1,1,...\right\} \\
+    &=
+    \begin{cases} 
+        -1, & n<0 \\
+        0, & n=0 \\
+        1, & n>0
+    \end{cases}.
+\end{align}
+\\ \\
+The \emph{geometric sequence} is defined as 
+\begin{align}
+    a^n u[n]
+    &=
+    \begin{cases} 
+        a^n, & n\geq 0 \\
+        0, & otherwise
+    \end{cases}.
+\end{align}
+Here, the value $a$ can be real or complex. Note that when $a=e^{j\Omega}$, the geometric sequence essentially becomes the 
+one-sided complex exponential sequence.
+\\ \\ 
+The stem plots of all DT signals described in this section can be found in Table \ref{sequences}. As with the CT case, these signals 
+can also be linearly combined.
+
+\begin{center}
+    \begin{table}
+    \small
+    \centering
+    \caption{Common DT sequences.}
+    \label{sequences}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{ c|c|c }
+    Sequence & Expression & Stem plot \\[0.1cm]
+    \hline 
+    Unit impulse & $\delta[n-N] = \mathbbm{1}_{\{n=N\}}[n]$ & 
+    \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.75, ytick={0,1}, ylabel={$\delta[n]$},
+                xmin=-5, xmax=5, xtick={-4,...,4}, xlabel={$n$},
+                width=6cm, height=3cm]
+                \addplot+ [
+                    ycomb,
+                ] coordinates {(-4,0) (-3,0) (-2,0) (-1,0) (0,1) (1,0) (2,0) (3,0) (4,0)};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+    Unit step & $u[n-N] = \mathbbm{1}_{\{n\geq N\}}[n]$ & 
+    \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.75, ytick={0,1}, ylabel={$u[n]$},
+                xmin=-5, xmax=5, xtick={-4,...,4}, xlabel={$n$},
+                width=6cm, height=3cm]
+                \addplot+ [
+                    ycomb,
+                ] coordinates {(-4,0) (-3,0) (-2,0) (-1,0) (0,1) (1,1) (2,1) (3,1) (4,1)};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+    Unit ramp & $r[n-N] = \operatorname{ramp}[n-N] = (n-N)u[n-N]$ & 
+    \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=5, ytick={0,2,4}, ylabel={$\operatorname{ramp}[n]$},
+                xmin=-5, xmax=5, xtick={-4,...,4}, xlabel={$n$},
+                width=6cm, height=3cm]
+                \addplot+ [
+                    ycomb,
+                ] coordinates {(-4,0) (-3,0) (-2,0) (-1,0) (0,0) (1,1) (2,2) (3,3) (4,4)};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+    Geometric & $a^n u[n] = 
+    \begin{cases} 
+        a^n, & n\geq 0 \\
+        0, & otherwise
+    \end{cases}$ & 
+    \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.75, ytick={0,1}, ylabel={$(1/2)^n u[n]$},
+                xmin=-5, xmax=5, xtick={-4,...,4}, xlabel={$n$},
+                width=6cm, height=3cm]
+            \addplot+ [
+                ycomb,
+            ] coordinates {(-4,0) (-3,0) (-2,0) (-1,0) (0,1) (1,0.5) (2,0.25) (3,0.125) (4,0.0625)};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+    Rectangular & $u[n-N_1] - u[n-N_2] = \mathbbm{1}_{[N_1,N_2)}[n]$ & 
+    \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.75, ytick={0,1}, ylabel={$u[n]-u[n-3]$},
+                xmin=-5, xmax=5, xtick={-4,...,4}, xlabel={$n$},
+                width=6cm, height=3cm]
+            \addplot+ [
+                ycomb,
+            ] coordinates {(-4,0) (-3,0) (-2,0) (-1,0) (0,1) (1,1) (2,1) (3,0) (4,0)};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+    Signum & $\operatorname{sgn}[n] = u[n]-u[-n]$ & 
+    \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-1.75, ymax=1.75, ytick={-1,0,1}, ylabel={$\text{sgn}[n]$},
+                xmin=-5, xmax=5, xtick={0,...,4}, xlabel={$n$},
+                width=6cm, height=3.75cm]
+            \addplot+ [
+                ycomb,
+            ] coordinates {(-4,-1) (-3,-1) (-2,-1) (-1,-1) (0,0) (1,1) (2,1) (3,1) (4,1)};
+            \end{axis}
+        \end{tikzpicture}}} \\
+    \hline
+    \end{tabular}
+    }
+    \end{table}
+\end{center}
+
+\section{Properties of Discrete-Time Signals}
+\subsection{Causality}
+Unlike the CT case, DT signals can either be causal, noncausal, or anticausal, depending on the application.
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \begin{itemize}
+        \item Causal signals: $x[n]=0$ for $n<0$
+        \item Noncausal signals: $x[n]\neq 0$ for $n<0$
+        \item Anticausal signals: $x[n]=0$ for $n>0$
+    \end{itemize}
+\end{tcolorbox}
+DT signals must be causal if \emph{real-time processing} is performed; however, the option to do \emph{offline processing} gives a pathway for noncausal signals 
+(and anticausal signals by extension). 
+
+\subsection{Symmetry}
+A DT signal could have even symmetry, odd symmetry, or no symmetry.
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \begin{itemize}
+        \item Even signals: $x[n]=x[-n]$
+        \item Odd signals: $x[n]=-x[-n]$, or alternatively $x[-n]=-x[n]$
+    \end{itemize}
+\end{tcolorbox}
+While a DT signal might not have any symmetry, any signal can be expressed as a sum of two component signals: one with even symmetry 
+and the other with odd symmetry. Sometimes it is easier to analyze each individual component rather than analyze the whole signal on its own. For 
+\begin{align}
+    x[n] = x_e[n] + x_o[n],
+\end{align}
+the even and odd components are given by
+\begin{align}
+    x_e[n] &= \frac{1}{2}\left(x[n]+x[-n]\right) \\
+    x_o[n] &= \frac{1}{2}\left(x[n]-x[-n]\right)
+\end{align}
+
+\subsection{Periodicity}
+A DT signal $x[n]$ is said to be \emph{periodic} if $x[n]=x[n+mN_0]$ for all integers $m$ and time $n$ with fundamental period $N_0$. 
+Note that $\Omega_0=2\pi/N_0$ is the fundamental angular frequency.
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    Unlike the CT case, the sum of $M$ periodic DT signals is always periodic with 
+    \begin{itemize}
+        \item $\Omega_0=\mathbf{GCD}(\Omega_1,\Omega_2,...,\Omega_M)$, where $\Omega_k$ is the fundamental angular frequency of the $k^{th}$ signal, and 
+        $N_0 = 2\pi/\Omega_0 = \mathbf{LCM}(N_1,N_2,...,N_M)$
+        \item $\forall m\in\left\{\frac{\Omega_1}{\Omega_0}, \frac{\Omega_2}{\Omega_0}, ..., \frac{\Omega_M}{\Omega_0}\right\}$ are integers, 
+        with each $m$ called the $m^{th}$ harmonic (or mode) of fundamental angular frequency $\Omega_0$
+    \end{itemize}
+\end{tcolorbox}
+
+
+\subsection{Signal Power and Energy}
+The total energy of a DT signal $x[n]$ is given by 
+\begin{align}
+    E = \sum_{n=-\infty}^{+\infty} |x[n]|^2,
+\end{align}
+whereas the average power of a DT signal is given by 
+\begin{align}
+    P_{av} = \lim_{N\rightarrow\infty}\frac{1}{2N+1}\sum_{n=-N}^{N} |x[n]|^2.
+\end{align}
+Interestingly, all finite-duration DT signals are energy signals.
+\\ \\
+Furthermore, if a DT signal $x[n]$ is periodic with fundamental period $N_0$, then
+\begin{align}
+    P_{av} = \frac{1}{N_0}\sum_{n=0}^{N_0-1}|x[n]|^2.
+\end{align}
+It can then be said that all periodic signals are power signals. 
+
+
+\begin{example}
+    Fully describe what type of signal $x[n] = \exp(j\frac{5\pi}{31}n) + \cos(\frac{2\pi}{7}n+\frac{1}{6})$ is.
+\end{example}
+\begin{solution}
+    First let $x_1[n] = \exp(j\frac{5\pi}{31}n)$. Then
+    \begin{align*}
+        \frac{2\pi}{\Omega_1} = \frac{2\pi}{5\pi/31} = \frac{62}{5} = \frac{N_1}{k}
+    \end{align*}
+    is a rational number, and $x_1[n]$ thus is periodic with $N_1 = 62$.
+    \\ \\
+    Now let $x_2[n] = \cos(\frac{2\pi}{7}n+\frac{1}{6})$. Then
+    \begin{align*}
+        \frac{2\pi}{\Omega_2} = \frac{2\pi}{2\pi/7} = 7 = \frac{N_2}{k}
+    \end{align*}
+    is a rational number, and $x_2[n]$ thus is periodic with $N_2 = 7$. 
+    \\ \\
+    Therefore, $x[n] = x_1[n] + x_2[n]$ is periodic with $N_0 = \mathbf{LCM}(62,7) = 434$. Since $x[n]$ is periodic, it is also a power signal. 
+    \\ \\
+    Checking for symmetry, we find there is none since
+    \begin{align*}
+        x[-n] &= \exp(-j5\pi n/31) + \cos(2\pi n/7 - 1/6) \neq x[n] \\
+        -x[-n] &= -\exp(-j5\pi n/31) - \cos(2\pi n/7 - 1/6) \neq x[n]
+    \end{align*}
+    Therefore, $x[n]$ is:
+    \begin{itemize}
+        \item a discrete-time signal,
+        \item deterministic, 
+        \item noncausal, 
+        \item asymmetric,
+        \item periodic,
+        \item and a power signal.
+    \end{itemize}
+\end{solution}
+
+\end{document}
