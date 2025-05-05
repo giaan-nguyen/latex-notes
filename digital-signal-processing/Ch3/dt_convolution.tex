@@ -1,0 +1,521 @@
+\documentclass{report}
+\input{../../preamble.tex}
+
+\begin{document}
+\setcounter{chapter}{2}
+\setcounter{page}{19}
+\chapter{Discrete-Time Convolution}
+
+In the previous chapter, we were introduced to the concept of \emph{linear convolution}, an operation ($*$) defined by the \emph{convolution sum}
+\begin{align*}
+    x[n] * h[n] &= \sum_{k=-\infty}^{+\infty} x[k]h[n-k].
+\end{align*}
+We have seen that the operation is commutative since by change of variables, 
+\begin{align*}
+    x[n] * h[n] &= \sum_{k=-\infty}^{+\infty} x[k]h[n-k] \\
+    &= \sum_{k=-\infty}^{+\infty} x[n-k]h[k] = h[n] * x[n].
+\end{align*}
+We have also already seen another linear convolution property in effect with the sampling property of the unit impulse sequence. 
+\begin{align*}
+    \sum_{k=-\infty}^{+\infty} x[k]\delta[k-N] &= x[N] \\
+    \Longrightarrow \sum_{k=-\infty}^{+\infty} x[k]\delta[k-n] &= \sum_{k=-\infty}^{+\infty} x[k]\delta[n-k] = x[n] \\
+    x[n] * \delta[n] &= x[n].
+\end{align*}
+We also introduced the concept that any LSI system characterized by impulse response $h[n]$ will always have predictable outputs since the output is simply the 
+linear convolution of the input signal and the impulse response, provided that all initial conditions of the system are zero. That is, 
+\begin{align}
+    y[n] = x[n] * h[n] = \sum_{k=-\infty}^{+\infty} x[k]h[n-k].
+\end{align}
+In this chapter, different techniques to computing the linear convolution of two sequences are explored.
+
+\section{Analytical Convolution in Discrete-Time}
+One way to compute the linear convolution is to directly solve the convolution sum itself. Refer to Table \ref{conv_prop} for some 
+linear convolution properties.
+\\
+\begin{table}[hbt!]
+    \centering
+    \caption{Linear convolution properties.}
+    \label{conv_prop}
+    \begin{tabular}{|c|c|}
+        \hline
+        Property & Description \\[0.15cm]
+        \hline
+        Commutativity & $x[n]*h[n]=h[n]*x[n]$ \\[0.5cm]
+        Associativity & $x[n]*[h[n]*g[n]]=[x[n]*h[n]]*g[n]$ \\[0.5cm]
+        Distributivity & $x[n]*[h_1[n]+\cdots+h_N[n]]=(x[n]*h_1[n])+\cdots+[x[n]*h_N[n]]$  \\[0.5cm]
+        Time-shift & $x[n-N_1]*h[n-N_2]=y[n-N_1-N_2]$ \\[0.5cm]
+        Convolution with impulse & $x[n]*\delta[n]=x[n]$ \\[0.5cm]
+        Convolution with step & $x[n]*u[n]=\displaystyle\sum_{k=-\infty}^{n} x[k]$ (ideal DT integrator) \\[0.5cm]
+        Causal signals and systems & $y[n]=u[n]\, \displaystyle\sum_{k=0}^{n} h[k]x[n-k]$ \\[0.5cm]
+        Width (duration) & $\text{Width}[y[n]]=\text{Width}[x[n]]+\text{Width}[h[n]]-1$ \\[0.5cm]
+         & $\begin{cases} 
+            (\text{domain } x[n])=[a,b], \\
+            (\text{domain } h[n])=[c,d]
+            \end{cases} \Longrightarrow (\text{domain } y[n])=[a+c,b+d]$ \\[0.5cm]
+        ``Area'' (infinite sum) & $\displaystyle\sum_{k=-\infty}^{+\infty} y[n]=\left(\displaystyle\sum_{k=-\infty}^{+\infty} x[n]\right)\left(\displaystyle\sum_{k=-\infty}^{+\infty} h[n]\right)$ \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table} 
+\\
+When convolving two causal sequences, one of the sequences will become time-reversed in the convolution sum. We can use this to our advantage in redefining the limits of summation. That is, for 
+$f[n]$ representing the non-step factors, 
+\begin{align}
+    \sum_{n=-\infty}^{+\infty} f[n] \cdot \underbrace{u[n-a]}_\textrm{$n-a\geq 0$} \cdot \underbrace{u[b-n]}_\textrm{$b-n\geq 0$} = u[b-a]\sum_{n=a}^{b} f[n].
+\end{align}
+The inequalities above are defined for when the step sequences are ``switched on'', and combining the two inequalities gives us an interval of validity $a\leq n\leq b$, which is what is used to update the convolution sum.
+\\ \\
+When solving convolution sums, the need to compute the geometric series come up often. As a reminder, the (length-$N$) finite sum of a geometric series is defined as 
+\begin{align}
+    \sum_{n=0}^{N-1} r^n = \frac{1-r^N}{1-r}\, \text{ for } |r| < 1,
+\end{align}
+whereas the infinite sum of a geometric series is defined as 
+\begin{align}
+    \sum_{n=0}^{\infty} r^n = \frac{1}{1-r}\, \text{ for } |r| < 1.
+\end{align}
+
+While we are mostly interested in intervals of validity that follow causal signals and systems, there are other possible intervals of validity for different 
+types of systems that may or may not be causal. Refer to Table \ref{sum_redef} for these summation redefinitions. 
+\begin{table}[hbt!]
+    \centering
+    \caption{Summation redefinitions based on unit step sequences.}
+    \label{sum_redef}
+    \begin{mdframed}
+    \begin{align}
+        \sum_{n=-\infty}^{+\infty} f[n] u[n-a] &= \sum_{n=a}^{+\infty} f[n] \\[0.25cm]
+        \sum_{n=-\infty}^{+\infty} f[n] u[b-n] &= \sum_{n=-\infty}^{b} f[n] \\[0.25cm]
+        \sum_{n=-\infty}^{+\infty} f[n] u[n-a] u[b-n] &= u[b-a]\sum_{n=a}^{b} f[n] \\[0.25cm]
+        \sum_{n=-\infty}^{+\infty} f[n] u[n-a] u[n-b] &= \sum_{n=\max(a,b)}^{+\infty} f[n] \nonumber \\ 
+        &= u[a-b] \sum_{n=a}^{+\infty} f[n] + u[b-a] \sum_{n=b}^{+\infty} f[n] \\[0.25cm] 
+        \sum_{n=-\infty}^{+\infty} f[n] u[a-n] u[b-n] &= \sum_{n=-\infty}^{\min(a,b)} f[n] \nonumber \\ 
+        &= u[b-a] \sum_{n=-\infty}^{a} f[n] + u[a-b] \sum_{n=-\infty}^{b} f[n] \\[0.15cm] \nonumber
+    \end{align}
+    \end{mdframed}
+\end{table} 
+
+\begin{example}
+    Find $y[n]=x[n]*h[n]$ for 
+    \begin{align*}
+        x[n] &= 2^{-n}u[n], \\
+        h[n] &= u[n-2].
+    \end{align*}
+\end{example}
+\begin{solution}
+    Using the convolution sum, it follows that 
+    \begin{align*}
+        y[n] = [2^{-n} u[n]] * u[n-2] &= \sum_{k=-\infty}^{+\infty} 2^{-k} \underbrace{u[k]}_\textrm{$k\geq 0$} \underbrace{u[n-k-2]}_\textrm{$n-2\geq k$} \\
+        &= u[n-2]\,\sum_{k=0}^{n-2} 2^{-k} = u[n-2]\,\sum_{k=0}^{n-2} \left(\frac{1}{2}\right)^k \\
+        &= u[n-2]\,\sum_{k=0}^{n-2} 2^{-k} = u[n-2]\, \left(\frac{1 - \left(\frac{1}{2}\right)^{n-1}}{1 - \frac{1}{2}}\right) \\
+        &= \left(2-\left(\frac{1}{2}\right)^{n-2}\right) u[n-2].
+    \end{align*}
+\end{solution}
+
+\begin{example}
+    Find $y[n]=x[n]*h[n]$ for 
+    \begin{align*}
+        x[n] &= 2^{-|n|}, \\
+        h[n] &= u[n-2].
+    \end{align*}
+\end{example}
+\begin{solution}
+    First, rewrite $x[n]$ such that
+    \begin{align*}
+        x[n] &= 2^{-|n|} \\
+        &= 2^{-n} u[n] + 2^n u[-n-1].
+    \end{align*}
+    Using the convolution sum, it follows that 
+    \begin{align*}
+        y[n] &= [2^{-n} u[n] + 2^n u[-n-1]] * u[n-2] \\
+        &= \sum_{k=-\infty}^{+\infty} [2^{-k} u[k] + 2^k u[-k-1]] u[n-k-2] \\
+        &= \sum_{k=-\infty}^{+\infty} 2^{-k} \underbrace{u[k]}_\textrm{$k\geq 0$} \underbrace{u[n-k-2]}_\textrm{$n-2\geq k$} + \sum_{k=-\infty}^{+\infty} 2^k \underbrace{u[-k-1]}_\textrm{$k\leq -1$}\underbrace{u[n-k-2]}_\textrm{$n-2\geq k$} \\
+        &= u[n-2]\sum_{k=0}^{n-2} 2^{-k} + u[n-1]\sum_{k=-\infty}^{-1} 2^k + u[1-n]\sum_{k=-\infty}^{n-2} 2^k
+    \end{align*}
+    Via change of variables, the output is given by
+    \begin{align*}
+        y[n] &= \left(2-\left(\frac{1}{2}\right)^{n-2}\right) u[n-2] + u[n-1]\sum_{\ell=1}^{+\infty} \left(\frac{1}{2}\right)^{\ell} + u[1-n]\sum_{\ell=2-n}^{+\infty} \left(\frac{1}{2}\right)^{\ell} \\
+        &= \left(2-\left(\frac{1}{2}\right)^{n-2}\right) u[n-2] + u[n-1]\sum_{m=0}^{+\infty} \left(\frac{1}{2}\right)^{m+1} + u[1-n]\sum_{m=0}^{+\infty} \left(\frac{1}{2}\right)^{m+2-n} \\
+        &= \left(2-\left(\frac{1}{2}\right)^{n-2}\right) u[n-2] + \left(\frac{\frac{1}{2}}{1-\frac{1}{2}}\right)u[n-1] + \left(\frac{\left(\frac{1}{2}\right)^{2-n}}{1-\frac{1}{2}}\right)u[1-n] \\
+        &= \left(2-\left(\frac{1}{2}\right)^{n-2}\right) u[n-2] + u[n-1] + \left(\frac{1}{2}\right)^{1-n}u[1-n] \\
+        &= \begin{cases} 
+            2^{n-1}, & n<1 \\
+            2, & n=1 \\
+            3-\left(\frac{1}{2}\right)^{n-2}, & n\geq 2
+        \end{cases}.
+    \end{align*}
+\end{solution}
+
+\section{Pointwise Graphical Convolution in Discrete-Time}
+Another way to compute the convolution is to interpret the convolution graphically. We will first introduce the pointwise method, 
+best used when only a few output samples are of interest. Since 
+\begin{align*}
+    y[n] = x[n] * h[n] = \sum_{k=-\infty}^{+\infty} x[k]h[n-k],
+\end{align*}
+the output at a certain single time $n$ is given by the sum of the points formed by multiplying $x[k]$ and $h[n-k]$, which is a time-reversed and translated 
+version of $h[k]$. 
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \noindent\emph{POINTWISE GRAPHICAL CONVOLUTION.}
+    \begin{enumerate}[Step 1:]
+        \item Determine the set of time values of interest $n_0, ..., n_N$.
+        \item Plot $x[k]$ and $h[-k]$ along the $k$-axis.
+        \item Let $n=n_0$ and shift $h[-k]$ to the right by $n$ units to represent $h[n-k]$.
+        \item Using the region of overlap between $x[k]$ and $h[n-k]$, take the sum of the point-by-point product.
+        \item Repeat Steps 2--4 for the remaining time values of interest.
+    \end{enumerate}
+\end{tcolorbox}
+
+\begin{example}
+    Find $y[n]=x[n]*h[n]$ for 
+    \begin{align*}
+        x[n] &= \left\{\underline{3},1,2\right\}, \\
+        h[n] &= \left\{\underline{3},2,1\right\}.
+    \end{align*}
+\end{example}
+\begin{solution}
+    From the width property of linear convolution, we know that the duration of the output is five samples, which is the sum of the two widths less one. 
+    Additionally, both $x[n]$ and $h[n]$ are finite signals that start at $n=0$ and end at $n=2$. Therefore, we are interested when $n=0,1,2,3,4$.
+    \\ \\
+    Suppose we are interested in only finding $y[2]$. First, we plot $x[k]$ and $h[-k]$ on the $k$-axis.
+    \\ \\
+    \begin{tikzpicture}
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=3.5, ytick={0,...,3},
+            xmin=-2.5, xmax=2.5, xtick={-3,...,3}, xlabel={$k$},
+            width=7cm, height=4cm]
+            \addplot+ [
+                ycomb,
+            ] coordinates {(0,3.05) (1,1) (2,2)};
+            \addplot+ [
+                ycomb,
+            ] coordinates {(0,2.95) (-1,2) (-2,1)};
+        \end{axis}
+    \end{tikzpicture}
+    \\ \\
+    Since we want to observe at time $n=2$, we shift the red plot to the right by 2 units: \\ \\
+    \begin{tikzpicture}
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=3.5, ytick={0,...,3},
+            xmin=-2.5, xmax=2.5, xtick={-3,...,3}, xlabel={$k$},
+            width=7cm, height=4cm]
+            \addplot+ [
+                ycomb,
+            ] coordinates {(0,3) (1,1) (2,2)};
+            \addplot+ [
+                ycomb,
+            ] coordinates {(2,3) (1,2) (0,1)};
+        \end{axis}
+    \end{tikzpicture}
+    \\ \\
+    Performing point-by-point multiplication, we get: \\ \\
+    \begin{tikzpicture}
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=6.5, ytick={0,2,4,6},
+            xmin=-2.5, xmax=2.5, xtick={-3,...,3}, xlabel={$k$},
+            width=7cm, height=4cm]
+            \addplot+ [ycomb] coordinates {(10,0)};
+            \addplot+ [ycomb] coordinates {(10,0)};
+            \addplot+ [
+                ycomb,
+            ] coordinates {(0,3) (1,2) (2,6)};
+        \end{axis}
+    \end{tikzpicture}
+    \\ \\
+    Taking the sum of the points, it follows that 
+    \begin{align*}
+        y[2] = 3 + 2 + 6 = 11.
+    \end{align*}
+    We can repeat the process for other values of $n\in[0,4]$ until we get $y[n]=\left\{\underline{9},9,11,5,2\right\}$.
+\end{solution}
+
+\section{Region-Based Graphical Convolution in Discrete-Time}
+The pointwise method is impractical if we are interested in the output response over a larger, if not entire, time domain. Here, we introduce the region-based 
+graphical convolution, which utilizes a signal's \emph{leading and trailing edges}, if any. 
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \noindent\emph{REGION-BASED GRAPHICAL CONVOLUTION.}
+    \begin{enumerate}[Step 1:]
+        \item Plot $x[k]$ and $h[-k]$ along the $k$-axis, with $h[-k]$ being the simpler sequence to flip.
+        \item Label the leading and trailing edges of $h[-k]$.
+        \item Identify a region of overlap and use the edges to determine the interval of $n$-values. Then evaluate the convolution sum during that region of overlap. 
+        \item Repeat Steps 2--3 for any other regions of overlap when shifting $h[-k]$ from left-to-right along the $k$-axis. Keep track of the width of $h[n-k]$. 
+    \end{enumerate}
+\end{tcolorbox}
+
+\begin{example}
+    Find $y[n]=x[n]*h[n]$ for 
+    \begin{align*}
+        x[n] &= (0.8)^n u[n], \\
+        h[n] &= u[n]-u[n-3].
+    \end{align*}
+\end{example}
+\begin{solution}
+    First, plot $x[k]$ and $h[-k]$. Then identify the leading and trailing edges of $h[-k]$. \\ \\
+    \begin{tikzpicture}
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=1.2, ytick={0,0.5,1}, ylabel={$x[k]$},
+            xmin=0, xmax=5.5, xtick={0,...,5}, xlabel={$k$},
+            width=7cm, height=4cm]
+            \addplot+ [
+                ycomb,
+            ] coordinates {(0,1) (1,0.8) (2,0.64) (3,0.512) (4,0.4096) (5,0.32768)};
+        \end{axis}
+    \end{tikzpicture}
+    \begin{tikzpicture}
+        \begin{axis}[
+            axis x line=center, axis y line=center,
+            ymin=0, ymax=1.2, ytick={0,0.5,1}, ylabel={$\big[h[n-k]\big|_{n=0} = h[-k]$},
+            xmin=-3.5, xmax=2.5, xtick={-2,-1,0}, xlabel={$k$},
+            width=7cm, height=4cm]
+            \addplot+ [ycomb] coordinates {(-10,0)};
+            \addplot+ [
+                ycomb,
+            ] coordinates {(0,1) (-1,1) (-2,1)};
+            \node[red] at (-3,0.5) {\scriptsize \shortstack{Trailing \\ edge, \\ $n-2$}};
+            \node[red] at (1,0.5) {\scriptsize \shortstack{Leading \\ edge, $n$}};
+        \end{axis}
+    \end{tikzpicture}
+    \\
+    From $h[-k]$ above, we see that the leading edge is $k=n$ and the trailing edge is $k=n-2$. Now we place $h[n-k]$ to the furthest left and gradually shift to the right. 
+    \\ \\ \\
+    \underline{Region 1: No overlap} \\ \\
+    \begin{tabular}{ cc }
+        \begin{tabular}{ c }
+            \begin{tikzpicture}
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=1.5, ytick={0,1}, ylabel={$x[k]$},
+                    xmin=-4, xmax=3.5, xtick={0,...,4}, xlabel={$k$},
+                    width=7cm, height=3cm]
+                    \addplot+ [
+                        ycomb,
+                    ] coordinates {(0,1) (1,0.8) (2,0.64) (3,0.512)};
+                \end{axis}
+            \end{tikzpicture} \\
+            \begin{tikzpicture}
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=1.5, ytick={0,1}, ylabel={$h[n-k]$},
+                    xmin=-4, xmax=3.5, xtick={0}, xlabel={$k$},
+                    extra x ticks={-3,-1}, extra x tick labels={$n-2$,$n$},
+                    width=7cm, height=3cm]
+                    \addplot+ [ycomb] coordinates {(-10,0)};
+                    \addplot+ [
+                        ycomb,
+                    ] coordinates {(-3,1) (-2,1) (-1,1)};
+                \end{axis}
+            \end{tikzpicture}
+        \end{tabular} & 
+        \begin{tabular}{ c }
+            Leading edge: $n \leq -1$ \\ 
+            \\
+            No overlap, so $y[n]=0$ for $n\leq -1.$
+        \end{tabular}
+    \end{tabular} 
+    \\ \\ \\
+    \noindent \underline{Region 2: Partial overlap} \\ \\
+    \begin{tabular}{ cc }
+        \begin{tabular}{ c }
+            \begin{tikzpicture}
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=1.5, ytick={0,1}, ylabel={$x[k]$},
+                    xmin=-4, xmax=3.5, xtick={0,...,4}, xlabel={$k$},
+                    width=7cm, height=3cm]
+                    \addplot+ [
+                        ycomb,
+                    ] coordinates {(0,1) (1,0.8) (2,0.64) (3,0.512)};
+                \end{axis}
+            \end{tikzpicture} \\
+            \begin{tikzpicture}
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=1.5, ytick={0,1}, ylabel={$h[n-k]$},
+                    xmin=-4, xmax=3.5, xtick={0}, xlabel={$k$},
+                    extra x ticks={-1,1}, extra x tick labels={$n-2$,$n$},
+                    width=7cm, height=3cm]
+                    \addplot+ [ycomb] coordinates {(-10,0)};
+                    \addplot+ [
+                        ycomb,
+                    ] coordinates {(-1,1) (0,1) (1,1)};
+                \end{axis}
+            \end{tikzpicture}
+        \end{tabular} & 
+        \begin{tabular}{ c }
+            Leading edge: $n \geq 0$ \\ 
+            Trailing edge: $n-2 \leq -1 \Rightarrow n \leq 1$ \\ 
+            \\
+            $\Longrightarrow 0\leq n\leq 1$ \\
+            \\
+            $\Longrightarrow y[n]=\displaystyle\sum_{k=0}^{n} [(0.8)^k][1] = \frac{1-(0.8)^{n+1}}{1-0.8}$ 
+        \end{tabular}
+    \end{tabular} 
+    \\ \\ \\
+    \noindent \underline{Region 3: Complete overlap} \\ \\
+    \begin{tabular}{ cc }
+        \begin{tabular}{ c }
+            \begin{tikzpicture}
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=1.5, ytick={0,1}, ylabel={$x[k]$},
+                    xmin=-4, xmax=3.5, xtick={0,...,4}, xlabel={$k$},
+                    width=7cm, height=3cm]
+                    \addplot+ [
+                        ycomb,
+                    ] coordinates {(0,1) (1,0.8) (2,0.64) (3,0.512)};
+                \end{axis}
+            \end{tikzpicture} \\
+            \begin{tikzpicture}
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=1.5, ytick={0,1}, ylabel={$h[n-k]$},
+                    xmin=-4, xmax=3.5, xtick={0}, xlabel={$k$},
+                    extra x ticks={1,3}, extra x tick labels={$n-2$,$n$},
+                    width=7cm, height=3cm]
+                    \addplot+ [ycomb] coordinates {(-10,0)};
+                    \addplot+ [
+                        ycomb,
+                    ] coordinates {(1,1) (2,1) (3,1)};
+                \end{axis}
+            \end{tikzpicture}
+        \end{tabular} & 
+        \begin{tabular}{ c }
+            Trailing edge: $n-2 \geq 0 \Rightarrow n \geq 2$ \\ 
+            \\
+            $\Longrightarrow y[n]=\displaystyle\sum_{k=n-2}^{n} [(0.8)^k][1] = \displaystyle\sum_{\ell=0}^{2} (0.8)^{\ell+n-2}$ \\
+            $\Longrightarrow y[n] = (0.8)^{n-2}\left(\frac{1-(0.8)^3}{1-0.8}\right) = 2.44(0.8)^{n-2}$ 
+        \end{tabular}
+    \end{tabular} 
+    \\ \\ \\
+    Aggregating the outputs from the five regions, we can write a piecewise function for the overall output:
+    \begin{align*}
+        y[n] = 
+        \begin{cases} 
+            0, & n \leq -1 \\
+            \frac{1-(0.8)^{n+1}}{0.2}, & 0\leq n\leq 1 \\
+            2.44(0.8)^{n-2}, & n\geq 2
+        \end{cases}.
+    \end{align*}
+\end{solution}
+
+\section{Tabular Methods for Finite-Length Sequences}
+Since offline processing (or even real-time processing with limited memory) involves analyzing data with finite duration (due to the sampled nature of existing collected data), linear convolutions in practice 
+mostly involves finite-length sequences -- meaning the output sequence will also be of finite-length. There are various shortcut methods to solving 
+these specific types of linear convolutions by hand.
+
+\subsection{Expanded Tabular Method}
+The expanded tabular method essentially is a tabular version of the pointwise graphical convolution, albeit saving time on sketching multiple plots.
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \noindent\emph{EXPANDED TABULAR METHOD.} For $(\text{domain } x[n]) = [a,b]$ and $(\text{domain } h[n]) = [c,d]$:
+    \begin{enumerate}[Step 1:]
+        \item Create a header row for the values of $n$.
+        \item Populate the first row with values of $x[n]$ under their respective $n$.
+        \item Populate the second row with the time-reversed $h[-n]$ under the respective $n$.
+        \item For every necessary time shift $N$, populate another row corresponding to $h[N-n]$.
+        \item Vertically multiply for each $x[n]h[N-n]$ and take the sum of the pointwise products to get $y[N]$.
+    \end{enumerate}
+\end{tcolorbox}
+
+\begin{example}
+    Find $y[n]=x[n]*h[n]$ for 
+    \begin{align*}
+        x[n] &= \left\{\underline{3},4,5\right\}, \\
+        h[n] &= \left\{\underline{6},7,8\right\}.
+    \end{align*}
+\end{example}
+\begin{solution}
+    From the width property, the output $y[n]$ should be of length 5 and defined for $n=0,1,2,3,4$. Setting up the table:
+    \begin{center}
+        \begin{tabular}{c|ccccccc|c}
+            $n \rightarrow $ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & $y[\cdot]$ \\
+            \hline
+            $x[n]$ & & & 3 & 4 & 5 & & & \\
+            \hline
+            $h[-n]$ & 8 & 7 & 6 & & & & & $y[0] = 3(6) = 18$ \\
+            $h[1-n]$ & & 8 & 7 & 6 & & & & $y[1] = 3(7) + 4(6) = 45$ \\
+            $h[2-n]$ & & & 8 & 7 & 6 & & & $y[2] = 3(8) + 4(7) + 5(6) = 82$\\
+            $h[3-n]$ & & & & 8 & 7 & 6 & & $y[3] = 4(8) + 5(7) = 67$ \\
+            $h[4-n]$ & & & & & 8 & 7 & 6 & $y[4] = 5(8) = 40$ 
+        \end{tabular}
+    \end{center}
+    Therefore, the output is $y[n]=\left\{\underline{18},45,82,67,40\right\}$.
+\end{solution}
+
+\subsection{Condensed Tabular Method}
+The condensed tabular method is visually more compact and the quickest to set up.
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \noindent\emph{CONDENSED TABULAR METHOD.} For $(\text{domain } x[n]) = [a,b]$ and $(\text{domain } h[n]) = [c,d]$:
+    \begin{enumerate}[Step 1:]
+        \item Create a header column for the values of $x[n]$. Underline $x[0]$.
+        \item Create a header row for the values of $h[n]$. Underline $h[0]$.
+        \item Populate the table by taking the product of the corresponding $x[\cdot]$ and $h[\cdot]$ values.
+        \item Add entries diagonally from right to left and list the sums in the order of their diagonals.
+        \item Find where $x[0]$ and $h[0]$ intersect. The corresponding right-to-left diagonal represents $y[0]$.
+    \end{enumerate}
+\end{tcolorbox}
+
+\begin{example}
+    Find $y[n]=x[n]*h[n]$ for 
+    \begin{align*}
+        x[n] &= \left\{\underline{3},4,5\right\}, \\
+        h[n] &= u[n]-u[n-4].
+    \end{align*}
+\end{example}
+\begin{solution}
+    First, note that $h[n] = u[n]-u[n-4] = \left\{\underline{1},1,1,1\right\}$ is of length 4. Setting up the table:
+    \begin{center}
+        \begin{NiceTabular}{p{1cm}|p{1cm} p{1cm} p{1cm} p{1cm}}[corners=NE,margin]
+            \rule{0pt}{2em}\diagbox{$x[n]$}{$h[n]$} & \Block{1-1}{$\underline{1}$} & \Block{1-1}{1} & \Block{1-1}{1} & \Block{1-1}{1} \\
+            \hline
+            \Block{1-1}{$\underline{3}$} & \Block[fill=yellow!50]{1-1}{3} & \Block[fill=red!30]{1-1}{3} & \Block[fill=blue!30]{1-1}{3} & \Block[fill=green!30]{1-1}{3} \\
+            \Block{1-1}{4} & \Block[fill=red!30]{1-1}{4} & \Block[fill=blue!30]{1-1}{4} & \Block[fill=green!30]{1-1}{4} & \Block[fill=violet!30]{1-1}{4} \\
+            \Block{1-1}{5} & \Block[fill=blue!30]{1-1}{5} & \Block[fill=green!30]{1-1}{5} & \Block[fill=violet!30]{1-1}{5} & \Block[fill=orange!50]{1-1}{5}
+        \end{NiceTabular}
+    \end{center}
+    Each right-to-left diagonal is highlighted a different color to show which entries should be summed. The output is then 
+    \begin{align*}
+        y[n] = \left\{\underline{3},\,3+4,\,3+4+5,\,3+4+5,\,4+5,\,5\right\} = \left\{\underline{3},7,12,12,9,5\right\}
+    \end{align*}
+\end{solution}
+
+\begin{example}
+    For $y[n]=x[n]*h[n]$, find $h[n]$ given that  
+    \begin{align*}
+        x[n] &= \left\{\underline{1},2,3\right\}, \\
+        y[n] &= \left\{\underline{1},4,7,6\right\}.
+    \end{align*}
+\end{example}
+\begin{solution}
+    Since $(\text{domain }x[n]) = [0,2]$ and $(\text{domain }y[n]) = [0,3]$, it must be true by the width property for linear convolution that 
+    \begin{align*}
+        (\text{domain }h[n]) &= [0-0,3-2] = [0,1] \\
+        \Longrightarrow h[n] &= \left\{\underline{h[0]},h[1]\right\}
+    \end{align*}
+    Using the condensed tabular method, we get:
+    \begin{center}
+        \begin{NiceTabular}{p{1cm}|p{1cm} p{1cm}}[corners=NE,margin]
+            \rule{0pt}{2em}\diagbox{$x[n]$}{$h[n]$} & \Block{1-1}{$\underline{h[0]}$} & \Block{1-1}{$h[1]$} \\
+            \hline
+            \Block{1-1}{$\underline{1}$} & \Block[fill=yellow!50]{1-1}{$h[0]$} & \Block[fill=red!30]{1-1}{$h[1]$} \\
+            \Block{1-1}{2} & \Block[fill=red!30]{1-1}{$2h[0]$} & \Block[fill=blue!30]{1-1}{$2h[1]$} \\
+            \Block{1-1}{3} & \Block[fill=blue!30]{1-1}{$3h[0]$} & \Block[fill=green!30]{1-1}{$3h[1]$} 
+        \end{NiceTabular}
+    \end{center}
+    Lining up each right-to-left diagonal with the corresponding $y[n]$ entry, we get the following system of equations:
+    \begin{align*}
+        h[0] &= 1 \\
+        2h[0] + h[1] &= 4 \\
+        3h[0] + 2h[1] &= 7 \\
+        3h[1] &= 6
+    \end{align*}
+    Solving the system of equations, we get:
+    \begin{align*}
+        h[n] = \left\{\underline{h[0]},h[1]\right\} = \left\{\underline{1},2\right\}
+    \end{align*}
+\end{solution}
+
+\end{document}
