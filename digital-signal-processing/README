@@ -1,0 +1,10 @@
+Personal notes on Digital Signal Processing
+
+This covers only introductory concepts to discrete-time (DT) signals and systems. Chapters are as follows:
+1. Signals
+2. Systems
+3. Convolution
+4. z-Transform
+5. Discrete-Time Fourier Series (DTFS)
+6. Discrete-Time Fourier Transform (DTFT)
+7. Discrete-Time Applications
