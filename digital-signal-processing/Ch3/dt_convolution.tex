@@ -21,7 +21,7 @@ We have also already seen another linear convolution property in effect with the
     \Longrightarrow \sum_{k=-\infty}^{+\infty} x[k]\delta[k-n] &= \sum_{k=-\infty}^{+\infty} x[k]\delta[n-k] = x[n] \\
     x[n] * \delta[n] &= x[n].
 \end{align*}
-We also introduced the concept that any LSI system characterized by impulse response $h[n]$ will always have predictable outputs since the output is simply the 
+We also introduced the concept that any DT LTI system characterized by impulse response $h[n]$ will always have predictable outputs since the output is simply the 
 linear convolution of the input signal and the impulse response, provided that all initial conditions of the system are zero. That is, 
 \begin{align}
     y[n] = x[n] * h[n] = \sum_{k=-\infty}^{+\infty} x[k]h[n-k].
