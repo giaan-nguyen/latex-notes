@@ -77,12 +77,11 @@ though direct computation of the inverse integral is often more cumbersome than 
 \\ \\
 Additionally, for signal $x(t)$ to be transformable, the unilateral Laplace integral must be absolutely integrable such that 
 \begin{align}
-    \int_{0^-}^{\infty} |x(t) e^{-st}| \,dt &= \int_{0^-}^{\infty} |x(t)||e^{-(\sigma+j\omega)t}| \,dt \nonumber \\
-    &= \int_{0^-}^{\infty} |x(t)| |e^{-\sigma t}| |e^{-j\omega t}| \,dt < \infty. 
+    \int_{0^-}^{\infty} |x(t) e^{-st}| \,dt = \int_{0^-}^{\infty} |x(t)| |e^{-st}| \,dt \leq \int_{0^-}^{\infty} |x(t)| \,dt < \infty. 
 \end{align}
-From above, $|e^{-j\omega t}|<1$ and $\sigma$ is real. Therefore, the integrable condition simplifies to 
+From above, $|e^{-st}|=|e^{-\sigma t}|\,|e^{-j\omega t}|\leq 1$. Therefore, the absolutely-integrable condition simplifies to 
 \begin{align}
-    \int_{0^-}^{\infty} |x(t)| e^{-\sigma t} \,dt < \infty.
+    \int_{0^-}^{\infty} |x(t)| \,dt < \infty.
 \end{align}
 The \emph{region of convergence} (ROC) is then defined as the values for $s$ for which the unilateral Laplace integral is absolutely integrable 
 for a given signal $x(t)$ for all $t$. Here, the ROC is defined by a set of values for $\sigma = \Re(s)$.
