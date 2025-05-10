@@ -75,15 +75,11 @@ Because of this relationship, there exists an \emph{inverse Laplace transform} d
 \end{align}
 though direct computation of the inverse integral is often more cumbersome than referencing a table of Laplace transform pairs.
 \\ \\
-Additionally, for signal $x(t)$ to be transformable, the unilateral Laplace integral must be absolutely integrable such that 
+Additionally, for signal $x(t)$ to be transformable, the unilateral Laplace integral must absolutely converge such that 
 \begin{align}
-    \int_{0^-}^{\infty} |x(t) e^{-st}| \,dt = \int_{0^-}^{\infty} |x(t)| |e^{-st}| \,dt \leq \int_{0^-}^{\infty} |x(t)| \,dt < \infty. 
+    \int_{0^-}^{\infty} |x(t) e^{-st}| \,dt < \infty. 
 \end{align}
-From above, $|e^{-st}|=|e^{-\sigma t}|\,|e^{-j\omega t}|\leq 1$. Therefore, the absolutely-integrable condition simplifies to 
-\begin{align}
-    \int_{0^-}^{\infty} |x(t)| \,dt < \infty.
-\end{align}
-The \emph{region of convergence} (ROC) is then defined as the values for $s$ for which the unilateral Laplace integral is absolutely integrable 
+The \emph{region of convergence} (ROC) is then defined as the values for $s$ for which the unilateral Laplace integral converges to some finite value  
 for a given signal $x(t)$ for all $t$. Here, the ROC is defined by a set of values for $\sigma = \Re(s)$.
 \\ \\
 For the unilateral Laplace transform, the ROC informs if there exists a unilateral Laplace transform for some signal $x(t)$ that can be mapped back to the time domain. 
@@ -93,6 +89,7 @@ Since all physically realizable signals and systems have a Laplace transform, th
 unilateral Laplace transform.
 \\ \\
 Table \ref{laplace_prop} lists the properties of the unilateral Laplace transform.
+\newpage
 \begin{table}[hbt!]
     \centering
     \caption{Properties of the unilateral Laplace transform.}
