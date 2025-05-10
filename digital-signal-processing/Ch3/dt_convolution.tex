@@ -70,7 +70,11 @@ When solving convolution sums, the need to compute the geometric series come up 
 \end{align}
 whereas the infinite sum of a geometric series is defined as 
 \begin{align}
-    \sum_{n=0}^{\infty} r^n = \frac{1}{1-r}\, \text{ for } |r| < 1.
+    \sum_{n=0}^{\infty} r^n = \frac{1}{1-r}\, \text{ for } |r| < 1,
+\end{align}
+or more generally, 
+\begin{align}
+    \sum_{n=\alpha}^{\infty} r^n = \frac{r^\alpha}{1-r}\, \text{ for } |r| < 1.
 \end{align}
 
 While we are mostly interested in intervals of validity that follow causal signals and systems, there are other possible intervals of validity for different 
@@ -132,7 +136,6 @@ types of systems that may or may not be causal. Refer to Table \ref{sum_redef} f
     Via change of variables, the output is given by
     \begin{align*}
         y[n] &= \left(2-\left(\frac{1}{2}\right)^{n-2}\right) u[n-2] + u[n-1]\sum_{\ell=1}^{+\infty} \left(\frac{1}{2}\right)^{\ell} + u[1-n]\sum_{\ell=2-n}^{+\infty} \left(\frac{1}{2}\right)^{\ell} \\
-        &= \left(2-\left(\frac{1}{2}\right)^{n-2}\right) u[n-2] + u[n-1]\sum_{m=0}^{+\infty} \left(\frac{1}{2}\right)^{m+1} + u[1-n]\sum_{m=0}^{+\infty} \left(\frac{1}{2}\right)^{m+2-n} \\
         &= \left(2-\left(\frac{1}{2}\right)^{n-2}\right) u[n-2] + \left(\frac{\frac{1}{2}}{1-\frac{1}{2}}\right)u[n-1] + \left(\frac{\left(\frac{1}{2}\right)^{2-n}}{1-\frac{1}{2}}\right)u[1-n] \\
         &= \left(2-\left(\frac{1}{2}\right)^{n-2}\right) u[n-2] + u[n-1] + \left(\frac{1}{2}\right)^{1-n}u[1-n] \\
         &= \begin{cases} 
