@@ -5,6 +5,7 @@ This covers only introductory concepts to discrete-time (DT) signals and systems
 2. Systems
 3. Convolution
 4. z-Transform
-5. Discrete-Time Fourier Series (DTFS)
-6. Discrete-Time Fourier Transform (DTFT)
-7. Discrete-Time Applications
+5. Discrete-Time Fourier Transform (DTFT)
+6. Discrete-Time Fourier Series (DTFS)
+7. Discrete Fourier Transform (DFT)
+8. Discrete-Time Applications
