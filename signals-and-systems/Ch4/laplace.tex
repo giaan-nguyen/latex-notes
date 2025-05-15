@@ -210,10 +210,9 @@ it is much simpler to reference a table of transform pairs.
         X(s) = \mathcal{B}[x(t)] = \int_{-\infty}^{+\infty} x(t) e^{-st} \,dt.
     \end{align}
 \end{tcolorbox}
-\noindent Similar to the unilateral Laplace transform, for a signal $x(t)$ to be transformable, the bilateral Laplace integral must be absolutely integrable such that 
-the simplified integrable condition given by 
+\noindent Similar to the unilateral Laplace transform, for a signal $x(t)$ to be transformable, the bilateral Laplace integral must absolutely converge such that  
 \begin{align}
-    \int_{-\infty}^{+\infty} |x(t)| e^{-\sigma t} \,dt < \infty
+    \int_{-\infty}^{+\infty} |x(t) e^{-st}| \,dt < \infty
 \end{align}
 holds true. However, the region of convergence (ROC) plays a bigger role for the bilateral Laplace transform. 
 \\ \\ 
