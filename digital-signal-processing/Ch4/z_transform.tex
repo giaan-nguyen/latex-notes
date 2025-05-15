@@ -1,0 +1,1180 @@
+\documentclass{report}
+\input{../../preamble.tex}
+
+\begin{document}
+\setcounter{chapter}{3}
+\setcounter{page}{30}
+\chapter{z--Transform}
+As with the CT case, DT LTI systems can be characterized by their impulse responses $h[n]$, and 
+the outputs of such systems are given by the linear convolution of the input signal and the impulse response. 
+An example of such a system is the affine transformation on the independent variable, whose impulse response is 
+\begin{align}
+    h[n]=\delta[an-b]=\delta\left[n-\frac{b}{a}\right].
+\end{align}
+\\ \\
+As some DT LTI systems are represented by a class of difference equations called LCCDEs, it is easier to find 
+the system response to such systems by mapping them to a domain that uses algebraic equations, similar to how the 
+Laplace tranform works in the CT case.
+\\ \\
+Unlike the CT case, because DT systems can either be implemented in real-time or offline, causality is not as 
+crucial depending on the application. Therefore, the bilateral (two-sided) $z$--transform is of interest.
+
+\section{Bilateral z--Transform}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    The \emph{bilateral $z$--transform} of a DT signal $x[n]$ is defined as  
+    \begin{align}
+        X(z) = \mathcal{Z}[x[n]] = \sum_{n=-\infty}^{+\infty} x[n] z^{-n},
+    \end{align}
+    where $z$ is a complex variable with some \emph{region of convergence} (ROC), $R$. 
+\end{tcolorbox}
+\noindent The $z$--transform essentially is an operator that maps a signal defined in the \emph{time domain} to another signal 
+defined in the \emph{$z$-domain}. $x[n]$ and $X(z)$ constitute a \emph{$z$--transform pair}. This relationship can be written as 
+\begin{align}
+    x[n] \iff X(z) \text{ for ROC } R,
+\end{align}
+where $R$ is the ROC, defined as the values for $z$ for which the bilateral $z$-domain summation is absolutely summable 
+for a given signal $x[n]$ for all $n$. Because of this relationship, there exists an \emph{inverse $z$--transform} defined by 
+the contour integral
+\begin{align}
+    x[n] = \mathcal{Z}^{-1}[X(z)] = \frac{1}{j2\pi}\oint\nolimits_{\Gamma} X(z) z^{n-1} \,dz,
+\end{align}
+where $\Gamma$ is a counterclockwise closed circular contour centered at the origin and entirely in the ROC.
+Direct computation of the inverse contour integral however is often more cumbersome than referencing a table of $z$--transform pairs 
+or finding other computational methods.
+\\ \\
+Additionally, for signal $x[n]$ to be transformable, the bilateral $z$--transform summation must absolutely converge such that 
+\begin{align}
+    \sum_{n=-\infty}^{+\infty} |x[n] z^{-n}| < \infty
+\end{align}
+The \emph{region of convergence} (ROC) can then be further defined as the values for $z$ for which the bilateral $z$--transform summation absolutely 
+converges for a given signal $x[n]$ for all $n$. 
+\\ \\
+Table \ref{z_prop} lists the properties of the bilateral $z$--transform.
+\begin{table}[hbt!]
+    \centering
+    \caption{Properties of the bilateral z--transform.}
+    \label{z_prop}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        Property & $x[n]$ & $X(z)=\mathcal{Z}[x[n]]$ & ROC: $R$ \\[0.15cm]
+        \hline
+        & & & \\
+        Superposition & $K_1x_1[n]+K_2x_2[n]$ & $K_1X_1(z)+K_2X_2(z)$ & At least $R_1\cap R_2$ \\[0.5cm]
+        Time shift & $x[n-N]$ & $z^{-N}X(z)$ & \shortstack{$R$, except for possible \\ addition/deletion of 0} \\[0.5cm]
+        Time reversal & $x[-n]$ & $X\left(\dfrac{1}{z}\right)$ & $R^{-1}$ \\[0.5cm]
+        Complex modulation & $a^n x[n]$ & $X\left(\dfrac{z}{a}\right)$ & $|a|\cdot R$ \\[0.5cm]
+        Finite difference & $x[n]-x[n-1]$ & $(1-z^{-1})X(z)$ & At least $R\cap(|z|>0)$ \\[0.5cm]
+        Accumulation & $\displaystyle\sum_{k=-\infty}^{n} x[k]$ & $\dfrac{1}{1-z^{-1}} X(z)$ & At least $R\cap(|z|>1)$ \\[0.5cm]
+        $z$-domain derivative & $n\cdot x[n]$ & $-z\,\dfrac{dX(z)}{dz} = -z\cdot X'(z)$ & $R$ \\[0.5cm]
+        Upsampling & $x[n/M],\text{ } M\in\mathbb{Z}^+$ & $X(z^M)$ & $R^{1/M}$ \\[0.5cm]
+        Downsampling & $x[Mn],\text{ } M\in\mathbb{Z}^+$ & $\dfrac{1}{M}\displaystyle\sum_{k=0}^{M-1}X(e^{-j2\pi k/M}z^{1/M})$ & $R^M$ \\[0.5cm]
+        Convolution & $x_1[n]*x_2[n]$ & $X_1(z)X_2(z)$ & At least $R_1\cap R_2$ \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{example}
+    Find the (bilateral) $z$--transform of $x[n]=n\cdot u[n]$. 
+\end{example}
+\begin{solution}
+    First, find the $z$--transform of $u[n]$:
+    \begin{align*}
+        \mathcal{Z}[u[n]] = \sum_{n=-\infty}^{+\infty} u[n] z^{-n} = \sum_{n=0}^{\infty} z^{-n} = \sum_{n=0}^{\infty} (z^{-1})^n = \frac{1}{1-z^{-1}}.
+    \end{align*}
+    Testing for absolute convergence, we get 
+    \begin{align*}
+        \sum_{n=-\infty}^{+\infty} \left|u[n] z^{-n}\right| = \sum_{n=0}^{\infty} \left|(z^{-1})^n\right| = \sum_{n=0}^{\infty} \left|z^{-1}\right|^n = \frac{1}{1-\left|z^{-1}\right|} < \infty,
+    \end{align*}
+    which can only hold true when $|z^{-1}| < 1$, or equivalently $|z| > 1$. Therefore,
+    \begin{align*}
+        u[n] \iff \frac{1}{1-z^{-1}} \text{ for } |z| > 1.
+    \end{align*}
+    Using the $z$--domain derivative property, we get 
+    \begin{align*}
+        X(z) = \mathcal{Z}[x[n]] &= \mathcal{Z}[n\cdot u[n]] = -z\cdot \frac{d}{dz}\left[\frac{1}{1-z^{-1}}\right] \\
+        &= -z\cdot \frac{-1}{(z-1)^2} = \frac{z}{(z-1)^2} = \frac{z^{-1}}{(1-z^{-1})^2}.
+    \end{align*}
+    Since the ROC remains unchanged under this property, the $z$--transform of $x[n]$ is given by
+    \begin{align*}
+        x[n] = n\cdot u[n] \iff X(z) = \frac{z^{-1}}{(1-z^{-1})^2} \text{ for } |z| > 1.
+    \end{align*}
+\end{solution}
+
+\begin{example}
+    Find the (bilateral) $z$--transform of $x[n]=-a^n u[-n-1]$. 
+\end{example}
+\begin{solution}
+    Using the $z$--transform summation:
+    \begin{align*}
+        X(z) = \mathcal{Z}[x[n]] &= \sum_{n=-\infty}^{+\infty} -a^n u[-n-1] z^{-n} = \sum_{n=-\infty}^{-1} -a^n z^{-n} = \sum_{n=-\infty}^{-1} -(az^{-1})^n \\
+        &= \sum_{m=1}^{\infty} -(az^{-1})^{-m} = -\sum_{m=1}^{\infty} (a^{-1}z)^m = -\frac{a^{-1}z}{1-a^{-1}z} = \frac{1}{1-az^{-1}}.
+    \end{align*}
+    Testing for absolute convergence:
+    \begin{align*}
+        \sum_{n=-\infty}^{+\infty} \left|-a^n u[-n-1] z^{-n}\right| = \sum_{m=1}^{\infty} \left|a^{-1}z\right|^m = \frac{\left|a^{-1}z\right|}{1-\left|a^{-1}z\right|} < \infty,
+    \end{align*}
+    which can only hold true when $\left|a^{-1}z\right| < 1$, or equivalently $|z|<|a|$. Therefore,
+    \begin{align*}
+        x[n] = -a^n u[-n-1] \iff X(z) = \frac{1}{1-az^{-1}} \text{ for } |z| < |a|.
+    \end{align*}
+\end{solution}
+
+Table \ref{z_pairs} lists some common bilateral $z$--transform pairs. Note that the $z$--transform is typically written in terms of $z^{-N}$ for $N\geq 0$ in order to exploit the time shift property.
+\begin{table}[hbt!]
+    \centering
+    \caption{Bilateral z--transform pairs.}
+    \label{z_pairs}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        $x[n]$ & $X(z)=\mathcal{Z}[x[n]]$ & ROC \\[0.15cm]
+        \hline
+        & & \\[0.1cm]
+        $\delta[n]$ & $1$ & All $z$ \\[0.5cm]
+        $\delta[n-N],\, N>0$ & $z^{-N}$ & All $z$ except $z=0$ \\[0.5cm]
+        $\delta[n+N],\, N>0$ & $z^N$ & All $z$ except $z=\infty$ \\[0.5cm]
+        $u[n]$ & $\dfrac{1}{1-z^{-1}}$ & $|z|>1$ \\[0.5cm]
+        $-u[-n-1]$ & $\dfrac{1}{1-z^{-1}}$ & $|z|<1$ \\[0.5cm]
+        $n\cdot u[n]$ & $\dfrac{z^{-1}}{(1-z^{-1})^2}$ & $|z|>1$ \\[0.5cm]
+        $-n\cdot u[-n-1]$ & $\dfrac{z^{-1}}{(1-z^{-1})^2}$ & $|z|<1$ \\[0.5cm]
+        $a^n u[n]$ & $\dfrac{1}{1-az^{-1}}$ & $|z|>|a|$ \\[0.5cm]
+        $-a^n u[-n-1]$ & $\dfrac{1}{1-az^{-1}}$ & $|z|<|a|$ \\[0.5cm]
+        $na^n u[n]$ & $\dfrac{az^{-1}}{(1-az^{-1})^2}$ & $|z|>|a|$ \\[0.5cm]
+        $-na^n u[-n-1]$ & $\dfrac{az^{-1}}{(1-az^{-1})^2}$ & $|z|<|a|$ \\[0.5cm]
+        $\dfrac{\prod_{k=1}^{m-1}(n+k)}{(m-1)!}a^n u[n]$ & $\dfrac{1}{(1-az^{-1})^m}$ & $|z|>|a|$ \\[0.5cm]
+        $\cos(\Omega_0 n)u[n]$ & $\dfrac{1-(\cos\Omega_0)z^{-1}}{1-(2\cos\Omega_0)z^{-1}+z^{-2}}$ & $|z|>1$ \\[0.5cm]
+        $\sin(\Omega_0 n)u[n]$ & $\dfrac{(\sin\Omega_0)z^{-1}}{1-(2\cos\Omega_0)z^{-1}+z^{-2}}$ & $|z|>1$ \\[0.5cm]
+        $a^n\cos(\Omega_0 n)u[n]$ & $\dfrac{1-(a\cos\Omega_0)z^{-1}}{1-(2a\cos\Omega_0)z^{-1}+a^2z^{-2}}$ & $|z|>|a|$ \\[0.5cm]
+        $a^n\sin(\Omega_0 n)u[n]$ & $\dfrac{(a\sin\Omega_0)z^{-1}}{1-(2a\cos\Omega_0)z^{-1}+a^2z^{-2}}$ & $|z|>|a|$ \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{example}
+    Suppose a DT signal $x[n]= u[n]$ is inputted into a DT LTI system characterized by $h[n]=(0.1)^nu[n]$. Find the (bilateral) $z$--transform of 
+    the output signal $y[n]$.
+\end{example}
+\begin{solution}
+    Using the table of $z$--transform pairs, it follows that
+    \begin{align*}
+        x[n] = u[n] &\iff X(z) = \frac{1}{1-z^{-1}} \text{ for } |z| > 1, \\
+        h[n] = (0.1)^nu[n] &\iff H(z) = \frac{1}{1-0.1z^{-1}} \text{ for } |z| > 0.1.
+    \end{align*}
+    Then by the convolution property, 
+    \begin{align*}
+        Y(z) = X(z)H(z) = \frac{1}{1-z^{-1}}\cdot\frac{1}{1-0.1z^{-1}} = \frac{1}{1-1.1z^{-1}+0.1z^{-2}}.
+    \end{align*}
+    Since $(|z|>1)\cap(|z|>0.1)=(|z|>1)$, it follows that the ROC at least contains $|z|>1$.
+\end{solution}
+
+The region of convergence (ROC) can be visualized as regions of the $z$--plane for which $X(z)$ is finite. They often are 
+depicted geometrically as open disks, annuli (rings), exteriors of circles, or even nearly the entire $z$--plane. Interestingly enough, 
+depending on the type of signal in terms of causality and duration, these region types typically can be predicted. 
+See Table \ref{roc} for reference.
+\\ \\
+Lastly, note that while the DT signal $x[n]$ is discrete in time, its $z$--transform $X(z)$ is actually continuous in $z$.
+
+\begin{table}[hbt!]
+    \centering
+    \caption{Characteristic families of DT signals and their corresponding ROCs.}
+    \label{roc}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{ c|c|c }
+    Signal type & Stem plot example & ROC in the $z$--plane \\[0.1cm]
+    \hline 
+    \shortstack{Finite and \\causal} 
+    & \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.5, ytick={0}, ylabel={$x[n]$},
+                xmin=-6, xmax=6, xtick={0}, xlabel={},
+                width=6cm, height=3cm]
+                \addplot+ [
+                    ycomb,
+                ] coordinates {(-4,0) (-3,0) (-2,0) (-1,0) (0,1) (1,0.8) (2,0.64) (3,0.512) (4,0) (5,0)};
+            \end{axis}
+        \end{tikzpicture}}}
+    & \adjustbox{valign=m}{\resizebox{0.175\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-2, ymax=2, ytick={0}, ylabel={$\Im(z)$},
+                xmin=-2, xmax=2, xtick={0}, xlabel={$\Re(z)$},
+                width=6cm, height=6cm]
+                \fill[red!5, opacity=0.85] (-5,-5) rectangle ++ (5,5);
+                \addplot+ [
+                    ycomb,
+                ] coordinates {(0,0)};
+            \end{axis}
+        \end{tikzpicture}}} \shortstack{Entire $z$--plane\\except $z=0$} \\[1.3cm]
+    \shortstack{Finite and \\anticausal} 
+    & \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.5, ytick={0}, ylabel={$x[n]$},
+                xmin=-6, xmax=6, xtick={0}, xlabel={},
+                width=6cm, height=3cm]
+                \addplot+ [
+                    ycomb,
+                ] coordinates {(5,0) (4,0) (3,0) (2,0) (1,0) (0,1) (-1,0.8) (-2,0.64) (-3,0.512) (-4,0) (-5,0)};
+            \end{axis}
+        \end{tikzpicture}}}
+    & \adjustbox{valign=m}{\resizebox{0.175\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-2, ymax=2, ytick={0}, ylabel={$\Im(z)$},
+                xmin=-2, xmax=2, xtick={0}, xlabel={$\Re(z)$},
+                width=6cm, height=6cm]
+                \fill[red!5, opacity=0.85] (-5,-5) rectangle ++ (5,5);
+            \end{axis}
+        \end{tikzpicture}}} \shortstack{Entire $z$--plane\\except $z=\infty$} \\[1.3cm]
+    \shortstack{Finite and \\noncausal (two-sided)} 
+    & \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.5, ytick={0}, ylabel={$x[n]$},
+                xmin=-6, xmax=6, xtick={0}, xlabel={},
+                width=6cm, height=3cm]
+                \addplot+ [
+                    ycomb,
+                ] coordinates {(-5,0) (-4,0) (-3,0) (-2,0.36) (-1,0.6) (0,1) (1,0.8) (2,0.64) (3,0.512) (4,0) (5,0)};
+            \end{axis}
+        \end{tikzpicture}}}
+    & \adjustbox{valign=m}{\resizebox{0.175\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-2, ymax=2, ytick={0}, ylabel={$\Im(z)$},
+                xmin=-2, xmax=2, xtick={0}, xlabel={$\Re(z)$},
+                width=6cm, height=6cm]
+                \fill[red!5, opacity=0.85] (-5,-5) rectangle ++ (5,5);
+                \addplot+ [
+                    ycomb,
+                ] coordinates {(0,0)};
+            \end{axis}
+        \end{tikzpicture}}} \shortstack{Entire $z$--plane\\except $z=0$\\and $z=\infty$} \\[1.3cm]
+    \shortstack{Infinite and \\causal} 
+    & \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.5, ytick={0}, ylabel={$x[n]$},
+                xmin=-6, xmax=6, xtick={0}, xlabel={},
+                width=6cm, height=3cm]
+                \addplot+ [
+                    ycomb,
+                ] coordinates {(-4,0) (-3,0) (-2,0) (-1,0) (0,1) (1,0.8) (2,0.64) (3,0.512)};
+                \node[] at (4.5,0.4096) {\Large $\cdots$};
+            \end{axis}
+        \end{tikzpicture}}}
+    & \adjustbox{valign=m}{\resizebox{0.175\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-2, ymax=2, ytick={0}, ylabel={$\Im(z)$},
+                xmin=-2, xmax=2, xtick={0}, xlabel={$\Re(z)$},
+                width=6cm, height=6cm]
+                \fill[red!5, opacity=0.85] (-5,-5) rectangle ++ (5,5); 
+                \filldraw[red!60, fill=white, very thick, opacity=0.9] (0,0) circle[radius=1];
+                \draw [-latex, very thick, color=blue] (0,0) -- (0.8,0.6);
+                \draw (0.3,0.5) node {$r$};
+            \end{axis}
+        \end{tikzpicture}}} $\;\;\;\;\;\;|z|>r\;\;\;\;\;\;\,$ \\[1.3cm]
+    \shortstack{Infinite and \\anticausal} 
+    & \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.5, ytick={0}, ylabel={$x[n]$},
+                xmin=-6, xmax=6, xtick={0}, xlabel={},
+                width=6cm, height=3cm]
+                \addplot+ [
+                    ycomb,
+                ] coordinates {(5,0) (4,0) (3,0) (2,0) (1,0) (0,1) (-1,0.8) (-2,0.64) (-3,0.512)};
+                \node[] at (-4.5,0.4096) {\Large $\cdots$};
+            \end{axis}
+        \end{tikzpicture}}}
+    & \adjustbox{valign=m}{\resizebox{0.175\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-2, ymax=2, ytick={0}, ylabel={$\Im(z)$},
+                xmin=-2, xmax=2, xtick={0}, xlabel={$\Re(z)$},
+                width=6cm, height=6cm]
+                \filldraw[red!60, fill=red!5, very thick, opacity=0.9] (0,0) circle[radius=1];
+                \draw [-latex, very thick, color=blue] (0,0) -- (0.8,0.6);
+                \draw (0.3,0.5) node {$r$};
+            \end{axis}
+        \end{tikzpicture}}} $\;\;\;\;\;\;|z|<r\;\;\;\;\;\;\,$ \\[1.3cm]
+    \shortstack{Infinite and \\noncausal (two-sided)}
+    & \adjustbox{valign=m}{\resizebox{0.25\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=1.5, ytick={0}, ylabel={$x[n]$},
+                xmin=-6, xmax=6, xtick={0}, xlabel={},
+                width=6cm, height=3cm]
+                \addplot+ [
+                    ycomb,
+                ] coordinates {(-2,0.36) (-1,0.6) (0,1) (1,0.8) (2,0.64) (3,0.512)};
+                \node[] at (4.5,0.4096) {\Large $\cdots$};
+                \node[] at (-4,0.216) {\Large $\cdots$};
+            \end{axis}
+        \end{tikzpicture}}}
+    & \adjustbox{valign=m}{\resizebox{0.175\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=-2, ymax=2, ytick={0}, ylabel={$\Im(z)$},
+                xmin=-2, xmax=2, xtick={0}, xlabel={$\Re(z)$},
+                width=6cm, height=6cm]
+                \filldraw[red!60, fill=red!5, very thick, opacity=0.9] (0,0) circle[radius=1.2];
+                \filldraw[red!60, fill=white, very thick, opacity=0.85] (0,0) circle[radius=0.8];
+                \draw [-latex, very thick, color=blue] (0,0) -- (0.96,0.72);
+                \draw (0.3,0.5) node {$r_2$};
+                \draw [-latex, very thick, color=blue] (0,0) -- (0.64,-0.48);
+                \draw (0.3,-0.5) node {$r_1$};
+            \end{axis}
+        \end{tikzpicture}}} $\;\,r_1<|z|<r_2\;\,$ \\[1.3cm]
+    \hline
+    \end{tabular}
+    }
+\end{table}
+
+\pagebreak
+\section{Unilateral z--Transform}
+In the event that only \emph{causal} signals and systems are of interest, then the unilateral $z$--transform is sufficient enough for analysis.
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    The \emph{unilateral $z$--transform} of a DT signal $x[n]$ is defined as  
+    \begin{align}
+        X^+(z) = \mathcal{Z}^+[x[n]] = \sum_{n=0}^{\infty} x[n] z^{-n}.
+    \end{align}
+\end{tcolorbox}
+
+Table \ref{u_prop} lists the properties of the unilateral z--transform. Note that the properties are largely the same as that of the bilateral z--transform, 
+with the exception of the time shifts. Additionally, the initial and final value theorems hold true for causal signals.
+\\ \\ 
+Similar to the CT case with the unilateral Laplace transform, if DT signal $x[n]$ is causal, then there exists a unique unilateral $z$--transform $X^+(z)$, with its 
+unilateral $z$--transform pair denoted as
+\begin{align}
+    \text{causal }x[n] \iff X^+(z).
+\end{align}
+In fact, when $x[n]$ is causal, the closed form expression for its unilateral and bilateral $z$--transforms are the same. 
+\\ \\ 
+Note that the ROC is not mentioned for the unilateral form. This is because the unilateral $z$--transform works under the assumption that the signals and systems of interest are causal; only then 
+is when the pair is unique. In such a specific case, there are other methods of analysis without need of finding the ROC.
+\\ \\
+However, in the event that an anticausal or noncausal element (signal or system) is introduced, the bilateral $z$--transform is more suitable. For the rest of this text, 
+the bilateral $z$--transform will be referred to as simply the $z$--transform. The unilateral $z$--transform will still be referred to by its full nomenclature.
+
+\begin{table}[hbt!]
+    \centering
+    \caption{Properties of the unilateral z--transform (for causal signals).}
+    \label{u_prop}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Property & $x[n]$ & $X^+(z)=\mathcal{Z}^+[x[n]]$ \\[0.15cm]
+        \hline
+        & & \\
+        Superposition & $K_1x_1[n]+K_2x_2[n]$ & $K_1X_1^+(z)+K_2X_2^+(z)$ \\[0.5cm]
+        Time delay of causal signal & $x[n-N]u[n-N],\text{ } N>0$ & $z^{-N}X^+(z)$ \\[0.5cm]
+        Time delay of noncausal signal & $x[n-N]u[n],\text{ } N>0$ & $z^{-N}\left[X^+(z)+\displaystyle\sum_{n=1}^{N}x[-n]z^n\right]$ \\[0.5cm]
+        Time advance & $x[n+N]u[n],\text{ } N>0$ & $z^N\left[X^+(z)-\displaystyle\sum_{n=0}^{N-1}x[n]z^{-n}\right]$ \\[0.5cm]
+        Time reversal & $x[-n]$ & $X^+\left(\dfrac{1}{z}\right)$ \\[0.5cm]
+        Complex modulation & $a^n x[n]$ & $X^+\left(\dfrac{z}{a}\right)$ \\[0.5cm]
+        Finite difference & $x[n]-x[n-1]$ & $(1-z^{-1})X^+(z)$ \\[0.5cm]
+        Accumulation & $\displaystyle\sum_{k=0}^{n} x[k]$ & $\dfrac{1}{1-z^{-1}} X^+(z)$ \\[0.5cm]
+        $z$-domain derivative & $n\cdot x[n]$ & $-z\,\dfrac{dX^+(z)}{dz}$ \\[0.5cm]
+        Upsampling & $x[n/M],\text{ } M\in\mathbb{Z}^+$ & $X^+(z^M)$ \\[0.5cm]
+        Downsampling & $x[Mn],\text{ } M\in\mathbb{Z}^+$ & $\dfrac{1}{M}\displaystyle\sum_{k=0}^{M-1}X^+(e^{-j2\pi k/M}z^{1/M})$ \\[0.5cm]
+        Convolution & $x_1[n]*x_2[n]$ & $X_1^+(z)X_2^+(z)$ \\[0.5cm]
+        Initial value theorem & $x[0]$ & $\displaystyle\lim_{z\to\infty} X^+(z)$ \\[0.5cm]
+        Final value theorem & $\displaystyle\lim_{n\to\infty}x[n]$ & $\displaystyle\lim_{z\to 1} \,(z-1)X^+(z)$ \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{example}
+    Determine the final value $x[\infty]$ of $x[n]=(0.3)^{n-1}(n-1)u[n-1]$.
+\end{example}
+\begin{solution}
+    Note that the signal is causal. Using the table of $z$--transform pairs and the time delay property for the unilateral $z$--transform, 
+    \begin{align*}
+        X^+(z) &= z^{-1} \mathcal{Z}[(0.3)^n n\cdot u[n]] = z^{-1}\frac{0.3z^{-1}}{(1-0.3z^{-1})^2} = \frac{0.3z^{-2}}{(1-0.3z^{-1})^2}.
+    \end{align*}
+    Then by the final value theorem,
+    \begin{align*}
+        x[\infty] = \lim_{z\to 1} (z-1)X^+(z) = \lim_{z\to 1} (z-1)\frac{0.3z^{-2}}{(1-0.3z^{-1})^2} = 0\times \frac{0.3}{(0.7)^2} = 0.
+    \end{align*}
+\end{solution}
+
+\section{Inverse z--Transform}
+While the inverse $z$--transform could be computed via contour integration, the process is too cumbersome. Typically, a table of $z$--transform pairs is 
+used, albeit some manipulation is required. Therefore, we will explore different methods of finding the inverse $z$--transform.
+
+\subsection{Inverse z--Transform by Power Series Expansion}
+Recall that the $z$--transform of a DT signal $x[n]$ is given by 
+\begin{align}
+    X(z) = \mathcal{Z}[x[n]] = \sum_{n=-\infty}^{+\infty} x[n] z^{-n}.
+\end{align}
+If some $z$-domain function $X(z)$ can be written in such a format, then by inspection we can easily list the coefficients and express the signal $x[n]$ 
+as a sequence. Typically, this method is reserved for finite signals, though if only the first few terms of a one-sided signal is needed, then power series expansion 
+is sufficient enough.
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    There are four ROC cases, each with a different task at hand.
+    \begin{itemize}
+        \item (ROC: nearly all $z$): $x[n]$ is \emph{finite}. Simply read the coefficients.
+        \item (ROC: $|z|>|a|$): $x[n]$ is \emph{infinite} and \emph{causal}. Perform polynomial (in $z^{-1}$) long division with 1 as the leading term of the divisor. Continue until enough coefficients are needed.
+        \item (ROC: $|z|<|a|$): $x[n]$ is \emph{infinite} and \emph{anticausal}. Perform polynomial (in $z^{-1}$) long division with the lowest power $z^{-N}$ as the leading term of the divisor. Continue until enough coefficients are needed.
+        \item (ROC: $|a_1|<|z|<|a_2|$): $x[n]$ is \emph{infinite} and \emph{two-sided}. Power series expansion is not a useful method; partial fraction expansion is needed.
+    \end{itemize}
+\end{tcolorbox}
+
+\begin{example}
+    Find the inverse $z$--transform of 
+    \begin{align*}
+        X(z) = \frac{7z^2+3z+6}{z^3}, \text{ for } z\neq 0.
+    \end{align*}
+\end{example}
+\begin{solution}
+    Since the ROC is nearly the entire $z$-plane, the signal $x[n]$ must be finite. We just need to simplify and list the coefficients.
+    \begin{align*}
+        X(z) = \frac{7z^2+3z+6}{z^3} &= 7z^{-1} + 3z^{-2} + 6z^{-3} \\
+        \Longrightarrow x[n] &= \left\{\underbar{0},7,3,6\right\} 
+    \end{align*}
+\end{solution}
+
+\begin{example}
+    Find the first few terms of $x[n]$, given that its $z$--transform is  
+    \begin{align*}
+        X(z) = \frac{z-1}{z-2}, \text{ for } |z|>2.
+    \end{align*}
+\end{example}
+\begin{solution}
+    From the ROC alone, the signal $x[n]$ must be infinite and causal. Rewriting $X(z)$ as a polynomial in $z^{-1}$,
+    \begin{align*}
+        X(z) = \frac{z-1}{z-2} = \frac{z(1-z^{-1})}{z(1-2z^{-1})} = \frac{1-z^{-1}}{1-2z^{-1}}
+    \end{align*}
+    From the denominator, let 1 be the leading term of the divisor. Then by long division,
+    \begin{align*}
+        X(z) = \frac{1-z^{-1}}{1-2z^{-1}} &= 1 + z^{-1} + 2z^{-2} + 4z^{-3} + 8z^{-4} + \cdots \\
+        \Longrightarrow x[n] &= \left\{\underbar{1},1,2,4,8,...\right\}
+    \end{align*}
+    In fact, one could also use the table of $z$--transform pairs to verify this.
+    \begin{align*}
+        x[n] = \mathcal{Z}^{-1}\left[\frac{1-z^{-1}}{1-2z^{-1}}\right] &= \mathcal{Z}^{-1}\left[\frac{1}{1-2z^{-1}}\right] - \mathcal{Z}^{-1}\left[\frac{z^{-1}}{1-2z^{-1}}\right] \\
+        &= 2^n u[n] - 2^{n-1}u[n-1] \\ 
+        &= \left\{\underbar{1},1,2,4,8,...\right\}
+    \end{align*}
+\end{solution}
+
+\begin{example}
+    Find the first few terms of $x[n]$, given that its $z$--transform is  
+    \begin{align*}
+        X(z) = \frac{1}{1-1.5z^{-1}+0.5z^{-2}}, \text{ for } |z|<0.5.
+    \end{align*}
+\end{example}
+\begin{solution}
+    From the ROC alone, the signal $x[n]$ must be infinite and anticausal. Since $X(z)$ is already written in terms of polynomials in $z^{-1}$, 
+    we choose $0.5z^{-2}$ as the leading term of the divisor such that 
+    \begin{align*}
+        X(z) = \frac{1}{0.5z^{-2}-1.5z^{-1}+1} &= 2z^2 + 6z^3 + 14z^4 + 30z^5 + \cdots \\
+        \Longrightarrow x[n] &= \left\{\underbar{0},0,2,6,14,30,...\right\}
+    \end{align*}
+\end{solution}
+
+\subsection{Inverse z--Transform by Partial Fraction Expansion}
+When finding a closed form expression for infinite DT signals, inverse $z$--transform by partial fraction expansion is more ideal. 
+Consider a $z$-domain rational function with positive powers in the numerator and denominator, of the form 
+\begin{align}
+    X(z) = \frac{N(z)}{D(z)},
+\end{align}
+written as a ratio of a polynomial numerator $N(z)$ to a polynomial denominator $D(z)$. 
+The roots of the numerator are called the \emph{zeros} of $X(z)$ and are defined by 
+\begin{align}
+    N(z) = 0,
+\end{align}
+whereas the roots of the denominator are called the \emph{poles} of $X(z)$ and are defined by 
+\begin{align}
+    D(z) = 0.
+\end{align}
+Before even performing partial fraction expansion, first we examine the orders of the numerator and denominator. Let 
+\begin{align}
+    p &= \deg[N(z)], \\ 
+    q &= \deg[D(z)].
+\end{align}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    There are three types of rational functions, each with a different task at hand.
+    \begin{itemize}
+        \item $p < q$: $X(z)$ is \emph{strictly proper}. It is ready for partial fraction expansion, if needed.
+        \item $p = q$: $X(z)$ is \emph{proper}. There are two options. 
+        \begin{itemize}
+            \item If $N(z) = z^{M}$, first peel away a single $z$. Then perform partial fraction expansion on $X(z)/z$. Reintroduce $z$ to each residue term.
+            \item Otherwise, perform long division and express $X(s)$ in terms of the quotient and remainder, then determine if the remainder term needs partial fraction expansion.
+        \end{itemize}
+        \item $p > q$: $X(z)$ is \emph{improper}. Perform long division and express $X(z)$ in terms of the quotient and remainder, then determine if the remainder term needs partial fraction expansion.
+    \end{itemize}
+\end{tcolorbox}
+\noindent A term would need partial fraction expansion if there is not an easily matching $z$--transform pair provided by the table. Table \ref{z_pairs_short} lists the corresponding 
+$z$--transform pairs for different partial fraction expansion cases. Note that unlike the CT case, the DT case requires ROC as well.
+
+\begin{table}[hbt!]
+    \centering
+    \caption{Bilateral z--transform pairs based on poles.}
+    \label{z_pairs_short}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Pole & $X(z)$ & $x[n]=\mathcal{Z}^{-1}[X(z)]$ \\[0.15cm]
+        \hline
+        & & \\
+        \Centerstack{Distinct real\\(causal)} & $\dfrac{A}{1-az^{-1}}, \text{ for } |z|>|a|$ & $A\,a^n u[n]$ \\[0.5cm]
+        \Centerstack{Distinct real\\(anticausal)} & $\dfrac{A}{1-az^{-1}}, \text{ for } |z|<|a|$ & $-A\,a^n u[-n-1]$ \\[0.5cm]
+        \Centerstack{Repeated real\\(causal)} & $\dfrac{A}{(1-az^{-1})^m}, \text{ for } |z|>|a|$ & $\dfrac{A\,\prod_{k=1}^{m-1}(n+k)}{(m-1)!}\,a^n u[n]$ \\[0.5cm]
+        \Centerstack{Repeated real\\(anticausal)} & $\dfrac{A}{(1-az^{-1})^m}, \text{ for } |z|<|a|$ & $\dfrac{-A\,\prod_{k=1}^{m-1}(n+k)}{(m-1)!}\,a^n u[-n-1]$ \\[0.5cm]
+        \Centerstack{Distinct complex\\(causal)} & $\dfrac{Ae^{+j\alpha}}{1-Be^{+j\beta}z^{-1}}+\dfrac{Ae^{-j\alpha}}{1-Be^{-j\beta}z^{-1}}, \text{ for } |z|>|a|$ & $2A\,B^n\cos(\beta n+\alpha)u[n]$ \\[0.5cm]
+        \Centerstack{Distinct complex\\(anticausal)} & $\dfrac{Ae^{+j\alpha}}{1-Be^{+j\beta}z^{-1}}+\dfrac{Ae^{-j\alpha}}{1-Be^{-j\beta}z^{-1}}, \text{ for } |z|<|a|$ & $-2A\,B^n\cos(\beta n+\alpha)u[-n-1]$ \\[0.5cm]
+        \Centerstack{Repeated complex\\(causal)} & $\dfrac{Ae^{+j\alpha}}{(1-Be^{+j\beta}z^{-1})^m}+\dfrac{Ae^{-j\alpha}}{(1-Be^{-j\beta}z^{-1})^m}, \text{ for } |z|>|a|$ & $\dfrac{2A\,B^n\,\prod_{k=1}^{m-1}(n+k)}{(m-1)!}\,\cos(\beta n+\alpha)u[n]$ \\[0.5cm]
+        \Centerstack{Repeated complex\\(anticausal)} & $\dfrac{Ae^{+j\alpha}}{(1-Be^{+j\beta}z^{-1})^m}+\dfrac{Ae^{-j\alpha}}{(1-Be^{-j\beta}z^{-1})^m}, \text{ for } |z|<|a|$ & $\dfrac{-2A\,B^n\,\prod_{k=1}^{m-1}(n+k)}{(m-1)!}\,\cos(\beta n+\alpha)u[-n-1]$ \\[0.5cm]
+        \hline
+    \end{tabular}
+    }
+\end{table}
+
+\begin{example}
+    Find the inverse $z$--transform of  
+    \begin{align*}
+        X(z) = \frac{1}{1-1.5z^{-1}+0.5z^{-2}}, \text{ for }
+    \end{align*}
+    (a) ROC: $|z|>1$ \\
+    (b) ROC: $|z|<0.5$ \\
+    (c) ROC: $0.5<|z|<1$
+\end{example}
+\begin{solution}
+    Rewrite $X(z)$ in terms of positive powers such that 
+    \begin{align*}
+        X(z) = \frac{1}{1-1.5z^{-1}+0.5z^{-2}} = \frac{z^2}{z^2-1.5z+0.5}.
+    \end{align*}
+    Note that $X(z)$ is proper. Peel away a $z$ such that 
+    \begin{align*}
+        X(z) = z \left[\frac{z}{z^2-1.5z+0.5}\right] = z\left[\frac{z}{(z-1)(z-0.5)}\right].
+    \end{align*}
+    Then performing partial fraction expansion,
+    \begin{align*}
+        X(z) &= z\underbrace{\left[\frac{z}{(z-1)(z-0.5)}\right]}_{F(z)} = z\left[\frac{A_1}{z-1} + \frac{A_2}{z-0.5}\right], \text{ where } \\
+        A_1 &= (z-1)F(z)\big|_{z=1} = \left[\frac{z}{z-0.5}\right|_{z=1} = 2 \\
+        A_2 &= (z-0.5)F(z)\big|_{z=0.5} = \left[\frac{z}{z-1}\right|_{z=0.5} = -1
+    \end{align*}
+    Finally, converting the result back to negative powers,
+    \begin{align*}
+        X(z) = z\left[\frac{2}{z-1} - \frac{1}{z-0.5}\right] &= \frac{2z}{z-1} - \frac{z}{z-0.5} \\ 
+        &= \frac{2}{1-z^{-1}} - \frac{1}{1-0.5z^{-1}}
+    \end{align*}
+    First, consider the ROC $|z|>1$. This indicates that the signal $x_a[n]$ is infinite and causal. Using the $z$--transform tables, 
+    \begin{align*}
+        x_a[n] = 2u[n] - (0.5)^nu[n] = [2-(0.5)^n]u[n].
+    \end{align*}
+    Next, consider the ROC $|z|<0.5$. This indicates that the signal $x_b[n]$ is infinite and anticausal. From the tables, it follows that 
+    \begin{align*}
+        x_b[n] = -2u[-n-1] + (0.5)^nu[-n-1] = [-2+(0.5)^n]u[-n-1]. 
+    \end{align*}
+    Last, consider the ROC $0.5<|z|<1$. This indicates that the signal $x_c[n]$ is infinite and two-sided. We can rewrite the ROC as the intersection of  
+    two regions: 
+    \begin{align*}
+        \text{ROC}_1 \cap \text{ROC}_2 = (|z|<1) \cap (|z|>0.5)
+    \end{align*}
+    From above, we see that $\text{ROC}_1=(|z|<1)$ indicates that the pole $p_1=1$ contributes to the anticausal part, whereas 
+    $\text{ROC}_2=(|z|>0.5)$ indicates that the pole $p_2=0.5$ contributes to the causal part. That is,
+    \begin{align*}
+        X(z) &= \underbrace{\frac{2}{1-z^{-1}}}_{|z|<1} - \underbrace{\frac{1}{1-0.5z^{-1}}}_{|z|>0.5} \\
+        x_c[n] &= -2u[-n-1] - (0.5)^nu[n].
+    \end{align*}
+\end{solution}
+
+\begin{example}
+    Find the causal signal whose $z$--transform is given by 
+    \begin{align*}
+        X(z) = \frac{1}{(1+z^{-1})(1-z^{-1})^2}.
+    \end{align*}
+\end{example}
+\begin{solution}
+    Since the signal is said to be causal, ROC analysis is not needed. In fact, we can even use the unilateral $z$--transform notation such that 
+    \begin{align*}
+        X^+(z) = \frac{1}{(1+z^{-1})(1-z^{-1})^2} = \frac{z^3}{(z+1)(z-1)^2} = z\left[\frac{z^2}{(z+1)(z-1)^2}\right].
+    \end{align*}
+    Using partial fraction expansion,
+    \begin{align*}
+        X^+(z) &= z\left[\frac{z^2}{(z+1)(z-1)^2}\right] = z\left[\frac{A_1}{z+1} + \frac{B_1}{z-1} + \frac{B_2}{(z-1)^2}\right] \\
+        A_1 &= \left[\frac{z^2}{(z-1)^2}\right|_{z=-1} = \frac{1}{4} \\ 
+        A_2 &= \frac{d}{dz}\left[\frac{z^2}{z+1}\right]_{z=1} = \left[\frac{(z+1)(2z)-z^2(1)}{(z+1)^2}\right|_{z=1} = \frac{3}{4} \\
+        A_3 &= \left[\frac{z^2}{z+1}\right|_{z=1} = \frac{1}{2}
+    \end{align*}
+    Since $x[n]$ is causal, the closed form expression is given by 
+    \begin{align*}
+        x[n] = \frac{1}{4}\,(-1)^n u[n] + \frac{3}{4\,}u[n] + \frac{1}{2}\,n\cdot u[n].
+    \end{align*}
+\end{solution}
+
+Of course, even without a ROC provided, one can select the ROC based on the criteria of the DT signal $x[n]$. Suppose that 
+\begin{align}
+    X(z) = K\cdot\, \frac{\displaystyle\prod_{k=1}^{M}(1-r_kz^{-1})}{\displaystyle\prod_{k=1}^{N}(1-p_kz^{-1})} = \frac{A_1}{1-p_1z^{-1}} + \frac{A_2}{1-p_2z^{-1}} + \cdots + \frac{A_N}{1-p_Nz^{-1}},
+\end{align}
+with poles $p_k$ and no known ROC. Then depending on what type of infinite DT signal is desired, one can use the superposition property such that 
+\begin{align}
+    \text{ROC} = \text{ROC}_1 \cap \text{ROC}_2 \cap \cdots \cap \text{ROC}_N, \text{ at least,}
+\end{align}
+which leads to Table \ref{roc_poles}. Note that for the two-sided case, the ROC is only obvious when there are only two poles.
+
+\begin{table}[hbt!]
+    \centering
+    \caption{ROC of infinite-duration DT signals based on poles.}
+    \label{roc_poles}
+    \begin{tabular}{|c|c|}
+        \hline
+        Infinite signal type & ROC \\[0.15cm]
+        \hline
+        & \\
+        Causal & $|z|>\max|p_k|$, for $p_k=\{p_1,p_2,...,p_N\}$ \\[0.5cm]
+        Anticausal & $|z|<\min|p_k|$, for $p_k=\{p_1,p_2,...,p_N\}$ \\[0.5cm]
+        \Centerstack{Noncausal\\(two-sided)} & $|p_1|<|z|<|p_2|$, for $p_k=\{p_1,p_2\}$ \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+
+\section{DT Transfer Function}
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    The \emph{discrete-time transfer function} is the $z$--transform of the impulse response and 
+    is defined as 
+    \begin{align}
+        H(z) = \frac{Y(z)}{X(z)} = \mathcal{Z}[h[n]],
+    \end{align}
+    with some appropriate ROC such that $\text{ROC}_{Y(z)} = \text{ROC}_{X(z)} \cap \text{ROC}_{H(z)}$, at least. 
+\end{tcolorbox}
+\noindent In fact, by the convolution property, it follows that 
+\begin{align}
+    y[n] = x[n] * h[n] \iff Y(z) = X(z)H(z).
+\end{align}
+\newpage
+\noindent Symbolically,
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x[n]$};
+        \node [] (output) at (+3,0){$y[n]$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$h[n]$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node at (0,0) [double arrow, draw=black, top color=red, bottom color=blue,
+            minimum width = 15pt, double arrow head extend=5pt,
+            minimum height=12mm,
+            rotate=90] {};
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$X(z)$};
+        \node [] (output) at (+3,0){$Y(z)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$H(z)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+As the impulse response is the system response to input $x[n]=\delta[n]$, consider the $z$--transform of the impulse signal $\mathcal{Z}[\delta[n]]=1$. Then it also follows that 
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x[n]=\delta[n]$};
+        \node [] (output) at (+3,0){$y[n]=h[n]$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$h[n]$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node at (0,0) [double arrow, draw=black, top color=red, bottom color=blue,
+            minimum width = 15pt, double arrow head extend=5pt,
+            minimum height=12mm,
+            rotate=90] {};
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$X(z)=1$};
+        \node [] (output) at (+3,0){$Y(z)=H(z)$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$H(z)$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    To find the transfer function of a DT LTI system, there are two approaches:
+    \begin{enumerate}
+        \item Find $X(z),Y(z)$. Then calculate $H(z)=Y(z)/X(z)$.
+        \item Find $X(z),Y(z)$. Then substitute $X(z)=1$ and $Y(z)=H(z)$.
+    \end{enumerate}
+\end{tcolorbox}
+While setting initial conditions to zero matters for the CT transfer function, the DT transfer function 
+can handle nonzero initial conditions due to the two-sidedness of the $z$--transform as well as the 
+DT application of being able to process offline. 
+
+\subsection{System Duration}
+If $H(z)$ is a non-everlasting polynomial in $z^{-1}$ or is a rational function that can be simplified to a non-everlasting polynomial in $z^{-1}$, 
+then $H(z)$ is said to be \emph{finite}. Finite-duration systems have a finite number of nonzero terms in its impulse response. Typically, we are more 
+interested in expressing finite-duration transfer functions as a length-$N$ polynomial in the form
+\begin{align}
+    H(z) = A_mz^{-m} + A_{m+1}z^{-(m+1)} + \cdots + A_{m+N-1}z^{-(m+N-1)}; \text{ for } m\in\mathbb{Z} \text{ and } N\in\mathbb{Z}^+.
+\end{align}
+Conversely, if $H(z)$ is an everlasting polynomial in $z^{-1}$ or is a rational function that can only be simplified to an everlasting polynomial in $z^{1}$, 
+then it is said to be \emph{infinite}. Infinite-duration systems have infinite nonzero terms in its impulse response. Typically, we are more interested in expressing 
+infinite-duration transfer functions in the partial fraction expansion form 
+\begin{align}
+    H(z) = \frac{A_1}{1-p_1z^{-1}} + \frac{A_2}{1-p_2z^{-1}} + \cdots + \frac{A_N}{1-p_Nz^{-1}},
+\end{align}
+where $p_k$ are poles of the system.
+
+\subsection{System Causality}
+Depending on the system duration, there are different ways to address the causality of the system. From Table \ref{causality}, we can see that while one can simply 
+look at the $z$-terms of the transfer function for finite-duration systems, the ROC is more important for infinite-duration systems.
+
+\begin{table}[hbt!]
+    \centering
+    \caption{Causality of DT systems based on transfer function.}
+    \label{causality}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        System type & Finite-duration & Infinite-duration \\[0.1cm]
+        \hline
+        & & \\
+        Causal & \Centerstack{Contains only \\negative powers of $z$} & \Centerstack{ROC: $|z|>\max|p_k|$, \\for poles $p_k=\{p_1,p_2,...,p_N\}$} \\[0.5cm]
+        Anticausal & \Centerstack{Contains only \\positive powers of $z$} & \Centerstack{ROC: $|z|<\min|p_k|$, \\for poles $p_k=\{p_1,p_2,...,p_N\}$} \\[0.5cm]
+        \Centerstack{Noncausal\\(two-sided)} & \Centerstack{Contains both \\negative and \\positive powers of $z$} & \Centerstack{ROC: $|p_1|<|z|<|p_2|$, \\for poles $p_k=\{p_1,p_2\}$} \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection{System Stability}
+A DT system is said to be \emph{stable} if the ROC of its transfer function contains the unit circle $|z|=1$. Since the ROC of finite-duration systems is 
+nearly the entire $z$-plane (which obviously includes the unit circle), finite-duration DT systems will always be stable. 
+\\ \\
+While the ROC is necessary for infinite-duration DT systems, there is a quick method to analyzing causal and anticausal systems just by looking at the poles. 
+If an infinite-duration DT system is causal, then the system can only be stable if the largest pole in magnitude is less than 1. That is, 
+\begin{align}
+    \text{Infinite and causal: } \max|p_k| < 1 \Longrightarrow \text{stable}.
+\end{align}
+Conversely, if the infinite-duration DT system is anticausal, then 
+the system can only be stable if the smallest pole in magnitude is greater than 1. That is,
+\begin{align}
+    \text{Infinite and anticausal: } \min|p_k| > 1 \Longrightarrow \text{stable}.
+\end{align}
+If the infinite-duration DT system is noncausal and contains only two poles, then one pole must be greater than 1 in magnitude while the other pole is less than 1 in magnitude. That is, 
+\begin{align}
+    \text{Infinite and noncausal with only two poles: } |p_1| < 1 < |p_2| \Longrightarrow \text{stable}.
+\end{align}
+Unfortunately, if there are more than two poles for an infinite-duration noncausal DT system, then some more ROC analysis is needed.
+\\ \\
+Regardless, we typically want to choose an appropriate ROC such that the DT system is stable. 
+
+\pagebreak
+\begin{example}
+    Given that a DT system generates an output $Y(z)$ from input $X(z)$, both given by, 
+    \begin{align*}
+        X(z) &= \frac{2z(z-\frac{10}{3})}{(z-\frac{1}{3})(z-3)}, \text{ for } \frac{1}{3}<|z|< 3, \\
+        Y(z) &= \frac{-\frac{1}{4}z}{(z-\frac{1}{3})(z-\frac{1}{4})}, \text{ for } |z|>\frac{1}{3},
+    \end{align*}
+    find the impulse response of such a system. Then characterize the system.
+\end{example}
+\begin{solution}
+    First, we find the transfer function.
+    \begin{align*}
+        H(z) = \frac{Y(z)}{X(z)} = \frac{-\frac{1}{4}z}{(z-\frac{1}{3})(z-\frac{1}{4})} \frac{(z-\frac{1}{3})(z-3)}{2z(z-\frac{10}{3})} = \frac{-\frac{1}{8}(z-3)}{(z-\frac{1}{4})(z-\frac{10}{3})}.
+    \end{align*}
+    Since $H(z)$ cannot be further simplified to a non-everlasting polynomial in $z^{-1}$, the system is of infinite duration. From the transfer function, we see $H(z)$ has two poles 
+    at $z=\frac{1}{4}$ and $z=\frac{10}{3}$. Now considering causality, there are three possible ROCs to consider.
+    \begin{align*}
+        \text{Causal: } & |z| > \max|p_k| = \frac{10}{3} \\
+        \text{Anticausal: } & |z| < \min|p_k| = \frac{1}{4} \\
+        \text{Noncausal: } & \frac{1}{4} < |z| < \frac{10}{3}
+    \end{align*}
+    Only one of the three ROCs above actually overlaps with the ROC for $X(z)$, and that is the noncausal option. As a sanity check,
+    \begin{align*}
+        \text{ROC}_{Y(z)} = \text{ROC}_{X(z)} \cap \text{ROC}_{H(z)} &= \left(\frac{1}{3}<|z|< 3\right) \cap \left(\frac{1}{4}<|z|<\frac{10}{3}\right) \\
+        &= \left(\frac{1}{3}<|z|< 3\right), \text{ at least.}
+    \end{align*}
+    We make an ``at least'' remark since there is a pole-zero cancellation at $z=3$ when multiplying $X(z)H(z)=Y(z)$, leaving $Y(z)$ with no pole at $z=3$ and hence a viable ROC of $|z|>\frac{1}{3}$.
+    \\ \\
+    Now we perform partial fraction expansion such that
+    \begin{align*}
+        H(z) &= \frac{-\frac{1}{8}(z-3)}{(z-\frac{1}{4})(z-\frac{10}{3})} = \left[\frac{A_1}{z-\frac{1}{4}} + \frac{A_2}{z-\frac{10}{3}}\right] \\
+        A_1 &= \frac{-\frac{1}{8}(z-3)}{(z-\frac{10}{3})}\bigg|_{z=1/4} = -\frac{33}{296} \\
+        A_2 &= \frac{-\frac{1}{8}(z-3)}{(z-\frac{1}{4})}\bigg|_{z=10/3} = -\frac{1}{74}.
+    \end{align*}
+    Finally, using ROC $\frac{1}{4}<|z|<\frac{10}{3}$, with $|z|>\frac{1}{4}$ contributing the causal part and $|z|<\frac{10}{3}$ contributing the anticausal part, we get the impulse response 
+    \begin{align*}
+        h[n] = -\frac{33}{296}\left(\frac{1}{4}\right)^n u[n] + \frac{1}{74}\left(\frac{10}{3}\right)^n u[-n-1].
+    \end{align*}
+    The DT system characterized by $h[n]$ and $H(z)$ can be described as 
+    \begin{itemize}
+        \item of infinite duration (rational function $H(z)$ cannot be further reduced), 
+        \item noncausal (ROC is an annulus), and
+        \item stable (ROC contains the unit circle).
+    \end{itemize}
+\end{solution}
+
+\begin{example}
+    Suppose a causal DT LTI system has the transfer function
+    \begin{align*}
+        H(z) = \frac{(z-1)(z-6)}{(z-2)(z-3)}.
+    \end{align*}
+    Determine if the system is stable. Then find the impulse response and difference equation which characterizes the system. 
+\end{example}
+\begin{solution}
+    Since the system is causal, we can check if the largest pole in magnitude is less that 1. Since 
+    \begin{align*}
+        \max|p_k| = 3 \nless 1,
+    \end{align*}
+    the system is not stable. To get the difference equation with causality in mind, we rewrite the rational function such that
+    \begin{align*}
+        H(z) = H^+(z) = \frac{(z-1)(z-6)}{(z-2)(z-3)} = \frac{z^2-7z+6}{z^2-5z+6} &= \frac{1-7z^{-1}+6z^{-2}}{1-5z^{-1}+6z^{-2}} = \frac{Y^+(z)}{X^+(z)} \\
+        \Longrightarrow (1-5z^{-1}+6z^{-2})Y^+(z) &= 1-7z^{-1}+6z^{-2}X^+(z) \\[0.25cm]
+        \Longrightarrow y[n]-5y[n-1]+6y[n-2] &= x[n]-7x[n-1]+6x[n-2].
+    \end{align*}
+    Lastly, to get the impulse response, we perform long division and partial fraction expansion such that 
+    \begin{align*}
+        H^+(z) = \frac{z^2-7z+6}{z^2-5z+6} &= 1 + \frac{-2z}{z^2-5z+6} \\ 
+        &= 1 + \frac{4}{z-2} - \frac{6}{z-3} \\
+        &= 1 + \frac{4z^{-1}}{1-2z^{-1}} - \frac{6z^{-1}}{1-3z^{-1}} \\[0.25cm]
+        \Longrightarrow h[n] &= \delta[n] + 4\cdot(2)^{n-1} u[n-1] - 6\cdot(3)^{n-1} u[n-1].
+    \end{align*}
+\end{solution}
+
+\subsection{Invertible Systems}
+As previously introduced, a system is invertible if there exists an inverse system that maps an output signal $y[n]$ back to its input $x[n]$. In the DT LTI case, 
+an inverse system characterized by $g[n]$ exists such that 
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x[n]$};
+        \node [] (output) at (+6,0){$x[n]$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (fwd) at (0,0){$h[n]$};
+        \node [draw,
+            fill=blue!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (inv) at (3,0){$g[n]$};
+        \draw [-latex, line width=1.5pt] (input) -- (fwd);
+        \draw [-latex, line width=1.5pt] (fwd) -- (inv);
+        \draw [-latex, line width=1.5pt] (inv) -- (output);
+    \end{tikzpicture}
+\end{center}
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$y[n]$};
+        \node [] (output) at (+6,0){$y[n]$};
+        \node [draw,
+            fill=blue!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (inv) at (0,0){$g[n]$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (fwd) at (3,0){$h[n]$};
+        \draw [-latex, line width=1.5pt] (input) -- (inv);
+        \draw [-latex, line width=1.5pt] (inv) -- (fwd);
+        \draw [-latex, line width=1.5pt] (fwd) -- (output);
+    \end{tikzpicture}
+\end{center}
+While an inverse system $g[n]$ may exist, it does not necessarily mean it is stable. In fact, for 
+\begin{align}
+    G^+(z) = \frac{1}{H^+(z)},
+\end{align}
+in order for a causal and stable DT LTI system $H^+(z)$ to have a causal and stable inverse DT LTI system $G^+(z)$, the transfer function $H^+(z)$ 
+must be a proper rational function (i.e., $\deg[N(z)]=\deg[D(z)]$) with both its poles and zeros all residing inside the unit circle on the $z$-plane. 
+Such a system is called a \emph{minimum phase system}. 
+\\ \\
+In the event that it is not possible to have a stable inverse system that is causal, one can force its causal state by applying a delay to the system, just 
+enough to create an \emph{auxiliary transfer function of the inverse system} which functions like a causal and stable inverse system, albeit delayed.
+
+\begin{example}
+    Find a causal and stable inverse of the system characterized by difference equation 
+    \begin{align*}
+        y[n] - 0.5y[n-1] = 0.5x[n-1].
+    \end{align*}
+\end{example}
+\begin{solution}
+    Converting to the $z$-domain, we get 
+    \begin{align*}
+        (1-0.5z^{-1})Y(z) &= 0.5z^{-1}X(z) \\
+        \Longrightarrow H(z) = \frac{Y(z)}{X(z)} &= \frac{0.5z^{-1}}{1-0.5z^{-1}}
+    \end{align*}
+    Taking the inverse, we get
+    \begin{align*}
+        G(z) = \frac{1}{H(z)} = \frac{1-0.5z^{-1}}{0.5z^{-1}} = 2z - 1 &= \frac{Y_G(z)}{X_G(z)} \\
+        \Longrightarrow Y_G(z) &= (2z - 1)X_G(z)
+    \end{align*}
+    Here we see that $G(z)$ is of finite duration and is stable. Now we convert back to the DT domain to get the difference equation 
+    \begin{align*}
+        y[n] = 2x[n+1] - x[n].
+    \end{align*}
+    Note that the inverse system above is stable but not causal. In order to force causality, we can delay the system by setting $m=n+1$ such that 
+    \begin{align*}
+        y[m-1] = 2x[m] - x[m-1],
+    \end{align*}
+    which now has an auxiliary transfer function 
+    \begin{align*}
+        \tilde{G}(z) = z^{-1}G(z) = z^{-1}(2z - 1) = 2 - z^{-1}.
+    \end{align*}
+\end{solution}
+
+\section{System Response Partitions}
+Given some system response $y[n]$, there are three different ways to partition the response, with each partition describing a particular 
+characteristic of the system response:
+\begin{enumerate}
+    \item Zero-state / zero-input partition
+    \item Natural / forced partition
+    \item Transient / steady-state partition
+\end{enumerate}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \textbf{\underline{Type 1: Zero-state / zero-input partition.}} \\[0.25cm]
+    As the names imply,
+    \begin{itemize}
+        \item the \emph{zero-state response} (ZSR) is the system response when there are no initial conditions, and
+        \item the \emph{zero-input response} (ZIR) is the system response when there is no input signal (but there are initial conditions).
+    \end{itemize}
+\end{tcolorbox}
+It follows that 
+\begin{align}
+    y[n] = y_{ZSR}[n] + y_{ZIR}[n].
+\end{align}
+Any geometric terms $a^n$ in the zero-input response $y_{ZIR}[n]$ are referred to as the \emph{characteristic modes} (also called \emph{natural modes}, or simply modes) 
+of the system. The zero-input response is comprised of only natural modes, whereas the zero-state response has a mix of natural modes and ``forced'' modes from the input excitation function $x[n]$.
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \textbf{\underline{Type 2: Natural / forced partition.}} \\[0.25cm]
+    On the discussion of natural modes and forced modes,
+    \begin{itemize}
+        \item the \emph{natural response} is the part of the system response with only natural modes which describe the natural identity of the system, and
+        \item the \emph{forced response} is the part of the system response with only forced modes which mimic the character of the excitation function $x[n]$.
+    \end{itemize}
+\end{tcolorbox}
+\noindent It follows that 
+\begin{align}
+    y[n] = y_{nat}[n] + y_{forc}[n].
+\end{align}
+The natural response is closely related to the zero-input response; since the zero-input response is composed exclusively of modes, we can use it to identify the modes, 
+then collect all terms with those modes to find the natural response. Naturally, the characteristic modes can also be determined by finding the poles of the system.
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    \textbf{\underline{Type 3: Transient / steady-state partition.}} \\[0.25cm]
+    The end behavior of the terms of the system response can be analyzed such that
+    \begin{itemize}
+        \item the \emph{transient response} is the part of the system response that decays to zero as $n\to\infty$, and
+        \item the \emph{steady-state response} is the part of the system response that remains after the transient response goes to zero.
+    \end{itemize}
+\end{tcolorbox}
+\noindent It follows that 
+\begin{align}
+    y[n] = y_{tr}[n] + y_{ss}[n].
+\end{align}
+
+\begin{example}
+    Suppose an input signal $x[n]=10\cos(\pi n/4)u[n]$ is inputted into a system characterized by the difference equation 
+    \begin{align*}
+        y[n] = 0.5y[n-1] + x[n].
+    \end{align*}
+    The system is initially at rest. Identify all six partitioned responses of the system response.
+\end{example}
+\begin{solution}
+    First, recognizing that we are dealing with causal signals and systems, it follows that 
+    \begin{align*}
+        H^+(z) &= \frac{Y^+(z)}{X^+(z)} = \frac{1}{1-0.5z^{-1}}, \\
+        X^+(z) &= \mathcal{Z}^+[x[n]] = \frac{10(1-(1/\sqrt{2})z^{-1})}{1-\sqrt{2}z^{-1}+z^{-2}} = \frac{10(1-(1/\sqrt{2})z^{-1})}{(1-e^{+j\pi/4}z^{-1})(1-e^{-j\pi/4}z^{-1})}.
+    \end{align*}
+    Then it follows that 
+    \begin{align*}
+        Y^+(z) = X^+(z)H^+(z) &= \frac{10(1-(1/\sqrt{2})z^{-1})}{(1-0.5z^{-1})(1-e^{+j\pi/4}z^{-1})(1-e^{-j\pi/4}z^{-1})} \\
+        &= \frac{6.3}{(1-0.5z^{-1})} + \frac{6.78e^{-j28.7^{\circ}}}{1-e^{+j\pi/4}z^{-1}} + \frac{6.78e^{+j28.7^{\circ}}}{1-e^{-j\pi/4}z^{-1}} \\
+        \Longrightarrow y[n] &= 6.3(0.5)^n u[n] + 13.56\cos\left(\frac{\pi n}{4}-28.7^{\circ}\right)u[n].
+    \end{align*}
+    To find the modes, first solve for $y_{ZIR}[n]$. Setting $x[n]=0$, we get 
+    \begin{align*}
+        y_{ZIR}[n] &= 0 \\
+        y_{ZSR}[n] &= y[n] - y_{ZIR}[n] = y[n] = 6.3(0.5)^n u[n] + 13.56\cos\left(\frac{\pi n}{4}-28.7^{\circ}\right)u[n].
+    \end{align*}
+    From $X^+(z)$, the forced modes are given by geometric term $(0.5)^n$. Therefore,
+    \begin{align*}
+        y_{forc}[n] &= 6.3(0.5)^n u[n] \\
+        y_{nat}[n] &= y[n] - y_{forc}[n] = 13.56\cos\left(\frac{\pi n}{4}-28.7^{\circ}\right)u[n].
+    \end{align*}
+    Lastly, we can group decaying terms together and the remaining terms together such that
+    \begin{align*}
+        y_{tr}[n] &= 6.3(0.5)^n u[n] \\
+        y_{ss}[n] &= y[n] - y_{tr}[n] = 13.56\cos\left(\frac{\pi n}{4}-28.7^{\circ}\right)u[n].
+    \end{align*}
+\end{solution}
+
+\section{Multirate Signal Processing}
+Recall that a DT signal is simply a sampled signal with sampling frequency $f_s$ such that 
+\begin{align}
+    x[n] = x(nT_s) = x\left(\frac{n}{f_s}\right).
+\end{align}
+Suppose 
+\begin{align}
+    x_1[n] &= x\left(\frac{n}{f_1}\right) \\
+    x_2[n] &= x\left(\frac{n}{f_2}\right),
+\end{align}
+where $f_1$ and $f_2$ are two different sampling frequencies. \emph{Multirate signal processing} is 
+the process of attaining $x_2[n]$ from $x_1[n]$ in the discrete-time domain. That is, it aims to 
+change the sampling rate from $f_1$ to $f_2$ without need to recollect data.
+\\ \\
+There are two main types of rate conversions: \emph{upsampling} and \emph{downsampling}. All other rate 
+conversions are a mix of the two. 
+
+\subsection{Upsampling}
+\emph{Upsampling} increases the sampling rate of a DT signal $x[n]$ by some integer factor $L$. It creates a rough estimate of 
+what would have been obtained had the original signal $x(t)$ been sampled at rate $(L\cdot f_s)$. Analagous to 
+a time expansion in the CT case, upsampling essentially stuffs zeros between data points in a DT sequence. This is given by 
+\begin{align}
+    (\uparrow L)x[n] = x_L[n] &=
+    \begin{cases}
+        x[n/L], & n=0,\pm L,\pm 2L,... \\
+        0, & \text{else}
+    \end{cases} \\
+    &= \left\{...,0,\underbar{x[0]}, \underbrace{0,...,0}_{L-1 \text{ zeros}}, x[1], 0, ...\right\}
+\end{align}
+Let $m=n/L$. Then in the $z$-domain, it follows that
+\begin{align}
+    X_L(z) &= \sum_{n=-\infty}^{+\infty} x_L[n]z^{-n} = \sum_{m=-\infty}^{+\infty} x[mL]z^{-mL} = \sum_{m=-\infty}^{+\infty} x[m](z^L)^{-m} = X(z^L), \\
+    & \text{with ROC } a<|z^L|<b \Longrightarrow a^{1/L}<|z|<b^{1/L} \Longrightarrow R^{1/L} \text{ for } a,b\in[0,\infty] \nonumber
+\end{align}
+
+\subsection{Downsampling}
+\emph{Downsampling} decreases the sampling rate of a DT signal $x[n]$ by some integer factor $M$. It creates a rough estimate of 
+what would have been obtained had the original signal $x(t)$ been sampled at rate $(f_s/M)$. Analagous to 
+a time compression in the CT case, downsampling essentially only retains every $M^{th}$ sample in a DT sequence and discards the rest. 
+This is denoted as 
+\begin{align}
+    (\downarrow M)x[n] = x_{1/M}[n] &= x[Mn] \\
+    &= \left\{...,\underbar{x[0]}, x[M], x[2M], ...\right\}.
+\end{align}
+Let $m=Mn$. Then in the $z$-domain, it follows that
+\begin{align}
+    X_{1/M}(z) = \sum_{n=-\infty}^{+\infty} x_{1/M}[n]z^{-n} &= \sum_{m=-\infty}^{+\infty} x[m/M]z^{-m/M} \nonumber \\
+    &= \sum_{m=-\infty}^{+\infty} x[m]z^{-m/M}\mathbbm{1}_{m=kM}[m] \nonumber \\
+    &= \sum_{m=-\infty}^{+\infty} x[m]z^{-m/M}\left(\frac{1}{M}\sum_{r=0}^{M-1}e^{j(2\pi m/M)r}\right) \nonumber \\
+    &= \frac{1}{M} \sum_{r=0}^{M-1}\sum_{m=-\infty}^{+\infty} x[m]z^{-m/M}e^{j(2\pi m/M)r} \nonumber \\
+    &= \frac{1}{M} \sum_{r=0}^{M-1}\sum_{m=-\infty}^{+\infty} x[m]\left(z^{1/M}e^{-j2\pi r/M}\right)^{-m} \nonumber \\
+    &= \frac{1}{M} \sum_{r=0}^{M-1} X\left(z^{1/M}e^{-j2\pi r/M}\right) \\
+    \text{with ROC } a<\left|z^{1/M}e^{-j2\pi r/M}\right|<b &\Longrightarrow a<|z^{1/M}|<b \nonumber \\
+    &\Longrightarrow a^M<|z|<b^M \Longrightarrow R^M \text{ for } a,b\in[0,\infty] \nonumber
+\end{align}
+
+\subsection{Resampling}
+\emph{Resampling} uses both upsampling and downsampling to change the sampling rate by some rational factor $L/M$. As shown in the block diagram below, it 
+requires some lowpass filter in-between upsampling and downsampling as a measure to interpolate the upsampled sequence as well as prevent aliasing when downsampling.
+
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x[n]$};
+        \node [] (output) at (+9,0){$x_{L/M}[n]$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (up) at (0,0){$\uparrow L$};
+        \node [draw,
+            fill=blue!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (lpf) at (3,0){\shortstack{Lowpass\\Filter}};
+        \node [draw,
+            fill=green!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (down) at (6,0){$\downarrow M$};
+        \draw [-latex, line width=1.5pt] (input) -- (up);
+        \draw [-latex, line width=1.5pt] (up) -- (lpf);
+        \draw [-latex, line width=1.5pt] (lpf) -- (down);
+        \draw [-latex, line width=1.5pt] (down) -- (output);
+    \end{tikzpicture}
+\end{center}
+\pagebreak
+Some common resampling factors $L/M$ include the following:
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (output) at (+9,0){\shortstack{Audio format\\conversion}};
+        \node [draw,
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (b1) at (0,0){\shortstack{CD\\44.1 [kHz]}};
+        \node [draw,
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (b2) at (3,0){$\dfrac{L}{M}=\dfrac{48}{44.1}$};
+        \node [draw,
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (b3) at (6,0){\shortstack{DAT\\48 [kHz]}};
+        \draw [-latex, line width=1.5pt] (b1) -- (b2);
+        \draw [-latex, line width=1.5pt] (b2) -- (b3);
+    \end{tikzpicture}
+\end{center}
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (output) at (+9,0){\shortstack{Speech\\compression}};
+        \node [draw,
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (b1) at (0,0){\shortstack{Speech\\on DAT\\48 [kHz]}};
+        \node [draw,
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (b2) at (3,0){$\dfrac{L}{M}=\dfrac{1}{6}$};
+        \node [draw,
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (b3) at (6,0){\shortstack{Speech\\for phone\\8 [kHz]}};
+        \draw [-latex, line width=1.5pt] (b1) -- (b2);
+        \draw [-latex, line width=1.5pt] (b2) -- (b3);
+    \end{tikzpicture}
+\end{center}
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (output) at (+9,0){\shortstack{Video format\\conversion}};
+        \node [draw,
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (b1) at (0,0){\shortstack{Film\\24 [fps]}};
+        \node [draw,
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (b2) at (3,0){$\dfrac{L}{M}=\dfrac{5}{4}$};
+        \node [draw,
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (b3) at (6,0){\shortstack{TV\\30 [fps]}};
+        \draw [-latex, line width=1.5pt] (b1) -- (b2);
+        \draw [-latex, line width=1.5pt] (b2) -- (b3);
+    \end{tikzpicture}
+\end{center}
+
+\end{document}
