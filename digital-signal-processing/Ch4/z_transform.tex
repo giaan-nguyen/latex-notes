@@ -1032,7 +1032,7 @@ then collect all terms with those modes to find the natural response. Naturally,
     \end{align*}
 \end{solution}
 
-\section{Multirate Signal Processing}
+\section{Sample-Rate Conversion}
 Recall that a DT signal is simply a sampled signal with sampling frequency $f_s$ such that 
 \begin{align}
     x[n] = x(nT_s) = x\left(\frac{n}{f_s}\right).
@@ -1042,7 +1042,7 @@ Suppose
     x_1[n] &= x\left(\frac{n}{f_1}\right) \\
     x_2[n] &= x\left(\frac{n}{f_2}\right),
 \end{align}
-where $f_1$ and $f_2$ are two different sampling frequencies. \emph{Multirate signal processing} is 
+where $f_1$ and $f_2$ are two different sampling frequencies. \emph{Sample-rate conversion} is 
 the process of attaining $x_2[n]$ from $x_1[n]$ in the discrete-time domain. That is, it aims to 
 change the sampling rate from $f_1$ to $f_2$ without need to recollect data.
 \\ \\
@@ -1176,5 +1176,6 @@ Some common resampling factors $L/M$ include the following:
         \draw [-latex, line width=1.5pt] (b2) -- (b3);
     \end{tikzpicture}
 \end{center}
+More on sample-rate conversion will be discussed in the next chapter.
 
 \end{document}
