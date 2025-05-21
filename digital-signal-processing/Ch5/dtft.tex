@@ -1,0 +1,734 @@
+\documentclass{report}
+\input{../../preamble.tex}
+
+\begin{document}
+\setcounter{chapter}{5}
+\setcounter{page}{54}
+\chapter{Discrete-Time Fourier Transform}
+
+Here, we introduce a special case of the $z$--transform. If we let $z=e^{j\Omega}$, then we get the \emph{discrete-time Fourier transform} (DTFT).
+\begin{align}
+    X(e^{j\Omega}) &= X(z)\big|_{z=\exp(j\Omega)}
+\end{align}
+An advantage of using the DTFT is not having to worry about ROCs. In addition, we are able to analyze and exploit the frequency content of DT signals and systems 
+using the DTFT, similar to the CT case. Interestingly, just as the $z$-transform is continuous in $z$, the DTFT is also continuous in $\Omega$.
+\\ \\
+Lastly, while 
+\begin{align}
+    e^{j\omega t} \neq e^{j(\omega+2\pi)t} \text{ for non-integer } t\in\mathbb{R},
+\end{align}
+it holds true that 
+\begin{align}
+    e^{j\Omega n} = e^{j(\Omega+2\pi)n} \text{ for } n\in\mathbb{Z}.
+\end{align}
+Therefore, the DTFT is $2\pi$-periodic.
+
+\section{Discrete-Time Fourier Transform}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    The \emph{discrete-time Fourier transform} (DTFT) of a DT signal $x[n]$ is a $2\pi$-periodic continuous function of $\Omega$ defined as 
+    \begin{align}
+        X(e^{j\Omega}) = \text{DTFT}[x[n]] = \sum_{n=-\infty}^{+\infty} x[n] e^{-j\Omega n}.
+    \end{align}
+\end{tcolorbox}
+Similar to the $z$--transform, the DTFT is essentially an operator that maps a signal defined in the \emph{time domain} to another signal defined 
+in the \emph{frequency domain}. $x[n]$ and $X(e^{j\Omega})$ constitute a unique \emph{DTFT pair}. This relationship can be written as 
+\begin{align}
+    x[n] \iff X(e^{j\Omega}).
+\end{align}
+Because of this relationship, there exists an \emph{inverse DTFT} defined by
+\begin{align}
+    x[n] = \text{DTFT}^{-1}[X(e^{j\Omega})] = \frac{1}{2\pi}\int_{-\pi}^{+\pi} X(e^{j\Omega}) e^{+j\Omega n} \,d\Omega,
+\end{align}
+though referencing a table of DTFT pairs is a lot simpler than computing the integral. 
+\\ \\
+Since DT signals are evaluated as sequences, the CT Dirichlet conditions are now condensed to a single sufficient condition for the DT case. 
+It follows that if $x[n]$ is absolutely summable such that 
+\begin{align}
+    \sum_{n=-\infty}^{+\infty}|x[n]| < \infty,
+\end{align}
+then $x[n]$ has a DTFT. However, it is a sufficient but not a necessary condition as both power signals and energy signals have DTFT pairs. 
+\\ \\
+Table \ref{dtft_prop} lists the properties of the Fourier transform.
+\begin{table}
+    \centering
+    \caption{Properties of the DTFT.}
+    \label{dtft_prop}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Property & $x[n]$ & $X(e^{j\Omega})=\text{DTFT}[x[n]]$ \\[0.15cm]
+        \hline
+        & & \\
+        Superposition & $K_1x_1[n]+K_2x_2[n]$ & $K_1X_1(e^{j\Omega})+K_2X_2(e^{j\Omega})$ \\[0.5cm]
+        Time shift & $x[n-n_0]$ & $e^{-j\Omega n_0}X(e^{j\Omega})$ \\[0.5cm]
+        Time reversal & $x[-n]$ & $X(e^{-j\Omega})$ \\[0.5cm]
+        Conjugation & $x^*[n]$ & $X^*(e^{-j\Omega})$ \\[0.5cm]
+        Frequency shift & $e^{j\Omega_0 n}x[n]$ & $X(e^{j(\Omega-\Omega_0)})$ \\[0.5cm]
+        Frequency derivative & $n\cdot x[n]$ & $j\cdot\dfrac{dX(e^{j\Omega})}{d\Omega} = j\cdot X'(e^{j\Omega})$\\[0.5cm]
+        Finite difference & $x[n]-x[n-1]$ & $(1-e^{-j\Omega})X(e^{j\Omega})$ \\[0.5cm]
+        Accumulation & $\displaystyle\sum_{k=-\infty}^{n} x[k]$ & $\dfrac{1}{1-e^{-j\Omega}} X(e^{j\Omega})$ \\[0.5cm]
+        Linear convolution & $x_1[n]*x_2[n]$ & $X_1(e^{j\Omega})X_2(e^{j\Omega})$ \\[0.5cm]
+        Multiplication & $x_1[n]x_2[n]$ & $\dfrac{1}{2\pi}\left[X_1(e^{j\Omega})*X_2(e^{j\Omega})\right]$ \\[0.5cm]
+        Modulation & $x(t)\cos(\omega_0 t)$ & $\dfrac{1}{2}[X(e^{j(\Omega-\Omega_0)}) + X(e^{j(\Omega+\Omega_0)})]$ \\[0.5cm]
+        Conjugate symmetry & $x[n]$ real & 
+        $\begin{cases}
+            X(e^{-j\Omega}) = X^*(e^{j\Omega}) \\
+            \Re(X(e^{j\Omega})) = \Re(X(e^{-j\Omega})) \\
+            \Im(X(e^{j\Omega})) = -\Im(X(e^{j\Omega})) \\
+            |X(e^{j\Omega})| = |X(e^{-j\Omega})| \\
+            \arg[X(e^{j\Omega})] = -\arg[X(e^{-j\Omega})]
+        \end{cases}$ \\[0.5cm]
+         & & \\[0.25cm]
+        \shortstack{Even-odd decomposition \\ of real signals} & 
+        $\begin{cases}
+            x_e[n]=\frac{1}{2}[x[n]+x[-n]] \\
+            x_o[n]=\frac{1}{2}[x[n]-x[-n]]
+        \end{cases}$ & 
+        $\begin{cases}
+            \Re(X(e^{j\Omega})) \\
+            j\Im(X(e^{j\Omega}))
+        \end{cases}$ \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+From the conjugate symmetry property, there are important implications about the properties of $x[n]$ and its DTFT $X(e^{j\Omega})$:
+\begin{center}
+    \begin{tabular}{|c|c|}
+        \hline
+        $x[n]$ & $X(e^{j\Omega})$ \\
+        \hline
+        Real and even & Real and even \\
+        Real and odd & Imaginary and odd \\
+        Imaginary and even & Imaginary and even \\
+        Imaginary and odd & Real and odd \\
+        \hline
+    \end{tabular}
+\end{center}
+Table \ref{dtft_pairs} lists some common DTFT pairs.
+
+\begin{example}
+    Show that $\text{DTFT}[\operatorname{sgn}[n]]=-j\cot\left(\frac{\Omega}{2}\right)$. 
+    Note that $\operatorname{sgn}[n] = u[n]-u[-n]$.
+\end{example}
+\begin{solution}
+    From the hint, we see that $\operatorname{sgn}[n] = u[n]-u[-n]$ is really just twice the odd part of real signal $u[n]$. 
+    That is, if we let $x[n]=u[n]$, then
+    \begin{align*}
+        \operatorname{sgn}[n] &= u[n]-u[-n] \\ 
+        &= x[n]-x[-n] = 2x_o[n].
+    \end{align*}
+    Then using the even-odd decomposition property of real signals for the DTFT, we see that 
+    \begin{align*}
+        \text{DTFT}[\operatorname{sgn}[n]] = \text{DTFT}[2x_o[n]] = j2\Im(X(e^{j\Omega})).
+    \end{align*} 
+    Therefore, for $X(e^{j\Omega})=\text{DTFT}[u[n]]$, 
+    \begin{align*}
+        \Im(X(e^{j\Omega})) &= \Im\left(\frac{1}{1-e^{-j\Omega}} + \sum_{k=-\infty}^{+\infty}\pi\delta(\Omega-2\pi k)\right) = \Im\left(\frac{1}{1-e^{-j\Omega}}\right) \\
+        &= \Im\left(\frac{e^{+j\Omega/2}}{e^{+j\Omega/2}-e^{-j\Omega/2}}\right) = \Im\left(\frac{\cos(\Omega/2)+j\sin(\Omega/2)}{j2\sin(\Omega/2)}\right) \\
+        &= \Im\left(\frac{\cos(\Omega/2)}{j2\sin(\Omega/2)}\right) = \Im\left(-j\frac{\cot(\Omega/2)}{2}\right) = -\frac{\cot(\Omega/2)}{2}. \\
+        \Longrightarrow\text{DTFT}[\operatorname{sgn}[n]] &= j2\Im(X(e^{j\Omega})) = j2\left(-\frac{\cot(\Omega/2)}{2}\right) = -j\cot\left(\frac{\Omega}{2}\right).
+    \end{align*}
+\end{solution}
+
+\begin{table}
+    \centering
+    \caption{DTFT pairs.}
+    \label{dtft_pairs}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|c|c|}
+        \hline
+        $x[n]$ & $X(e^{j\Omega})=\text{DTFT}[x[n]]$ \\[0.15cm]
+        \hline
+        & \\[0.1cm]
+        $\delta[n]$ & $1$ \\[0.5cm]
+        $\delta[n-n_0],\, n_0\in\mathbb{Z}$ & $e^{-j\Omega n_0}$ \\[0.5cm]
+        $1$ & $2\pi\displaystyle\sum_{k=-\infty}^{+\infty}\delta(\Omega-2\pi k)$ \\[0.5cm]
+        $u[n]$ & $\dfrac{1}{1-e^{-j\Omega}} + \displaystyle\sum_{k=-\infty}^{+\infty}\pi\delta(\Omega-2\pi k)$ \\[0.5cm]
+        $\operatorname{sgn}[n]=u[n]-u[-n]$ & $-j\cot\left(\dfrac{\Omega}{2}\right)$ \\[0.5cm]
+        $u[n]-u[n-N]$ & $e^{-j\Omega(N-1)/2}\left[\dfrac{\sin\left(\frac{N\Omega}{2}\right)}{\sin\left(\frac{\Omega}{2}\right)}\right]$ \\[0.5cm]
+        $u[n+N]-u[n-(N+1)]$ & $\dfrac{\sin\left[\Omega\left(N+\frac{1}{2}\right)\right]}{\sin\left(\frac{\Omega}{2}\right)}$ \\[0.5cm]
+        $a^n u[n],\, |a|<1$ & $\dfrac{1}{1-ae^{-j\Omega}}$ \\[0.5cm]
+        $a^n u[-n-1],\, |a|>1$ & $\dfrac{1}{1-ae^{-j\Omega}}$ \\[0.5cm]
+        $a^{-n} u[-n-1],\, |a|<1$ & $\dfrac{ae^{j\Omega}}{1-ae^{j\Omega}}$ \\[0.5cm]
+        $n\cdot a^n u[n],\, |a|<1$ & $\dfrac{ae^{j\Omega}}{(e^{j\Omega}-a)^2}$ \\[0.5cm]
+        $e^{j\Omega_0 n}$ & $2\pi\displaystyle\sum_{k=-\infty}^{+\infty}\delta(\Omega-\Omega_0-2\pi k)$ \\[0.5cm]
+        $\cos(\Omega_0 n)$ & $\pi\displaystyle\sum_{k=-\infty}^{+\infty}[\delta(\Omega-\Omega_0-2\pi k)+\delta(\Omega+\Omega_0-2\pi k)]$ \\[0.5cm]
+        $\sin(\Omega_0 n)$ & $\dfrac{\pi}{j}\displaystyle\sum_{k=-\infty}^{+\infty}[\delta(\Omega-\Omega_0-2\pi k)-\delta(\Omega+\Omega_0-2\pi k)]$ \\[0.5cm]
+        $a^n\cos(\Omega_0 n+\theta)u[n],\,|a|<1$ & $\dfrac{e^{j2\Omega}\cos\theta-ae^{j\Omega}\cos(\Omega_0-\theta)}{e^{j2\Omega}-2ae^{j\Omega}\cos\Omega_0+a^2}$ \\[0.5cm]
+        $\dfrac{\sin(\Omega_0 n)}{\pi n}$ & $\displaystyle\sum_{k=-\infty}^{+\infty}[u(\Omega+\Omega_0-2\pi k)-u(\Omega-\Omega_0-2\pi k)] = \displaystyle\sum_{k=-\infty}^{+\infty}\operatorname{rect}\left(\dfrac{\Omega-2\pi k}{2\Omega_0}\right)$ \\[0.5cm]
+        \hline
+    \end{tabular}
+    }
+\end{table}
+
+\begin{example}
+    Find the DTFT of the discrete-time impulse train 
+    \begin{align*}
+        \Sha[n] = \sum_{m=-\infty}^{+\infty}\delta[n-mN], \text{ for } N\in\mathbb{Z}^+.
+    \end{align*}
+\end{example}
+\begin{solution}
+    Note that the DT impulse train is merely an upsampled version of $x[n]=1$ by a factor of $N$. That is, there are $N-1$ zeros stuffed 
+    between each sample of $x[n]$:
+    \begin{align*}
+        x[n] = 1 \Longrightarrow \Sha[n] = (\uparrow N)x[n] = x_N[n].
+    \end{align*}
+    Therefore, for $z=e^{j\Omega}$,
+    \begin{align*}
+        X_N(z) = X(z^N) \Longrightarrow X_N(e^{j\Omega}) = X(e^{j\Omega N}).
+    \end{align*}
+    Then for $X(e^{j\Omega}) = \text{DTFT}[1] = 2\pi\sum_{k=-\infty}^{+\infty}\delta(\Omega-2\pi k)$,
+    \begin{align*}
+        \text{DTFT}[\Sha[n]] = X(e^{j\Omega N}) &= 2\pi\sum_{k=-\infty}^{+\infty}\delta(\Omega N-2\pi k) \\
+        &= 2\pi\sum_{k=-\infty}^{+\infty}\delta\left(N\left(\Omega -\frac{2\pi k}{N}\right)\right) \\
+        &= \frac{2\pi}{N}\sum_{k=-\infty}^{+\infty}\delta\left(\Omega -\frac{2\pi k}{N}\right).
+    \end{align*}
+\end{solution}
+
+\section{DTFT of Periodic Signals}
+Analagous to the CT form, Fourier's theorem states that any periodic DT signal $x[n]$ can be expressed as a finite sum of DT sinusoids. Here, a periodic DT signal can be 
+written in exponential form: 
+\begin{align}
+    x[n] &= \sum_{k=0}^{N_0-1} x_k e^{jk\Omega_0 n}  \\
+    x_k &= \frac{1}{N_0}\sum_{n=0}^{N_0-1} x[n]e^{-jk\Omega_0 n}, \text{ for } \Omega_0 = 2\pi/N_0.
+\end{align}
+Then the DTFT of a periodic DT signal $x[n]$ is given by 
+\begin{align}
+    \text{DTFT}[x[n]] &= \text{DTFT}\left[\sum_{k=0}^{N_0-1} x_k e^{jk\Omega_0 n}\right] = \sum_{k=0}^{N_0-1} \text{DTFT}[x_k e^{jk\Omega_0 n}] \\
+    &= \sum_{k=0}^{N_0-1} x_k 2\pi \sum_{m=-\infty}^{+\infty}\delta(\Omega - k\Omega_0 - 2\pi m) = 2\pi \sum_{k=-\infty}^{+\infty}x_k\delta(\Omega - k\Omega_0).
+\end{align}
+
+\section{Parseval's Theorem for DTFT}
+Similar to the CT case, Parseval's theorem for the DTFT is essentially a ``conservation of energy'' theorem for any DT signal (aperiodic or periodic). 
+When signals are mapped from the discrete-time function to the continuous-frequency DTFT spectrum, the total signal energy is conserved. It follows that 
+the total energy of a DT signal $x[n]$ can be evaluated as:
+\begin{align}
+    E_x = \sum_{n=-\infty}^{+\infty} \left|x[n]\right|^2  = \frac{1}{2\pi}\int_{-\pi}^{+\pi} \left|X(e^{j\Omega})\right|^2 \,d\Omega
+\end{align}
+Additionally, we can define the \emph{one-sided energy spectral density} (1-sided ESD) to be 
+\begin{align}
+    ESD_1 = \frac{1}{\pi}\left|X(e^{j\Omega})\right|^2,
+\end{align}
+and the \emph{two-sided energy spectral density} (2-sided ESD) to be 
+\begin{align}
+    ESD_2 = \frac{1}{2\pi}\left|X(e^{j\Omega})\right|^2.
+\end{align}
+Note that the 2-sided ESD is defined for all frequencies, whereas the 1-sided ESD is defined for only nonnegative frequencies. 
+Because of this, the values of the 2-sided ESD are half the values of the 1-sided ESD. In signal processing, we tend to be more interested in the 1-sided ESD. 
+Regardless, because $X(e^{j\Omega})$ is periodic, the ESD is also periodic.
+
+\section{DT LTI Systems with DTFT}
+Similar to the $z$--transform, DT LTI systems characterized by LCCDEs can be solved by applying the DTFT, computing the $\Omega$-domain solution, 
+and mapping the solution back to the time domain. 
+\\ \\
+An LCCDE of the form 
+\begin{align}
+    \sum_{k=0}^{N} a_k y[n-k] = \sum_{k=0}^{M} b_k x[n-k].
+\end{align}
+can be transformed to the $\Omega$-domain to get 
+\begin{align}
+    \left[\sum_{k=0}^{N} a_k e^{-j\Omega k}\right]Y(e^{j\Omega}) = \left[\sum_{k=0}^{M} b_k e^{-j\Omega k}\right]X(e^{j\Omega}).
+\end{align}
+
+\begin{example}
+    A DT LTI system is characterized by the LCCDE 
+    \begin{align*}
+        y[n]+y[n-1] = x[n]-x[n-1].
+    \end{align*}
+    Find the system response to input $x[n]=(0.5)^n u[n]$.
+\end{example}
+\begin{solution}
+    Transforming the LCCDE to $\Omega$-domain, we get 
+    \begin{align*}
+        [1+e^{-j\Omega}]Y(e^{j\Omega}) &= [1-e^{-j\Omega}]X(e^{j\Omega}) \\
+        \Longrightarrow Y(e^{j\Omega}) &= \left[\frac{1-e^{-j\Omega}}{1+e^{-j\Omega}}\right]X(e^{j\Omega}).
+    \end{align*}
+    From the table of DTFT pairs, we see that
+    \begin{align*}
+        \text{DTFT}\left[(0.5)^n u[n]\right] = \frac{1}{1-0.5e^{-j\Omega}}.
+    \end{align*}
+    Therefore, by applying partial fraction expansion with respect to $z=e^{j\Omega}$, we get
+    \begin{align*}
+        Y(e^{j\Omega}) &= \left[\frac{1-e^{-j\Omega}}{1+e^{-j\Omega}}\right]\frac{1}{1-0.5e^{-j\Omega}} \\
+        \Longrightarrow Y(z) &= \frac{1-z^{-1}}{(1+z^{-1})(1-0.5z^{-1})} = z\left[\frac{z-1}{(z+1)(z-0.5)}\right] = \frac{4/3}{1+z^{-1}} - \frac{1/3}{1-0.5z^{-1}} \\
+        \Longrightarrow Y(e^{j\Omega}) &= \frac{4/3}{1+e^{-j\Omega}}-\frac{1/3}{1-0.5e^{-j\Omega}},
+    \end{align*}
+    and the solution becomes 
+    \begin{align*}
+        y[n] = \frac{4}{3}(-1)^n u[n] - \frac{1}{3}(0.5)^n u[n].
+    \end{align*}
+\end{solution}
+
+\section{DT Frequency Response}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    The \emph{discrete-time frequency response function} is the DTFT of the DT impulse response:
+    \begin{align}
+        H(e^{j\Omega}) = \frac{Y(e^{j\Omega})}{X(e^{j\Omega})} = \text{DTFT}[h[n]].
+    \end{align}
+\end{tcolorbox}
+\noindent In fact, by the linear convolution property, it follows that 
+\begin{align}
+    y[n] = x[n] * h[n] \iff Y(e^{j\Omega}) = X(e^{j\Omega})H(e^{j\Omega}).
+\end{align}
+Symbolically,
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x[n]$};
+        \node [] (output) at (+3,0){$y[n]$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$h[n]$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node at (0,0) [double arrow, draw=black, top color=red, bottom color=blue,
+            minimum width = 15pt, double arrow head extend=5pt,
+            minimum height=12mm,
+            rotate=90] {};
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$X(e^{j\Omega})$};
+        \node [] (output) at (+3,0){$Y(e^{j\Omega})$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$H(e^{j\Omega})$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+As the impulse response is the system response to input $x[n]=\delta[n]$, consider the DTFT of the impulse signal $\text{DTFT}[\delta[n]]=1$. Then it also follows that 
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x[n]=\delta[n]$};
+        \node [] (output) at (+3,0){$y[n]=h[n]$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$h[n]$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node at (0,0) [double arrow, draw=black, top color=red, bottom color=blue,
+            minimum width = 15pt, double arrow head extend=5pt,
+            minimum height=12mm,
+            rotate=90] {};
+    \end{tikzpicture} \\[0.25cm]
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$X(e^{j\Omega})=1$};
+        \node [] (output) at (+3,0){$Y(e^{j\Omega})=H(e^{j\Omega})$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (system) at (0,0){$H(e^{j\Omega})$};
+        \draw [-latex, line width=1.5pt] (input) -- (system);
+        \draw [-latex, line width=1.5pt] (system) -- (output);
+    \end{tikzpicture}
+\end{center}
+Interestingly, the DT frequency response is related to the DT transfer function:
+\begin{align}
+    H(e^{j\Omega}) = H(z)\big|_{z=\exp(j\Omega)}
+\end{align}
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+    As before, there are two approaches to finding the frequency response of a DT LTI system:
+    \begin{enumerate}
+        \item Find $X(e^{j\Omega}),Y(e^{j\Omega})$. Then calculate $H(e^{j\Omega})=Y(e^{j\Omega})/X(e^{j\Omega})$.
+        \item Find $X(e^{j\Omega}),Y(e^{j\Omega})$. Then substitute $X(e^{j\Omega})=1$ and $Y(e^{j\Omega})=H(e^{j\Omega})$.
+    \end{enumerate}
+\end{tcolorbox}
+While the frequency response can be used for determining system stability just like the transfer function, 
+the frequency response has the additional tool of analyzing the gain and phase of an LTI system at particular 
+frequencies of interest. 
+\\ \\
+The magnitude $|H(e^{j\Omega})|$ of the DT frequency response is called the \emph{magnitude response} and has an associated \emph{phase reponse} $\phase{H(e^{j\Omega})}$. 
+The plots of the magnitude response and phase response are two-sided and continuous and are collectively referred to as the \emph{frequency spectrum}. 
+\\ \\ 
+When expressed as $H(e^{j\Omega})=\dfrac{N(e^{j\Omega})}{D(e^{j\Omega})}$, the magnitude and phase responses can be computed as 
+\begin{align}
+    |H(e^{j\Omega})| &= \frac{|N(e^{j\Omega})|}{|D(e^{j\Omega})|} = \frac{\sqrt{[\Re(N(e^{j\Omega}))]^2 + [\Im(N(e^{j\Omega})]^2}}{\sqrt{[\Re(D(e^{j\Omega}))]^2 + [\Im(D(e^{j\Omega}))]^2}} \\
+    \phase{H(e^{j\Omega})} &=  \phase{N(e^{j\Omega})} -  \phase{D(e^{j\Omega})} = \arctan\left(\frac{\Im(N(e^{j\Omega}))}{\Re(N(e^{j\Omega}))}\right) - \arctan\left(\frac{\Im(D(e^{j\Omega}))}{\Re(D(e^{j\Omega}))}\right)
+\end{align}
+Note that DT LTI systems characterized by LCCDEs have the frequency response 
+\begin{align}
+    H(e^{j\Omega}) = \frac{\displaystyle\sum_{k=0}^{M} b_k e^{-j\Omega k}}{\displaystyle\sum_{k=0}^{N} a_k e^{-j\Omega k}}.
+\end{align}
+
+\pagebreak
+\section{Sample-Rate Conversion}
+As explored before in the $z$-domain, we now can examine the frequency content behind sample-rate conversion by substituting $z=e^{j\Omega}$ in previous analyses. 
+As a result, the importance of using filters for sample-rate conversions will become more obvious.
+
+\subsection{Interpolation}
+As a reminder, upsampling stuffs $L-1$ zeros between consecutive points of a sequence $x[n]$ to give the appearance of having sampled at rate $(L\cdot f_s)$. Its $z$--transform is 
+given by
+\begin{align}
+    X_L(z) = X(z^L).
+\end{align}
+Substituting $z=e^{j\Omega}$, we get 
+\begin{align}
+    X_L(e^{j\Omega}) = X(e^{j(\Omega L)}).
+\end{align}
+Because the DTFT is $2\pi$-periodic, $X_L(e^{j\Omega})$ is thus periodic. Let 
+\begin{align}
+    X_{\langle2\pi\rangle}(e^{j\Omega}) = X(e^{j\Omega}), \text{ for } \Omega\in[-\pi,\pi].
+\end{align}
+Then the spectrum of $X_L(e^{j\Omega})$ can be described as the sum of shifted 
+compressed (by factor $L$) copies of $X_{\langle2\pi\rangle}(e^{j\Omega})$, centered at $\Omega_k = 2\pi k/L$.
+
+\begin{center}
+    \begin{table}[!hbt]
+    \small
+    \centering
+    \caption{Upsampling.}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{ c|c }
+    DT Sequence & DTFT Spectrum \\
+    \hline 
+    \adjustbox{valign=m}{\resizebox{0.4\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= ((3 * sin(deg(\x)) / \x) + (\x == 0) * (3))^2 ; }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=11, ytick={0}, ylabel={$x[n]$},
+                xmin=-7.5, xmax=7.5, xtick={0},
+                domain=-7:7, samples=15,
+                extra x ticks={0}, extra x tick labels={\scriptsize\Centerstack{ \\ }}, 
+                width=7cm, height=4cm]
+                \addplot+ [
+                    ycomb,
+                ] {func(x)};
+            \end{axis}
+        \end{tikzpicture}}} & 
+    \adjustbox{valign=m}{\resizebox{0.4\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > -2, \x < 2) * (1-abs(\x/2)); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=2, ytick={0}, ylabel={$X(e^{j\Omega})$},
+                xmin=-7.5, xmax=7.5, xtick={0},
+                domain=-7:7, samples=200,
+                extra x ticks={-2*pi,-pi,-2,2,pi,2*pi}, extra x tick labels={\scriptsize\Centerstack{$-2\pi$\\ }, \scriptsize\Centerstack{$-\pi$\\ }, \scriptsize\Centerstack{$-B$\\ }, \scriptsize\Centerstack{$B$\\ }, \scriptsize\Centerstack{$\pi$\\ }, \scriptsize\Centerstack{$2\pi$\\ }}, 
+                width=7cm, height=4cm]
+                \addplot [blue,thick]{func(x)+func(x+2*pi)+func(x-2*pi)};
+                \draw[red,dashed] (-pi,0)--(-pi,1.1)--(pi,1.1)--(pi,0);
+                \node[violet] at (0,1.25) {\scriptsize$X_{\langle 2\pi\rangle}(e^{j\Omega})$};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+    \adjustbox{valign=m}{\resizebox{0.4\textwidth}{!}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=11, ytick={0}, ylabel={$x_L[n]$},
+                xmin=-7.5, xmax=7.5, xtick={0},
+                extra x ticks={1.5}, extra x tick labels={\scriptsize\Centerstack{$L-1$\\zeros}}, 
+                width=7cm, height=4cm]
+                \addplot+ [
+                    ycomb,
+                ] coordinates {(-6,1.8604) (-5,0) (-4.5,0) (-4,0) (-3,6.3727) (-2,0) (-1.5,0) (-1,0) (0,9) (1,0) (1.5,0) (2,0) (3,6.3727) (4,0) (4.5,0) (5,0) (6,1.8604)};
+            \end{axis}
+        \end{tikzpicture}}} & 
+    \adjustbox{valign=m}{\resizebox{0.4\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > -1, \x < 1) * (1-abs(\x)); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=2, ytick={0}, ylabel={$X_L(e^{j\Omega})$},
+                xmin=-7.5, xmax=7.5, xtick={0},
+                domain=-7:7, samples=200,
+                extra x ticks={-2*pi,-pi,-1,1,pi,2*pi}, extra x tick labels={\scriptsize$-\dfrac{4\pi}{L}$, \scriptsize$-\dfrac{2\pi}{L}$, \scriptsize$-\dfrac{B}{L}$, \scriptsize$\dfrac{B}{L}$, \scriptsize$\dfrac{2\pi}{L}$, \scriptsize$\dfrac{4\pi}{L}$}, 
+                width=7cm, height=4cm]
+                \addplot [blue,thick]{func(x)+func(x+2*pi)+func(x+pi)+func(x-2*pi)+func(x-pi)};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+        \hline
+    \end{tabular}
+    }
+    \end{table}
+\end{center}
+
+Of course, upsampling is not a perfect reconstruction of what a CT signal sampled at a higher rate would look like, due to the presence of stuffed zeros. In actuality, these zeros would be replaced with 
+sampled values of the original CT signal being sampled. 
+\\ \\
+Here, we introduce the ideal reconstruction filter, which aims to remove image spectra such that the time-domain output is a perfectly reconstructed signal at a higher sample rate. Let 
+\begin{align}
+    H_{\langle 2\pi\rangle}(e^{j\Omega}) = 
+    \begin{cases}
+        1, & 0\leq|\Omega|\leq\pi/L \\
+        0, & \pi/L<|\Omega|\leq\pi.
+    \end{cases}
+\end{align}
+Note that the cutoff frequency of this ideal lowpass filter is at $|\Omega_c|=\pi/L$. Since the DTFT is $2\pi$-periodic, the ideal reconstruction filter is then given by 
+\begin{align}
+    H(e^{j\Omega}) = \sum_{k=-\infty}^{+\infty} H_{\langle 2\pi\rangle}(e^{j(\Omega+2\pi k)}).
+\end{align}
+The process of upsampling followed by a reconstruction filter is called \emph{interpolation}.
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x[n]$};
+        \node [] (output) at (+6,0){\Centerstack{$x_L[n]$\\(interpolated)}};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (up) at (0,0){$\uparrow L$};
+        \node [draw,
+            fill=green!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (lpf) at (3,0){\Centerstack{Lowpass\\Filter}};
+        \draw [-latex, line width=1.5pt] (input) -- (up);
+        \draw [-latex, line width=1.5pt] (up) -- (lpf);
+        \draw [-latex, line width=1.5pt] (lpf) -- (output);
+    \end{tikzpicture}
+\end{center}
+
+\subsection{Decimation}
+As a reminder, downsampling only retains every $M^{th}$ point of a sequence $x[n]$ to give the appearance of having sampled at rate $(f_s/M)$. Its $z$--transform is 
+given by
+\begin{align}
+    X_{1/M}(z) = \frac{1}{M} \sum_{r=0}^{M-1} X\left(z^{1/M}e^{-j2\pi r/M}\right).
+\end{align}
+Substituting $z=e^{j\Omega}$, we get 
+\begin{align}
+    X_{1/M}(e^{j\Omega}) = \frac{1}{M} \sum_{r=0}^{M-1} X\left(e^{j\Omega/M}e^{-j2\pi r/M}\right) = \frac{1}{M} \sum_{r=0}^{M-1} X\left(e^{j(\Omega-2\pi r)/M}\right).
+\end{align}
+Because the DTFT is $2\pi$-periodic, $X_{1/M}(e^{j\Omega})$ is thus periodic. Again let 
+\begin{align}
+    X_{\langle2\pi\rangle}(e^{j\Omega}) = X(e^{j\Omega}), \text{ for } \Omega\in[-\pi,\pi].
+\end{align}
+Then the spectrum of $X_{1/M}(e^{j\Omega})$ can be described as the sum of shifted 
+expanded (by factor $M$) copies of $X_{\langle2\pi\rangle}(e^{j\Omega})$, centered at $\Omega_k = 2\pi k$, albeit attenuated.
+\begin{center}
+    \begin{table}[!hbt]
+    \small
+    \centering
+    \caption{Downsampling.}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{ c|c }
+    DT Sequence & DTFT Spectrum \\
+    \hline 
+    \adjustbox{valign=m}{\resizebox{0.4\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= ((3 * sin(deg(\x)) / \x) + (\x == 0) * (3))^2 ; }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=11, ytick={0}, ylabel={$x[n]$},
+                xmin=-7.5, xmax=7.5, xtick={0},
+                domain=-7:7, samples=15,
+                extra x ticks={0}, extra x tick labels={\scriptsize\Centerstack{ \\ }}, 
+                width=7cm, height=4cm]
+                \addplot+ [
+                    ycomb,
+                ] {func(x)};
+            \end{axis}
+        \end{tikzpicture}}} & 
+    \adjustbox{valign=m}{\resizebox{0.4\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > -2, \x < 2) * (1-abs(\x/2)); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=2, ytick={0}, ylabel={$X(e^{j\Omega})$},
+                xmin=-7.5, xmax=7.5, xtick={0},
+                domain=-7:7, samples=200,
+                extra x ticks={-2*pi,-pi,-2,2,pi,2*pi}, extra x tick labels={\scriptsize\Centerstack{$-2\pi$\\ }, \scriptsize\Centerstack{$-\pi$\\ }, \scriptsize\Centerstack{$-B$\\ }, \scriptsize\Centerstack{$B$\\ }, \scriptsize\Centerstack{$\pi$\\ }, \scriptsize\Centerstack{$2\pi$\\ }}, 
+                width=7cm, height=4cm]
+                \addplot [blue,thick]{func(x)+func(x+2*pi)+func(x-2*pi)};
+                \draw[red,dashed] (-pi,0)--(-pi,1.1)--(pi,1.1)--(pi,0);
+                \node[violet] at (0,1.25) {\scriptsize$X_{\langle 2\pi\rangle}(e^{j\Omega})$};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+    \adjustbox{valign=m}{\resizebox{0.4\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= ((3 * sin(deg(\x)) / \x) + (\x == 0) * (3))^2 ; }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=11, ytick={0}, ylabel={$x_{1/M}[n]$},
+                xmin=-7.5, xmax=7.5, xtick={0},
+                domain=-7:7, samples=15,
+                extra x ticks={0}, extra x tick labels={\scriptsize\Centerstack{ \\ }}, 
+                width=7cm, height=4cm]
+                \addplot+ [
+                    ycomb,
+                ] {func(2*x)};
+            \end{axis}
+        \end{tikzpicture}}} & 
+    \adjustbox{valign=m}{\resizebox{0.4\textwidth}{!}{
+        \begin{tikzpicture}
+            [declare function={
+                func(\x)= and(\x > -4, \x < 4) * (1-abs(\x/4)); }]
+            \begin{axis}[
+                axis x line=center, axis y line=center,
+                ymin=0, ymax=2, ytick={0}, ylabel={$X_{1/M}(e^{j\Omega})$},
+                xmin=-7.5, xmax=7.5, xtick={0},
+                domain=-7:7, samples=200,
+                extra x ticks={-2*pi,-4,4,2*pi}, extra x tick labels={\scriptsize\Centerstack{$-2\pi$\\ }, \scriptsize\Centerstack{$-MB$\\ }, \scriptsize\Centerstack{$MB$\\ }, \scriptsize\Centerstack{$2\pi$\\ }}, 
+                extra y ticks={0.5}, extra y tick labels={\scriptsize$1/M$}, 
+                width=7cm, height=4cm]
+                \addplot [blue,thick]{func(x)/2};
+                \addplot [red,thick]{func(x+2*pi)/2};
+                \addplot [red,thick]{func(x-2*pi)/2};
+                \node[] at (3,0.5) {\scriptsize\Centerstack{Aliasing\\$\downarrow$}};
+            \end{axis}
+        \end{tikzpicture}}} \\[1cm]
+        & \adjustbox{valign=m}{\resizebox{0.4\textwidth}{!}{
+            \begin{tikzpicture}
+                [declare function={
+                    func(\x)= and(\x > -4, \x < 4) * (1-abs(\x/4)); }]
+                \begin{axis}[
+                    axis x line=center, axis y line=center,
+                    ymin=0, ymax=2, ytick={0}, ylabel={$X_{1/M}(e^{j\Omega})$},
+                    xmin=-7.5, xmax=7.5, xtick={0},
+                    domain=-7:7, samples=200,
+                    extra x ticks={-2*pi,-4,4,2*pi}, extra x tick labels={\scriptsize\Centerstack{$-2\pi$\\ }, \scriptsize\Centerstack{$-MB$\\ }, \scriptsize\Centerstack{$MB$\\ }, \scriptsize\Centerstack{$2\pi$\\ }}, 
+                    extra y ticks={0.5}, extra y tick labels={\scriptsize$1/M$}, 
+                    width=7cm, height=4cm]
+                    \addplot [blue,thick]{func(x)/2 + func(x+2*pi)/2 + func(x-2*pi)/2};
+                    \node[] at (3,0.5) {\scriptsize\Centerstack{Aliasing\\$\downarrow$}};
+                \end{axis}
+            \end{tikzpicture}}} \\[1cm]
+        \hline
+    \end{tabular}
+    }
+    \end{table}
+\end{center}
+However, unlike upsampling, there is a risk of aliasing with downsampling. Let $B\in[0,\pi]$ be the maximum frequency in $X_{\langle 2\pi\rangle}(e^{j\Omega})$ 
+that contains nonzero frequency content. Then the only mathematical instance when aliasing is not an issue is when 
+\begin{align}
+    MB < 2\pi - MB \Longrightarrow B < \frac{\pi}{M} \text{ [rad/samp]},
+\end{align}
+which rarely happens as this would require the data to contain only very low frequency content. Therefore, there is a need to apply some sort
+of filter before downsampling.
+
+\pagebreak
+\noindent\emph{Decimation} then is the process of applying an anti-aliasing filter followed by downsampling.
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x[n]$};
+        \node [] (output) at (+6,0){\Centerstack{$x_{1/M}[n]$\\(decimated)}};
+        \node [draw,
+            fill=blue!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (lpf) at (0,0){\Centerstack{Lowpass\\Filter}};
+        \node [draw,
+            fill=red!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (down) at (3,0){$\downarrow M$};
+        \draw [-latex, line width=1.5pt] (input) -- (lpf);
+        \draw [-latex, line width=1.5pt] (lpf) -- (down);
+        \draw [-latex, line width=1.5pt] (down) -- (output);
+    \end{tikzpicture}
+\end{center}
+The ideal anti-aliasing filter aims to avoid aliasing by removing higher frequency content in $X_{\langle 2\pi\rangle}(e^{j\Omega})$ such that the image spectra 
+of $X_{DEC}(e^{j\Omega})$ will never overlap. As such, the filter does introduce some information loss, but the alternative is having corrupted data at such frequencies. 
+Let 
+\begin{align}
+    H_{\langle 2\pi\rangle}(e^{j\Omega}) = 
+    \begin{cases}
+        1, & 0\leq|\Omega|\leq\pi/M \\
+        0, & \pi/M<|\Omega|\leq\pi.
+    \end{cases}
+\end{align}
+Note that the cutoff frequency of this ideal lowpass filter is at $|\Omega_c|=\pi/M$. Since the DTFT is $2\pi$-periodic, the ideal anti-aliasing filter is then given by 
+\begin{align}
+    H(e^{j\Omega}) = \sum_{k=-\infty}^{+\infty} H_{\langle 2\pi\rangle}(e^{j(\Omega+2\pi k)}).
+\end{align}
+
+\subsection{Resampling}
+As a reminder, resampling is the combination of upsampling and downsampling with a lowpass filter to attain a sampling rate change by a non-integer factor. Now we see that a filter 
+following upsampling is required to obtain interpolated data points, while having a lowpass filter before downsampling is required to prevent aliasing. 
+\\ \\
+In fact, resampling is essentially just an interpolator and a decimator in cascade. 
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-5.25,0){$x[n]$};
+        \node [] (output) at (+8.75,0){\Centerstack{$x_{L/M}[n]$\\(resampled)}};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=1.8cm, 
+            minimum height=1.2cm
+        ] (up) at (-3,0){$\uparrow L$};
+        \node [draw,
+            fill=green!30, 
+            minimum width=1.8cm, 
+            minimum height=1.2cm
+        ] (lpf1) at (0,0){\Centerstack{Lowpass\\Filter,\\$|\Omega_c|=\pi/L$}};
+        \node [draw,
+            fill=blue!30, 
+            minimum width=1.8cm, 
+            minimum height=1.2cm
+        ] (lpf2) at (3,0){\Centerstack{Lowpass\\Filter,\\$|\Omega_c|=\pi/M$}};
+        \node [draw,
+            fill=red!30, 
+            minimum width=1.8cm, 
+            minimum height=1.2cm
+        ] (down) at (6,0){$\downarrow M$};
+        \draw [-latex, line width=1.5pt] (input) -- (up);
+        \draw [-latex, line width=1.5pt] (up) -- (lpf1);
+        \draw [-latex, line width=1.5pt] (lpf1) -- (lpf2);
+        \draw [-latex, line width=1.5pt] (lpf2) -- (down);
+        \draw [-latex, line width=1.5pt] (down) -- (output);
+        \draw[dashed] (-4.5,-1.5)--(-4.5,1.5)--(1.2,1.5)--(1.2,-1.5)--(-4.5,-1.5);
+        \node[] at (-3,1.1) {Interpolator};
+        \draw[dashed] (7.2,-1.5)--(7.2,1.5)--(1.5,1.5)--(1.5,-1.5)--(7.2,-1.5);
+        \node[] at (3,1.1) {Decimator};
+    \end{tikzpicture}
+\end{center}
+The two lowpass filters can be combined into a single lowpass filter such that 
+\begin{center}
+    \begin{tikzpicture}
+        \node [] (input) at (-3,0){$x[n]$};
+        \node [] (output) at (+9,0){$x_{L/M}[n]$};
+        \node [draw,
+            fill=yellow!50, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (up) at (0,0){$\uparrow L$};
+        \node [draw,
+            fill=blue!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (lpf) at (3,0){\shortstack{Lowpass\\Filter}};
+        \node [draw,
+            fill=red!30, 
+            minimum width=2cm, 
+            minimum height=1.2cm
+        ] (down) at (6,0){$\downarrow M$};
+        \draw [-latex, line width=1.5pt] (input) -- (up);
+        \draw [-latex, line width=1.5pt] (up) -- (lpf);
+        \draw [-latex, line width=1.5pt] (lpf) -- (down);
+        \draw [-latex, line width=1.5pt] (down) -- (output);
+    \end{tikzpicture}
+\end{center}
+Here, the ideal lowpass filter is given by
+\begin{align}
+    H(e^{j\Omega}) = \sum_{k=-\infty}^{+\infty} H_{\langle 2\pi\rangle}(e^{j(\Omega+2\pi k)}),
+\end{align}
+where 
+\begin{align}
+    H_{\langle 2\pi\rangle}(e^{j\Omega}) = 
+    \begin{cases}
+        1, & 0\leq|\Omega|\leq\min(\pi/L,\pi/M) \\
+        0, & \min(\pi/L,\pi/M)<|\Omega|\leq\pi.
+    \end{cases}
+\end{align}
+Note that the cutoff frequency of the lowpass filter is $|\Omega_c|=\min(\pi/L,\pi/M)$, which is the result of 
+multiplying the frequency response functions of the ideal reconstruction filter and the ideal anti-aliasing filter.
+\\ \\
+Lastly, note that interpolation is done before decimation. Since decimation already suggests some information loss, it is 
+better to interpolate the data first to minimize as much loss as possible.
+
+\end{document}
