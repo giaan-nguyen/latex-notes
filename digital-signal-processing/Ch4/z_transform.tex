@@ -68,7 +68,7 @@ Table \ref{z_prop} lists the properties of the bilateral $z$--transform.
         $z$-domain derivative & $n\cdot x[n]$ & $-z\,\dfrac{dX(z)}{dz} = -z\cdot X'(z)$ & $R$ \\[0.5cm]
         Upsampling & $x[n/M],\text{ } M\in\mathbb{Z}^+$ & $X(z^M)$ & $R^{1/M}$ \\[0.5cm]
         Downsampling & $x[Mn],\text{ } M\in\mathbb{Z}^+$ & $\dfrac{1}{M}\displaystyle\sum_{k=0}^{M-1}X(e^{-j2\pi k/M}z^{1/M})$ & $R^M$ \\[0.5cm]
-        Convolution & $x_1[n]*x_2[n]$ & $X_1(z)X_2(z)$ & At least $R_1\cap R_2$ \\[0.5cm]
+        Linear convolution & $x_1[n]*x_2[n]$ & $X_1(z)X_2(z)$ & At least $R_1\cap R_2$ \\[0.5cm]
         \hline
     \end{tabular}
 \end{table}
@@ -390,7 +390,7 @@ the bilateral $z$--transform will be referred to as simply the $z$--transform. T
         $z$-domain derivative & $n\cdot x[n]$ & $-z\,\dfrac{dX^+(z)}{dz}$ \\[0.5cm]
         Upsampling & $x[n/M],\text{ } M\in\mathbb{Z}^+$ & $X^+(z^M)$ \\[0.5cm]
         Downsampling & $x[Mn],\text{ } M\in\mathbb{Z}^+$ & $\dfrac{1}{M}\displaystyle\sum_{k=0}^{M-1}X^+(e^{-j2\pi k/M}z^{1/M})$ \\[0.5cm]
-        Convolution & $x_1[n]*x_2[n]$ & $X_1^+(z)X_2^+(z)$ \\[0.5cm]
+        Linear convolution & $x_1[n]*x_2[n]$ & $X_1^+(z)X_2^+(z)$ \\[0.5cm]
         Initial value theorem & $x[0]$ & $\displaystyle\lim_{z\to\infty} X^+(z)$ \\[0.5cm]
         Final value theorem & $\displaystyle\lim_{n\to\infty}x[n]$ & $\displaystyle\lim_{z\to 1} \,(z-1)X^+(z)$ \\[0.5cm]
         \hline
