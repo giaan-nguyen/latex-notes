@@ -155,7 +155,7 @@ The \emph{unit impulse sequence}, also called the \emph{Kronecker delta sequence
         1, & n=N \\
         0, & otherwise
     \end{cases}, \\
-    \text{with } \sum_{-\infty}^{+\infty} \delta[n-N] \,dt = 1.
+    \text{with } \sum_{n=-\infty}^{+\infty} \delta[n-N] = 1.
 \end{align}
 Interestingly, when time-scaled by a factor $a$,
 \begin{align}
@@ -163,7 +163,7 @@ Interestingly, when time-scaled by a factor $a$,
 \end{align}
 The impulse sequence also has a \emph{sampling property}, also called \emph{sifting property}:
 \begin{align}
-    \sum_{-\infty}^{+\infty} x[n]\delta[n-N]&= x[N], \\
+    \sum_{n=-\infty}^{+\infty} x[n]\delta[n-N]&= x[N], \\
     x[n]\delta[n-N] &= x[N]\delta[n-N].
 \end{align} \\
 The cumulative summation of the unit impulse sequence is the \emph{unit step sequence}, also called the \emph{Heaviside step sequence}, and is defined as 
