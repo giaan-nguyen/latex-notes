@@ -1,0 +1,229 @@
+\documentclass{report}
+\input{../../preamble.tex}
+
+\begin{document}
+\setcounter{chapter}{5}
+\setcounter{page}{66}
+\chapter{Discrete-Time Fourier Series}
+
+As with the CT Fourier series, there exists a discrete-time Fourier series (DTFS) representation for periodic DT signals,  
+as part of a collection of discrete-time \emph{Fourier analysis} techniques. Of course, while the DTFS is applicable for periodic DT signals, 
+the DTFT is applicable for any DT signal regardless of periodicity or causality. 
+\\ \\
+However, understanding how the DTFS works is a precursor to understanding the third DT Fourier analysis technique: the discrete Fourier transform (DFT).
+Before delving into the DFT, we briefly examine the DTFS.
+
+\section{Discrete-Time Fourier Series}
+Fourier's theorem can be applied to the discrete-time domain in the sense that any periodic DT signal $x[n]$ can be represented as a finite sum of DT sinusoids. 
+Specifically, given that the period of $x[n]$ is $N_0$ and that sinusoids are closely related to complex exponentials, the signal can be expressed as a 
+sum of $N_0$ complex exponentials.
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+The \emph{discrete-time Fourier series} (DTFS) of a $N_0$-periodic DT signal $x[n]$ for $N_0=2\pi/\Omega_0$ is given by
+    \begin{align}
+        x[n] = \sum_{k=0}^{N_0-1} x_k e^{jk\Omega_0 n},
+    \end{align}
+    where the \emph{Fourier coefficients} are calculated from the summation: 
+    \begin{align}
+        x_k = \frac{1}{N_0} \sum_{n=0}^{N_0-1} x[n] e^{-jk\Omega_0 n}.
+    \end{align}
+\end{tcolorbox}
+\noindent Additionally, from the equation for calculating Fourier coefficients, since $x[n]e^{-jk\Omega_0 n}$ is $N_0$-periodic, the coefficients $x_k$ themselves must also be $N_0$-periodic, 
+despite only needing one period to compute such coefficients. That is,
+\begin{align}
+    x_k = x_{k+mN_0}, \text{ for } m\in\mathbb{Z}.
+\end{align}
+For $x_k=|x_k|\exp(j\phi_k)$, the magnitudes $|x_k|$ and phases $\phi_k$ can be collected and plotted against their corresponding harmonic frequencies 
+on a \emph{magnitude spectrum} and a \emph{two-sided phase spectrum}, respectively. Often the two spectra together are collectively referred to as the 
+\emph{two-sided Fourier spectrum}. 
+\\ \\
+As with the DTFT, since periodic DT signals are sequences, there is only one single necessary Dirichlet condition for the DTFS. It follows that if $N_0$-periodic signal $x[n]$ is absolutely summable 
+over a period such that 
+\begin{align}
+    \sum_{n=0}^{N_0-1} |x[n]| < \infty,
+\end{align}
+then $x[n]$ has a DTFS. Unless the sequence contains the value $\pm\infty$ at a certain value of $n$, the sequence will almost always converge absolutely. Note here that the condition 
+is necessary, not sufficient. The implication is that the DTFS applies to strictly DT power signals. 
+\\ \\
+Properties of the DTFS are outlined in Table \ref{dtfs_prop}.
+
+\begin{table}[hbt!]
+    \centering
+    \caption{Properties of the DTFS.}
+    \label{dtfs_prop}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Property & Periodic signal, $x[n]$ & Fourier coefficients, $x_k$ \\[0.15cm]
+        \hline
+        & & \\
+        Superposition & $A_1x_1[n]+A_2x_2[n]$ & $A_1(x_1)_k+A_2(x_2)_k$ \\[0.5cm]
+        Time shift & $x[n-n_0]$ & $e^{-jk\Omega_0 n_0}x_k$ \\[0.5cm]
+        Frequency shift & $e^{-jk_0\Omega_0 n}x[n]$ & $x_{k+k_0}$ \\[0.5cm]
+        Time reversal & $x[-n]$ & $x_{-k}$ \\[0.5cm]
+        Conjugate symmetry & $x[n]$ real & 
+        $\begin{cases}
+            x_{-k} = x_k^* \\
+            \Re(x_k) = \Re(x_{-k}) \\
+            \Im(x_k) = -\Im(x_{-k}) \\
+            |x_k| = |x_{-k}| \\
+            \phi_k = -\phi_{-k}
+        \end{cases}$ \\[0.5cm]
+         & & \\[0.25cm]
+        Real and even signals & $x[n]$ real and even & $x_k$ purely real and even \\[0.5cm]
+        Real and odd signals & $x[n]$ real and odd & $x_k$ purely imaginary and odd \\[0.5cm]
+        \Centerstack{Even-odd decomposition \\ of real signals} & 
+        $\begin{cases}
+            x_e[n]=\frac{1}{2}[x[n]+x[-n]] \\
+            x_o[n]=\frac{1}{2}[x[n]-x[-n]]
+        \end{cases}$ & 
+        $\begin{cases}
+            \Re(x_k) \\
+            j\Im(x_k)
+        \end{cases}$ \\[0.5cm]
+        \hline
+    \end{tabular}
+\end{table}
+
+\pagebreak
+\begin{example}
+    Compute the DTFS of periodic sequence 
+    \begin{align*}
+        x[n] = \left\{...,\underbar{24},8,12,16,24,8,12,16,...\right\}.
+    \end{align*}
+\end{example}
+\begin{solution}
+    From visual inspection, we see that the period of $x[n]$ is $N_0=4$. Therefore, we need to find four Fourier coefficients. 
+    \begin{align*}
+        x_0 &= \frac{1}{4} \sum_{n=0}^{3} x[n] = \frac{1}{4}[24+8+12+16] = 15 \\
+        x_1 &= \frac{1}{4} \sum_{n=0}^{3} x[n]e^{-j2\pi n/4} = \frac{1}{4}[24+8e^{-j\pi/2}+12e^{-j2\pi/2}+16e^{-j3\pi/2}] = 3.6e^{j33.7^\circ} \\
+        x_2 &= \frac{1}{4} \sum_{n=0}^{3} x[n]e^{-j4\pi n/4} = \frac{1}{4}[24+8e^{-j\pi}+12e^{-j2\pi}+16e^{-j3\pi}] = 3 \\
+        x_3 &= \frac{1}{4} \sum_{n=0}^{3} x[n]e^{-j6\pi n/4} = \frac{1}{4}[24+8e^{-j3\pi/2}+12e^{-j6\pi/2}+16e^{-j9\pi/2}] = 3.6e^{-j33.7^\circ}
+    \end{align*}
+    Then for $\Omega_0=2\pi/N_0=\pi/2$, the DTFS of $x[n]$ is 
+    \begin{align*}
+        x[n] = \sum_{k=0}^{N_0-1} x_k e^{jk\Omega_0 n} &= 15 + 3.6e^{j33.7^\circ}e^{j\pi n/2} + 3e^{j2\pi n/2} + 3.6e^{-j33.7^\circ}e^{j3\pi n/2} \\
+        &= 15 + 3(-1)^n + 7.2\cos\left(\frac{\pi}{2}n+33.7^\circ\right).
+    \end{align*}
+\end{solution}
+
+\section{Parseval's Theorem for DTFS}
+Parseval's theorem for the DTFS is essentially a ``conservation of (average) power'' theorem. When periodic signals are mapped from the DTFS to the discrete-frequency Fourier spectrum, the 
+total signal average power is conserved. It follows that the total average power of a DT periodic signal $x[n]$ can be evaluated as: 
+\begin{align}
+    P_x = \frac{1}{N_0}\sum_{n=0}^{N_0-1} |x[n]|^2 = \sum_{k=0}^{N_0-1} |x_k|^2.
+\end{align}
+Here, the DC power is given by $|x_0|^2$ whereas the rest of the summation is the average AC power.
+\\ \\
+Additionally, we can define the \emph{one-sided power spectral density} (1-sided PSD) to be 
+\begin{align}
+    PSD_1 = 
+    \begin{cases}
+        |x_0|^2, & k=0 \\
+        2|x_k|^2, & k>0
+    \end{cases}
+\end{align}
+and the \emph{two-sided power spectral density} (2-sided PSD) to be 
+\begin{align}
+    PSD_2 = |x_k|^2.
+\end{align}
+Note that the 2-sided PSD is defined for all frequencies, whereas the 1-sided PSD is defined for only nonnegative frequencies. 
+Because of this, the AC component of the 2-sided PSD are half the values of the 1-sided PSD. In signal processing, we tend to be more interested in the 1-sided PSD.
+
+\section{DT LTI Systems with DTFS}
+As with the CT case, the superposition principle can be applied to find the output of a DT LTI system, especially if the input signal is a periodic DT signal which 
+can be represented as a finite sum of DT complex exponentials. 
+
+\begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
+\emph{DTFS ANALYSIS.}
+    \begin{enumerate}
+        \item Express the input signal $x[n]$ as a DTFS to obtain the Fourier coefficients $x_k$.
+        \item Use the DTFT to find the generic frequency response function $H(e^{j\Omega})$ of the system.
+        \item Compute the output Fourier coefficients $y_k = x_k H(e^{j\Omega})\big|_{\Omega=k\Omega_0}$.
+        \item Determine the output signal $y[n] = \displaystyle\sum_{k=0}^{N_0-1} y_k e^{jk\Omega_0 n}$.
+    \end{enumerate}
+\end{tcolorbox}
+
+\begin{example}
+    Suppose a periodic sequence
+    \begin{align*}
+        x[n] = \left\{...,\underbar{4},-2,0,-2,4,-2,0,-2,...\right\}
+    \end{align*}
+    is inputted into a system characterized by impulse response
+    \begin{align*}
+        h[n] = \frac{\sin\left(\frac{\pi n}{3}\right)}{\pi n}.
+    \end{align*}
+    Find the system response $y[n]$.
+\end{example}
+\begin{solution}
+    From visual inspection, we see that the period of $x[n]$ is $N_0=4$. Therefore, we need to find four Fourier coefficients. 
+    \begin{align*}
+        x_0 &= \frac{1}{4} \sum_{n=0}^{3} x[n] = \frac{1}{4}[4-2+0-2] = 0 \\
+        x_1 &= \frac{1}{4} \sum_{n=0}^{3} x[n]e^{-j2\pi n/4} = \frac{1}{4}[4-2e^{-j\pi/2}+0e^{-j2\pi/2}-2e^{-j3\pi/2}] = 1 \\
+        x_2 &= \frac{1}{4} \sum_{n=0}^{3} x[n]e^{-j4\pi n/4} = \frac{1}{4}[4-2e^{-j\pi}+0e^{-j2\pi}-2e^{-j3\pi}] = 2 \\
+        x_3 &= \frac{1}{4} \sum_{n=0}^{3} x[n]e^{-j6\pi n/4} = \frac{1}{4}[4-2e^{-j3\pi/2}+0e^{-j6\pi/2}-2e^{-j9\pi/2}] = 1
+    \end{align*}
+    Using the DTFT table, we find that 
+    \begin{align*}
+        H(e^{j\Omega}) = \text{DTFT}[h[n]] = \sum_{k=-\infty}^{+\infty} \operatorname{rect}\left(\frac{\Omega-2\pi k}{2(\pi/3)}\right).
+    \end{align*}
+    Isolate one period such that the frequency response over one period is
+    \begin{align*}
+        H_{\langle 2\pi\rangle}(e^{j\Omega}) = \operatorname{rect}\left(\frac{\Omega}{2(\pi/3)}\right) = 
+        \begin{cases}
+            1, & 0\leq|\Omega|\leq\pi/3 \\
+            0, & \pi/3<|\Omega|<\pi.
+        \end{cases}
+    \end{align*}
+    Then for $\Omega_0=2\pi/N_0=\pi/2$, 
+    \begin{align*}
+        &H_{\langle 2\pi\rangle}(e^{j\Omega})\bigg|_{\Omega=0} = 1 \\
+        &H_{\langle 2\pi\rangle}(e^{j\Omega})\bigg|_{(\Omega=\Omega_0=\pi/2)} = 0 \\
+        &H_{\langle 2\pi\rangle}(e^{j\Omega})\bigg|_{(\Omega=2\Omega_0=\pi)} = 0 \\
+        &H_{\langle 2\pi\rangle}(e^{j\Omega})\bigg|_{(\Omega=3\Omega_0=3\pi/2=-\pi/2)} = 0.
+    \end{align*}
+    The output Fourier coefficients are then 
+    \begin{align*}
+        y_0 &= x_0 H(e^{j\Omega})\big|_{\Omega=0} = 0 \\
+        y_1 &= x_1 H(e^{j\Omega})\big|_{\Omega=\Omega_0} = 0 \\
+        y_2 &= x_2 H(e^{j\Omega})\big|_{\Omega=2\Omega_0} = 0 \\
+        y_3 &= x_3 H(e^{j\Omega})\big|_{\Omega=3\Omega_0} = 0,
+    \end{align*}
+    and the system response is thus 
+    \begin{align*}
+        y[n] = \sum_{k=0}^{N_0-1} y_k e^{jk\Omega_0 n} = \sum_{k=0}^{3} 0\,e^{jk (2\pi/4) n} = 0.
+    \end{align*}
+\end{solution}
+
+\begin{example}
+    Given the periodic sequences 
+    \begin{align*}
+        x[n] &= \left\{...,\underbar{4},2,1,0,4,2,1,0,...\right\} \\
+        y[n] &= \left\{...,\underbar{10},4,10,4,10,4,...\right\} \\
+    \end{align*}
+    find $h[n]=\left\{\underbar{\emph{a}},b,c\right\}$ for $y[n]=x[n]*h[n]$.
+\end{example}
+\begin{solution}
+    Because $h[n]$ is finite, we can avoid using the DTFS representation altogether by using the expanded tabular method for linear convolution. 
+    Since $x[n]$ has a period of 4 (which is greater than the period of $h[n]$ which is 2), only 4 rows for $h[\cdot]$ are needed.
+    \begin{center}
+        \begin{tabular}{c|ccccccc|c}
+            $n \rightarrow $ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & $y[\cdot]$ \\
+            \hline
+            $x[n]$ & 1 & 0 & 4 & 2 & 1 & 0 & 4 & \\
+            \hline
+            $h[-n]$ & $c$ & $b$ & $a$ & & & & & $y[0] = c + 4a = 10$ \\
+            $h[1-n]$ & & $c$ & $b$ & $a$ & & & & $y[1] = 4b + 2a = 4$ \\
+            $h[2-n]$ & & & $c$ & $b$ & $a$ & & & $y[2] = 4c + 2b + a = 10$\\
+            $h[3-n]$ & & & & $c$ & $b$ & $a$ & & $y[3] = 2c + b = 4$
+        \end{tabular}
+    \end{center}
+    Then solving the system of equations from the right pane, we get 
+    \begin{align*}
+        a &= 2 \\
+        b &= 0 \\
+        c &= 2.
+    \end{align*}
+    Therefore, $h[n]=\left\{\underbar{2},0,2\right\}$.
+\end{solution}
+
+\end{document}
