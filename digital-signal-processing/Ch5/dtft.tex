@@ -21,7 +21,7 @@ it holds true that
 \begin{align}
     e^{j\Omega n} = e^{j(\Omega+2\pi)n} \text{ for } n\in\mathbb{Z}.
 \end{align}
-Therefore, the DTFT is $2\pi$-periodic.
+Therefore, the DTFT is $2\pi$-periodic in $\Omega$.
 
 \section{Discrete-Time Fourier Transform}
 \begin{tcolorbox}[width=\textwidth,colback={white}, sharp corners]
@@ -144,8 +144,8 @@ Table \ref{dtft_pairs} lists some common DTFT pairs.
         $1$ & $2\pi\displaystyle\sum_{k=-\infty}^{+\infty}\delta(\Omega-2\pi k)$ \\[0.5cm]
         $u[n]$ & $\dfrac{1}{1-e^{-j\Omega}} + \displaystyle\sum_{k=-\infty}^{+\infty}\pi\delta(\Omega-2\pi k)$ \\[0.5cm]
         $\operatorname{sgn}[n]=u[n]-u[-n]$ & $-j\cot\left(\dfrac{\Omega}{2}\right)$ \\[0.5cm]
-        $u[n]-u[n-N]$ & $e^{-j\Omega(N-1)/2}\left[\dfrac{\sin\left(\frac{N\Omega}{2}\right)}{\sin\left(\frac{\Omega}{2}\right)}\right]$ \\[0.5cm]
-        $u[n+N]-u[n-(N+1)]$ & $\dfrac{\sin\left[\Omega\left(N+\frac{1}{2}\right)\right]}{\sin\left(\frac{\Omega}{2}\right)}$ \\[0.5cm]
+        $u[n]-u[n-N]$ & $e^{-j\Omega(N-1)/2}\left[\dfrac{\sin\left(\frac{N\Omega}{2}\right)}{\sin\left(\frac{\Omega}{2}\right)}\right]$ (modulated Dirichlet kernel) \\[0.5cm]
+        $u[n+N]-u[n-(N+1)]$ & $\dfrac{\sin\left[\Omega\left(N+\frac{1}{2}\right)\right]}{\sin\left(\frac{\Omega}{2}\right)}$ (Dirichlet kernel) \\[0.5cm]
         $a^n u[n],\, |a|<1$ & $\dfrac{1}{1-ae^{-j\Omega}}$ \\[0.5cm]
         $a^n u[-n-1],\, |a|>1$ & $\dfrac{1}{1-ae^{-j\Omega}}$ \\[0.5cm]
         $a^{-n} u[-n-1],\, |a|<1$ & $\dfrac{ae^{j\Omega}}{1-ae^{j\Omega}}$ \\[0.5cm]
@@ -374,7 +374,7 @@ Substituting $z=e^{j\Omega}$, we get
 \begin{align}
     X_L(e^{j\Omega}) = X(e^{j(\Omega L)}).
 \end{align}
-Because the DTFT is $2\pi$-periodic, $X_L(e^{j\Omega})$ is thus periodic. Let 
+Because the DTFT is $2\pi$-periodic in $\Omega$, $X_L(e^{j\Omega})$ is thus periodic. Let 
 \begin{align}
     X_{\langle2\pi\rangle}(e^{j\Omega}) = X(e^{j\Omega}), \text{ for } \Omega\in[-\pi,\pi].
 \end{align}
@@ -466,7 +466,7 @@ Here, we introduce the ideal reconstruction filter, which aims to remove image s
         0, & \pi/L<|\Omega|\leq\pi.
     \end{cases}
 \end{align}
-Note that the cutoff frequency of this ideal lowpass filter is at $|\Omega_c|=\pi/L$. Since the DTFT is $2\pi$-periodic, the ideal reconstruction filter is then given by 
+Note that the cutoff frequency of this ideal lowpass filter is at $|\Omega_c|=\pi/L$. Since the DTFT is $2\pi$-periodic in $\Omega$, the ideal reconstruction filter is then given by 
 \begin{align}
     H(e^{j\Omega}) = \sum_{k=-\infty}^{+\infty} H_{\langle 2\pi\rangle}(e^{j(\Omega+2\pi k)}).
 \end{align}
@@ -501,7 +501,7 @@ Substituting $z=e^{j\Omega}$, we get
 \begin{align}
     X_{1/M}(e^{j\Omega}) = \frac{1}{M} \sum_{r=0}^{M-1} X\left(e^{j\Omega/M}e^{-j2\pi r/M}\right) = \frac{1}{M} \sum_{r=0}^{M-1} X\left(e^{j(\Omega-2\pi r)/M}\right).
 \end{align}
-Because the DTFT is $2\pi$-periodic, $X_{1/M}(e^{j\Omega})$ is thus periodic. Again let 
+Because the DTFT is $2\pi$-periodic in $\Omega$, $X_{1/M}(e^{j\Omega})$ is thus periodic. Again let 
 \begin{align}
     X_{\langle2\pi\rangle}(e^{j\Omega}) = X(e^{j\Omega}), \text{ for } \Omega\in[-\pi,\pi].
 \end{align}
@@ -642,7 +642,7 @@ Let
         0, & \pi/M<|\Omega|\leq\pi.
     \end{cases}
 \end{align}
-Note that the cutoff frequency of this ideal lowpass filter is at $|\Omega_c|=\pi/M$. Since the DTFT is $2\pi$-periodic, the ideal anti-aliasing filter is then given by 
+Note that the cutoff frequency of this ideal lowpass filter is at $|\Omega_c|=\pi/M$. Since the DTFT is $2\pi$-periodic in $\Omega$, the ideal anti-aliasing filter is then given by 
 \begin{align}
     H(e^{j\Omega}) = \sum_{k=-\infty}^{+\infty} H_{\langle 2\pi\rangle}(e^{j(\Omega+2\pi k)}).
 \end{align}
@@ -715,11 +715,8 @@ The two lowpass filters can be combined into a single lowpass filter such that
 \end{center}
 Here, the ideal lowpass filter is given by
 \begin{align}
-    H(e^{j\Omega}) = \sum_{k=-\infty}^{+\infty} H_{\langle 2\pi\rangle}(e^{j(\Omega+2\pi k)}),
-\end{align}
-where 
-\begin{align}
-    H_{\langle 2\pi\rangle}(e^{j\Omega}) = 
+    H(e^{j\Omega}) &= \sum_{k=-\infty}^{+\infty} H_{\langle 2\pi\rangle}(e^{j(\Omega+2\pi k)}), \text{ where } \\
+    H_{\langle 2\pi\rangle}(e^{j\Omega}) &= 
     \begin{cases}
         1, & 0\leq|\Omega|\leq\min(\pi/L,\pi/M) \\
         0, & \min(\pi/L,\pi/M)<|\Omega|\leq\pi.
@@ -730,5 +727,6 @@ multiplying the frequency response functions of the ideal reconstruction filter 
 \\ \\
 Lastly, note that interpolation is done before decimation. Since decimation already suggests some information loss, it is 
 better to interpolate the data first to minimize as much loss as possible.
+
 
 \end{document}
