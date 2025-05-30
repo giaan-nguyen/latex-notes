@@ -1,7 +1,7 @@
 Personal notes on Signals and Systems
 
 This covers only continuous-time (CT), continuous-valued signals and systems. Chapters are as follows:
-0. Preface (Complex Algebra, Analytic Functions)
+0. Preface (Complex Algebra, Operations)
 1. Signals
 2. Systems
 3. Convolution
