@@ -9,6 +9,7 @@
 \usepackage{enumerate}
 \usepackage{mathtools}
 \usepackage{nicematrix}
+\usepackage{pdfpages}
 \usepackage{pgfplots}
 \usepackage{polynom}
 \usepackage{qtree}
@@ -34,6 +35,10 @@ cross/.default={1pt}}
 
 \renewcommand{\Re}{\operatorname{Re}}
 \renewcommand{\Im}{\operatorname{Im}}
+
+\usepackage[OT2,T1]{fontenc}
+\DeclareSymbolFont{cyrletters}{OT2}{wncyr}{m}{n}
+\DeclareMathSymbol{\Sha}{\mathalpha}{cyrletters}{"58}
 
 \usepackage{pifont}
 \newcommand{\cmark}{\text{\ding{51}}}
