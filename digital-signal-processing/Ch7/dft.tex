@@ -92,7 +92,7 @@ Because of this relationship, there exists an \emph{inverse DFT} defined by
     x[n] = \text{DFT}^{-1}[X[k]] &= \frac{1}{N}\sum_{k=0}^{N-1} X[k] e^{+j2\pi kn/N} \\
     &= \frac{1}{N}\sum_{k=0}^{N-1} X[k] W^{-kn}_N, \text{ for } n=0,1,...,N-1.
 \end{align}
-Because the DFT requires both input $x[n]$ and output $X[k]$ to be discrete sequences, the DFT over a single period $N$ can be expressed as a matrix equation:
+Because the DFT requires both input $x[n]$ and output $X[k]$ to be discrete sequences, the DFT over a single period $N$ can be expressed as a matrix equation, $X=Wx$:
 \begin{align}
     \begin{bmatrix}
         X[0] \\
@@ -1212,7 +1212,11 @@ By visual inspection, the peak sidelobe happens between first and (technically) 
 \end{center}
 
 \pagebreak
-Putting all five normalized windows on the same plot, we can now see how some windows are more advantageous than others.
+Putting all five normalized windows on the same plot, we can now see how some windows are more advantageous than others. 
+We can also see how different windows provide different ways of tapering towards the ends of the window to remove high-frequency 
+distortion -- this is why a window function is sometimes called a \emph{tapering function} or an \emph{apodization function} 
+(``apodization'' literally means ``removing the foot'').
+
 \begin{center}
     \begin{tikzpicture}
         [declare function={
@@ -1273,11 +1277,5 @@ Putting all five normalized windows on the same plot, we can now see how some wi
     \end{tikzpicture}
 \end{center}
 
-\section{Frequency Analysis using Python}
-Here, we provide an example of using Python to perform frequency analysis on a sampled sine wave and using spectral peak detection 
-to find the frequency of the sine wave. This is all done in Jupyter notebook, as seen in the next few pages.
-
-\pagebreak
-\includepdf[pages=-]{freq_analysis.pdf}
 
 \end{document}
