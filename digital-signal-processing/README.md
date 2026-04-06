@@ -1,0 +1,25 @@
+# Personal notes on Digital Signal Processing
+
+This covers only introductory concepts to discrete-time (DT) signals and systems. 
+
+## Chapters
+
+1. Signals
+2. Systems
+3. Convolution
+4. z-Transform
+5. Discrete-Time Fourier Transform (DTFT)
+6. Discrete-Time Fourier Series (DTFS)
+7. Discrete Fourier Transform (DFT)
+8. Discrete-Time Applications
+
+
+## References
+
+[1] J. G. Proakis and D. G. Manolakis, *Digital Signal Processing: Principles, Algorithms, and Applications*, 4th ed. Upper Saddle River, NJ, USA: Pearson Prentice Hall, 2007. 
+
+[2] F. T. Ulaby and A. E. Yagle, *Signals & Systems: Theory and Applications*, 2nd ed. University of Michigan, MI, USA: Michigan Publishing, 2024.
+
+[3] M. D. Adams, *Signals and Systems*, 3rd ed. University of Victoria, Victoria, BC, Canada, Dec. 2020.
+
+[4] R. E. Ziemer, W. H. Tranter, and D. R. Fannin, *Signals & Systems: Continuous and Discrete*, 4th ed. Upper Saddle River, NJ, USA: Pearson Prentice Hall, 1998. 
